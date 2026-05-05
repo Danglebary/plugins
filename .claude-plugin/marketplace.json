@@ -1,0 +1,13 @@
+{
+  "name": "danglebary-plugins",
+  "owner": {
+    "name": "danglebary"
+  },
+  "plugins": [
+    {
+      "name": "agentic-flow",
+      "source": "./plugins/agentic-flow",
+      "description": "AI-augmented software development workflow: PRD/ticket/retro hierarchy with plugin-shipped reviewer agents."
+    }
+  ]
+}
