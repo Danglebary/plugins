@@ -7,7 +7,7 @@ description: Close the current ticket. Invokes the deviation-fact-checker sub-ag
 
 Close a ticket using **disk-as-primary-signal**: fact-check the captured `## Deviations` against the actual diff via a sub-agent, then write the retro entry. Works the same way from a fresh session as from one with full impl context.
 
-Format references: [TICKET-FORMAT.md](../../_shared/TICKET-FORMAT.md), [RETRO-FORMAT.md](../../_shared/RETRO-FORMAT.md).
+Format references: [TICKET-FORMAT.md](../../_shared/TICKET-FORMAT.md), [RETRO-FORMAT.md](../../_shared/RETRO-FORMAT.md), [ABSTRACTION-LEVELS-PRINCIPLE.md](../../_shared/ABSTRACTION-LEVELS-PRINCIPLE.md) (deviation threshold).
 
 ## State contract
 
@@ -33,13 +33,15 @@ Warns rather than refuses on `open → done` (a user who did the work without fl
    - Existing ADR titles + statuses (so it doesn't propose duplicates)
    
    The fact-checker returns three sections (each may be `_None._`):
-   - **Deviation gaps** — diff changes not captured in `## Deviations`
+   - **Deviation gaps** — diff changes at or above the behavioral/seam threshold not captured in `## Deviations`
    - **Misrepresented deviations** — entries in `## Deviations` that don't match the diff
    - **ADR candidates** — choices in the diff that may warrant an ADR per the three-gate test
+   
+   The fact-checker is briefed against the threshold in [ABSTRACTION-LEVELS-PRINCIPLE.md](../../_shared/ABSTRACTION-LEVELS-PRINCIPLE.md). Below-threshold diff content (private renames, formatting, internal refactors, idiomatic changes inside a module) is **not** flagged as gaps — those are noise, not deviations. `_None._` across all three sections is a valid, common outcome on small in-module tickets.
 
-4. **Adversarially review the findings.** The fact-checker's drafts are *drafts* — review each finding against the cited diff hunks, drop noise/false positives, surface high-signal items to the user.
+4. **Adversarially review the findings.** The fact-checker's drafts are *drafts* — review each finding against cited diff hunks, drop noise (below-threshold gaps the fact-checker shouldn't have flagged), surface high-signal items.
 
-5. **Apply confirmed updates** to the ticket's `## Deviations` section (append gaps, fix misrepresentations).
+5. **Apply confirmed updates** to the ticket's `## Deviations` section (append gaps, fix misrepresentations). If there are no above-threshold findings, leave `## Deviations` as-is (including `_None yet._` if nothing was captured during impl) — empty is the correct outcome when nothing seam-level or behavioral diverged.
 
 6. **Surface ADR candidates to the user** for explicit decision: each candidate gets a yes/no/defer. On yes, hand off to ADR creation per [ADR-FORMAT.md](../../_shared/ADR-FORMAT.md).
 
@@ -70,12 +72,12 @@ Warns rather than refuses on `open → done` (a user who did the work without fl
 ## Refusing to run
 
 - If the ticket's status is already `done`, refuse. Suggest checking git history if the user wants to know what happened.
-- If the ticket's status is `open` (never started), warn before flipping straight to `done`. Confirm with the user, then proceed.
 
 ## Anti-patterns
 
 - **Don't restructure the running retro.** This skill appends only. Restructuring is `/retro`'s job at PRD close.
 - **Don't write what was done in the retro entry.** That's redundant with the ticket file. Capture *insight*, not *log*.
-- **Don't trust the fact-checker's drafts blindly.** Review each finding against the cited diff. Drop noise.
+- **Don't trust the fact-checker's drafts blindly.** Review each finding against the cited diff. Drop noise — particularly any "gap" that's actually below threshold (private rename, formatting, internal refactor inside a module).
+- **Don't pad `## Deviations` to look thorough.** If nothing seam-level moved and behavior matched spec, leave the section empty (or at `_None yet._`). A clean ticket is a clean ticket; manufactured deviations turn retros into commentary on noise.
 - **Don't auto-invoke `/improve-codebase-architecture`.** Recommend it; let the user choose to invoke (or defer if no refactor seems needed).
 - **Don't skip the fact-check step even when impl just happened in this session.** Disk-as-primary means the fact-checker runs every time, regardless of conversation context.

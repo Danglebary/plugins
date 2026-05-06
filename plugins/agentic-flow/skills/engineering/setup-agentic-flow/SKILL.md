@@ -35,7 +35,7 @@ These are structural-marker files — the explicit exception to the lazy-creatio
 2. Scaffold `CONTEXT.md` skeleton (asks user for project name).
 3. Scaffold `docs/agentic-flow.toml` with all options present and defaults uncommented (commented-out alternatives included for discoverability).
 4. Run reviewer detection (see below). Propose the list to the user, allow revision, then write `docs/reviewers.md`.
-5. Suggest the user consider mentioning agentic-flow in their repo's `CLAUDE.md` — but **do not auto-edit `CLAUDE.md`**.
+5. Suggest the user consider mentioning agentic-flow in their repo's `CLAUDE.md`.
 
 ### Re-run (refresh mode)
 

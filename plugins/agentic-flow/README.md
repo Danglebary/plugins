@@ -45,7 +45,7 @@ LOOP per ticket:
 
 ### Engineering
 
-- **[setup-agentic-flow](./skills/engineering/setup-agentic-flow/SKILL.md)** — Idempotent per-repo bootstrap and refresh. Scaffolds `docs/prds/`, `docs/adr/`, `docs/reviewers.md`, `CONTEXT.md`.
+- **[setup-agentic-flow](./skills/engineering/setup-agentic-flow/SKILL.md)** — Idempotent per-repo bootstrap and refresh. Scaffolds `docs/prds/`, `docs/adr/`, `docs/reviewers.md`, `CONTEXT.md`, `docs/agentic-flow.toml`.
 - **[next-prd](./skills/engineering/next-prd/SKILL.md)** — Exploration of what to work on next. Reads PRDs, retros, CONTEXT.md, ADRs; surfaces gaps and priorities as a conversation.
 - **[grill-me](./skills/engineering/grill-me/SKILL.md)** — Interview the user relentlessly about a plan or design. Updates CONTEXT.md inline and offers ADRs via the three-gate test.
 - **[to-prd](./skills/engineering/to-prd/SKILL.md)** — Synthesize the current conversation into a frozen `prd.md` (status: drafting). Does not interview.
@@ -70,5 +70,6 @@ The canonical vocabulary used by `agentic-flow` itself lives in [`CONTEXT.md`](.
 - **Vertical slicing.** Tickets are end-to-end thin slices, not horizontal layers.
 - **Lazy file creation.** PRDs, tickets, retros, ADRs are created by the skills that produce them — not in advance, not by bootstrap. The exception is structural-marker files (`CONTEXT.md`, `docs/reviewers.md`, `docs/agentic-flow.toml`), which `/setup-agentic-flow` scaffolds eagerly.
 - **Immutable IDs.** PRD numbers and ticket numbers are never renumbered — references in retros, ADRs, and commits would rot. Abandoned work moves to `_abandoned/` rather than being deleted; numbering globs both directories when assigning the next ID.
-- **`(refactor)` marker on deviations.** Architectural changes from `/improve-codebase-architecture` land in the same ticket's `## Deviations` section with a `(refactor)` prefix, so `/retro` can group them into the synthesized retro's optional `## Refactor` section.
+- **`(refactor)` marker on deviations.** Seam-level changes from `/improve-codebase-architecture` land in the same ticket's `## Deviations` section with a `(refactor)` prefix, so `/retro` can group them into the synthesized retro's optional `## Refactor` section.
+- **Behavioral / seam-level / code-shape — three abstraction levels.** Each artifact captures content at one level: PRDs/tickets/retros are *behavioral* (what changes for a user or caller); deviations and ADRs are *seam-level* (module boundaries, public APIs); inline comments are *code-shape* (why this code is shaped this way, gated on non-obvious WHY). Tickets are written in behavioral voice, not implementation prescription. Deviations capture only behavioral or seam-level divergence — internal renames, formatting, and idiomatic refactors inside a module are below threshold and don't get captured. See [`skills/_shared/ABSTRACTION-LEVELS-PRINCIPLE.md`](./skills/_shared/ABSTRACTION-LEVELS-PRINCIPLE.md).
 - **Disk is the primary signal.** `agentic-flow:deviation-fact-checker` compares ticket diffs against `## Deviations` from a fresh session — conversation context is bonus, not load-bearing. Skills are designed to work the same way without prior context.

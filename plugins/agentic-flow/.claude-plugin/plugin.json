@@ -1,6 +1,6 @@
 {
   "name": "agentic-flow",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "AI-augmented software development workflow: PRD/ticket/retro hierarchy with plugin-shipped reviewer agents.",
   "author": {
     "name": "Austin See"

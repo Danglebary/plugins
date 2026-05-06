@@ -19,18 +19,9 @@ May also run ad-hoc at any PRD/ticket state for general architecture review, but
 
 ## Glossary
 
-Use these terms exactly in every suggestion. Consistent language is the point — don't drift into "component," "service," "API," or "boundary." Full definitions in [LANGUAGE.md](LANGUAGE.md).
+Use the vocabulary in [LANGUAGE.md](LANGUAGE.md) — module, interface, implementation, depth, seam, adapter, leverage, locality. Don't drift to "component," "service," "API," or "boundary."
 
-- **Module** — anything with an interface and an implementation (function, class, package, slice).
-- **Interface** — everything a caller must know to use the module: types, invariants, error modes, ordering, config. Not just the type signature.
-- **Implementation** — the code inside.
-- **Depth** — leverage at the interface: a lot of behaviour behind a small interface. **Deep** = high leverage. **Shallow** = interface nearly as complex as the implementation.
-- **Seam** — where an interface lives; a place behaviour can be altered without editing in place. (Use this, not "boundary.")
-- **Adapter** — a concrete thing satisfying an interface at a seam.
-- **Leverage** — what callers get from depth.
-- **Locality** — what maintainers get from depth: change, bugs, knowledge concentrated in one place.
-
-Key principles (see [LANGUAGE.md](LANGUAGE.md) for the full list):
+Three principles you'll apply repeatedly:
 
 - **Deletion test**: imagine deleting the module. If complexity vanishes, it was a pass-through. If complexity reappears across N callers, it was earning its keep.
 - **The interface is the test surface.**
@@ -84,7 +75,7 @@ This skill is _informed_ by the project's domain model. The domain language give
    - (refactor) <one-line description of what was deepened/extracted/consolidated and the locality benefit>
    ```
 
-   This is the bridge to `/retro` synthesis — `(refactor)`-marked entries across all tickets aggregate into the retro's optional `## Refactor` section.
+   Threshold same as any deviation — only seam-level moves get captured (see [ABSTRACTION-LEVELS-PRINCIPLE.md](../../_shared/ABSTRACTION-LEVELS-PRINCIPLE.md)). If the refactor pass produced no seam-level moves (e.g. all candidates were rejected, or the work was purely internal cleanup), append nothing — that's the correct outcome.
 
 ## Anti-patterns
 
@@ -92,4 +83,5 @@ This skill is _informed_ by the project's domain model. The domain language give
 - **Don't propose more than 3-5 candidates per ticket.** A ticket-scoped refactor pass shouldn't be a full audit. If reviewers surface many candidates, narrow to the highest-leverage ones tied to the ticket's diff.
 - **Don't let reviewers' raw output through unfiltered.** Adversarially review their candidates against the deepening framework — drop noise, surface signal.
 - **Don't skip the `(refactor)` marker on deviations.** That marker is what makes retro synthesis work.
+- **Don't capture below-threshold cleanups as `(refactor)` entries.** Internal renames, control-flow tidy-up, dedup that doesn't cross a module boundary — none of that belongs in `## Deviations`. The threshold is the seam, not the line. If the refactor pass produced no seam-level moves, append nothing.
 - **Don't run reviewer dispatch silently if `docs/reviewers.md` lists agents that don't exist.** Fail loudly with a clear list.

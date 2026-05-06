@@ -5,7 +5,7 @@ A Claude Code plugin (slash commands and behaviors) supporting a four-phase work
 ## Language
 
 **PRD** (Product Requirements Document):
-The multi-ticket scope unit. A frozen artifact (`prd.md`) describing what to build at a level larger than a single **Ticket** but smaller than an epic. Carries one of `drafting | open | done`. Lives at `docs/prds/<NNN>-<slug>/prd.md`.
+The multi-ticket scope unit. Describes what to build at a level larger than a single **Ticket** but smaller than an epic. Lives at `docs/prds/<NNN>-<slug>/prd.md`. Carries one of `drafting | open | done`; editable while `drafting`, frozen on **Lock** to `open`.
 _Avoid_: epic, story, design doc, plan doc
 
 **Ticket**:
@@ -23,7 +23,7 @@ A cross-**PRD** durable decision recorded at `docs/adr/<NNNN>-<slug>.md`. Create
 One of `Exact match | Extended | Divergence | Omitted`. Applied to per-**Ticket** entries in the running **Retro** and to per-section entries in the synthesized **Retro**.
 
 **Plugin-shipped agent**:
-A Claude Code subagent shipped by `agentic-flow` at `agents/<name>.md`, namespaced at invocation as `agentic-flow:<name>`. Two classes: **Reviewer agent** and **Workflow agent**. Auto-discovered by the plugin loader; not listed in `plugin.json`.
+A Claude Code subagent shipped by `agentic-flow` at `agents/<name>.md`, namespaced at invocation as `agentic-flow:<name>`. Two classes: **Reviewer agent** and **Workflow agent**. Auto-discovered by the plugin loader.
 
 **Reviewer agent**:
 A **Plugin-shipped agent** (or repo-specific subagent at `.claude/agents/<name>.md`) invoked by `/improve-codebase-architecture` for refactor candidate-finding. Listed in `docs/reviewers.md`. Examples: `agentic-flow:qa-engineer`, `agentic-flow:software-architect`, `agentic-flow:security-engineer`.
@@ -39,10 +39,16 @@ The **Workflow agent** (`agentic-flow:deviation-fact-checker`) that compares a t
 The criteria used to decide whether a decision warrants an **ADR**. All three must hold: (1) hard to reverse, (2) surprising without context, (3) the result of a real trade-off.
 
 **Bucket folder**:
-A subdirectory of `skills/` grouping related skills. Currently `engineering/`, `productivity/`, and `_shared/`. The `_shared/` folder is for **Format doc**s only, not skills.
+A subdirectory of `skills/` grouping related skills. Currently `engineering/`, `productivity/`, and `_shared/`. The `_shared/` folder holds **Reference doc**s, not skills.
+
+**Reference doc**:
+A markdown document under `skills/_shared/` referenced by one or more skills. Two kinds: **Format doc**s (the canonical shape of a document type) and **Principle doc**s (cross-cutting rules applying across multiple skills). Distinguished by filename suffix.
 
 **Format doc**:
-A reference document at `skills/_shared/<NAME>-FORMAT.md` that defines the canonical shape of a document type (PRD, Ticket, Retro, ADR, CONTEXT, reviewers). Referenced by skills that produce or read those documents.
+A **Reference doc** at `skills/_shared/<NAME>-FORMAT.md` that defines the canonical shape of a document type (PRD, Ticket, Retro, ADR, CONTEXT, reviewers). Referenced by skills that produce or read those documents.
+
+**Principle doc**:
+A **Reference doc** at `skills/_shared/<NAME>-PRINCIPLE.md` that captures cross-cutting rules applying across multiple skills. Referenced from the SKILL.md files (and other reference docs) that need to enforce or align with the principle.
 
 **Vertical slice**:
 A **Ticket** scope shape: end-to-end behavior across whatever layers it touches (UI → backend → DB), rather than one layer for many features (a horizontal slice). The default for `/to-tickets`.
@@ -54,7 +60,7 @@ The transition from `drafting → open` on a **PRD**, triggered by `/to-tickets`
 A divergence between a **Ticket**'s planned approach and what was actually implemented. Captured in the ticket's `## Deviations` section during impl, surfaced in the **Retro** synthesis pass. A `(refactor)` prefix marks deviations from `/improve-codebase-architecture`'s per-ticket pass; the prefix lets `/retro` group refactor work into the synthesized retro's optional `## Refactor` section.
 
 **Active PRD pointer**:
-A one-line text file at `docs/prds/.active` containing the slug of the **PRD** currently being implemented (e.g. `001-add-auth`). Set by `/to-tickets` at PRD lock, cleared by `/retro` at PRD close, manually editable by the user when context-switching between concurrently-`open` PRDs. Not a substitute for PRD `status` — `.active` is "what am I building right now," `status` is "where in its lifecycle is this PRD."
+A one-line text file at `docs/prds/.active` containing the slug of the **PRD** currently being implemented (e.g. `001-add-auth`). Set by `/to-tickets` at PRD lock, cleared by `/retro` at PRD close *if it still points to the closing PRD* (otherwise left alone, since the user may have manually pointed it elsewhere), manually editable by the user when context-switching between concurrently-`open` PRDs. Not a substitute for PRD `status` — `.active` is "what am I building right now," `status` is "where in its lifecycle is this PRD."
 
 **`docs/agentic-flow.toml`**:
 The per-repo configuration file for `agentic-flow`. Created by `/setup-agentic-flow` with all options present (defaults uncommented, alternatives commented). Currently holds branching strategy (`serial` vs `stacked`); future options append here. Skills update it as configuration choices materialize.

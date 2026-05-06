@@ -13,7 +13,7 @@ If a question can be answered by exploring the codebase, explore the codebase in
 
 ## State contract
 
-- **PRD state required**: `drafting` (when operating on a PRD); refuses on `done` PRDs
+- **PRD state required**: `drafting` (when operating on a PRD); refuses on `open` and `done` PRDs
 - **Ticket state required**: n/a
 - **Transition**: none
 
@@ -63,13 +63,7 @@ Don't couple `CONTEXT.md` to implementation details. Only include terms that are
 
 ### Offer ADRs sparingly — three-gate test
 
-Only offer to create an ADR when **all three** gates pass:
-
-1. **Hard to reverse** — the cost of changing your mind later is meaningful.
-2. **Surprising without context** — a future reader will wonder "why did they do it this way?"
-3. **The result of a real trade-off** — there were genuine alternatives and you picked one for specific reasons.
-
-If any of the three is missing, skip the ADR — let the decision live in the PRD's Approach section instead. Use the format in [ADR-FORMAT.md](../../_shared/ADR-FORMAT.md).
+Only offer an ADR when all three gates pass (hard to reverse, surprising without context, real trade-off) — see [ADR-FORMAT.md](../../_shared/ADR-FORMAT.md). If any gate is missing, the decision lives in the PRD's Approach section instead.
 
 ## Refusing to run
 

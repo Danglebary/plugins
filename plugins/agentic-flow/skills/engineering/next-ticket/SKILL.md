@@ -65,6 +65,6 @@ If no tickets are ready, this means one of:
 
 - **Don't auto-start the recommended ticket.** Recommend, don't act. The user might want to skip ahead or pick differently.
 - **Don't reorder by anything other than dependencies and ticket number.** Don't try to be clever about "which is easier" — that's the user's call.
-- **Don't read ticket bodies unless asked.** This skill is about the queue, not about what each ticket entails. Keep it fast.
+- **Don't read ticket bodies unless asked.** This is about the queue, not the content — keep it fast.
 - **Don't refuse on cycle detection.** Warn and show productive work that's unblocked. Refusing is too strict when only a subset of tickets are affected.
 - **Don't cut a branch silently.** Tell the user the branch name and the parent it was cut from; they may want to verify before starting work.

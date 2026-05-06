@@ -7,7 +7,7 @@ description: Break a drafting PRD into dependency-ordered vertical-slice tickets
 
 Take a `drafting` PRD and break it into vertical-slice tickets. **One-shot per PRD**: refuses on `open` or `done` PRDs (frozen-scope principle).
 
-Format reference: [TICKET-FORMAT.md](../../_shared/TICKET-FORMAT.md).
+Format references: [TICKET-FORMAT.md](../../_shared/TICKET-FORMAT.md), [ABSTRACTION-LEVELS-PRINCIPLE.md](../../_shared/ABSTRACTION-LEVELS-PRINCIPLE.md) (ticket voice).
 
 ## State contract
 
@@ -25,6 +25,7 @@ Refuses on `open` (frozen scope — adding tickets violates lock; do new work as
    - Deliver end-to-end behavior across whatever layers it touches.
    - Be small enough that an agent can implement it without further breakdown.
    - Be independently verifiable via observable acceptance criteria.
+   - Read in **behavioral voice** (see ABSTRACTION-LEVELS-PRINCIPLE.md, linked above).
 
 3. **Determine dependencies** between tickets. Ticket B depends on ticket A if B can't start until A is done — typically because B needs an interface, schema, or data structure A creates.
 
@@ -36,9 +37,9 @@ Refuses on `open` (frozen scope — adding tickets violates lock; do new work as
 
 7. **On user confirmation, write each ticket** at `docs/prds/<NNN>-<slug>/tickets/<NNN>-<slug>.md` with:
    - Frontmatter: `status: open`, `depends_on: [<list>]` (empty `[]` if none).
-   - `## Goal` — required, one paragraph.
-   - `## Acceptance criteria` — required, checklist of observable conditions.
-   - `## Implementation notes` — optional; omit the section header if there's nothing useful to say.
+   - `## Goal` — required, one paragraph in behavioral voice.
+   - `## Acceptance criteria` — required, checklist of observable conditions (each item is something a caller or user of the system could verify).
+   - `## Implementation notes` — optional; omit the section header if there's nothing useful to say. Use this only for *load-bearing* implementation constraints (e.g. *"use the existing SessionStore"*, *"no new dependencies"*) — i.e. seam-level constraints surfacing as hints, not code-shape directives.
    - `## Deviations` — placeholder body: `_None yet._`.
 
 8. **Flip the PRD status** from `drafting` to `open`.
@@ -47,23 +48,16 @@ Refuses on `open` (frozen scope — adding tickets violates lock; do new work as
 
 10. **Report** the final ticket list to the user. Recommend `/next-ticket` to start.
 
-## Vertical slice anti-patterns
-
-- **"Set up routing"** — no behavior. Reframe: a route that delivers something specific.
-- **"Add types"** — no behavior. Types are part of whatever ticket needs them.
-- **"Wire up middleware"** — no behavior unless paired with a route that uses it. Combine with the route ticket.
-
-A ticket should make the answer to "what new behavior does this give us?" obvious in one sentence.
-
 ## PRD too big
 
 If you'd produce more than ~10 tickets, the PRD is epic-sized. Stop and tell the user: *"This PRD would produce N tickets, which is too big. Split it into multiple PRDs first."*
 
 ## Anti-patterns
 
-- **Don't write the implementation.** Tickets are specs, not code.
+- **Don't write the implementation.** Tickets are specs of *behavior*, not code. *"Change this function call to use map instead of forEach"*, *"add an `if` check here"*, *"rename this to that"* — these are code-shape directives, not behavioral specs. If the choice is genuinely load-bearing (must use an existing module, must not add a dependency), surface it as a seam-level constraint in `## Implementation notes`. Otherwise leave implementation silent so the implementing agent can match the codebase as it actually exists.
+- **Don't write tickets the implementing agent can't deviate from without "violating" them.** A ticket that prescribes implementation locks the agent into choices that may not fit how the library actually works or how the codebase is shaped — which produces poor code and noisy retros. Behavioral specs leave room for the right implementation to emerge.
 - **Don't carry over PRD section text verbatim.** Each ticket is a focused slice; the PRD stays the parent.
 - **Don't depend on tickets in other PRDs.** Tickets are PRD-scoped. Cross-PRD work means a new PRD.
-- **Don't create `retro.md` here.** Lazy creation by `/done` on first append.
+- **Don't create `retro.md` here.** `/done` creates it lazily on first append.
 - **Don't write files before the user confirms the ticket list.** The proposal step is essential — once written, the PRD locks and `/to-tickets` won't run again on this PRD.
 - **Don't run on an `open` PRD to "add a few more tickets."** That violates the frozen-scope principle. Either a new PRD or a manual ticket file.

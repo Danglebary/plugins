@@ -28,18 +28,6 @@ This produces **crap tests**:
 
 **Correct approach**: Vertical slices via tracer bullets. One test → one implementation → repeat. Each test responds to what you learned from the previous cycle. Because you just wrote the code, you know exactly what behavior matters and how to verify it.
 
-```
-WRONG (horizontal):
-  RED:   test1, test2, test3, test4, test5
-  GREEN: impl1, impl2, impl3, impl4, impl5
-
-RIGHT (vertical):
-  RED→GREEN: test1→impl1
-  RED→GREEN: test2→impl2
-  RED→GREEN: test3→impl3
-  ...
-```
-
 ## Workflow
 
 ### 1. Planning
@@ -86,15 +74,11 @@ Rules:
 - Don't anticipate future tests
 - Keep tests focused on observable behavior
 
-### 4. Refactor
+### 4. Refactor — the critical second pass
 
-After all tests pass, look for [refactor candidates](refactoring.md):
+Once tests are green, take a critical second pass at what you just wrote: now that this behavior exists, is this the right shape? You wrote whatever was simplest to pass the test (correctly) — refactoring is where you check whether the resulting shape holds up.
 
-- [ ] Extract duplication
-- [ ] Deepen modules (move complexity behind simple interfaces)
-- [ ] Apply SOLID principles where natural
-- [ ] Consider what new code reveals about existing code
-- [ ] Run tests after each refactor step
+Lenses and stop conditions: see [refactoring.md](refactoring.md).
 
 **Never refactor while RED.** Get to GREEN first.
 
@@ -110,4 +94,4 @@ After all tests pass, look for [refactor candidates](refactoring.md):
 
 ## Working within an `agentic-flow` ticket
 
-If TDD is happening inside an `agentic-flow` ticket (i.e., a ticket is `in-progress` for the active PRD), and the implementation diverges from the ticket's planned approach (different design, added scope, dropped or revised acceptance criterion), append a one-line entry to the ticket's `## Deviations` section as the delta becomes clear. Don't wait for `/done` to capture it — disk-as-primary means the deviation should be on disk by the time `/done` runs.
+If TDD runs inside an in-progress `agentic-flow` ticket, append behavioral or seam-level divergences from the ticket's plan to its `## Deviations` as they emerge — disk-as-primary means the deviation should be on disk by the time `/done` runs, not held back for `/done` to discover. Threshold and rationale-placement: see [ABSTRACTION-LEVELS-PRINCIPLE.md](../../_shared/ABSTRACTION-LEVELS-PRINCIPLE.md).

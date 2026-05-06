@@ -7,7 +7,7 @@ description: Close a PRD by synthesizing the running retro into the structured f
 
 Close a PRD by synthesizing the running retro into structured form, with one final fact-check pass against the full PRD-branch diff.
 
-Format reference: [RETRO-FORMAT.md](../../_shared/RETRO-FORMAT.md).
+Format references: [RETRO-FORMAT.md](../../_shared/RETRO-FORMAT.md), [ABSTRACTION-LEVELS-PRINCIPLE.md](../../_shared/ABSTRACTION-LEVELS-PRINCIPLE.md) (deviation threshold).
 
 ## State contract
 
@@ -32,9 +32,11 @@ Refuses if any ticket isn't `done` (lists outstanding tickets) or if PRD is alre
    - `CONTEXT.md`
    - Existing ADR titles + statuses
    
-   The fact-checker returns the same three sections it does for `/done`, but at PRD scope. Adversarially review findings against cited diff hunks.
+   The fact-checker returns the same three sections it does for `/done`, but at PRD scope. Same threshold applies (see [ABSTRACTION-LEVELS-PRINCIPLE.md](../../_shared/ABSTRACTION-LEVELS-PRINCIPLE.md)) — below-threshold churn doesn't accumulate into deviations at PRD scope; don't surface it.
+   
+   Adversarially review findings against cited diff hunks. PRD-scope gaps tend to be cross-cutting things ticket-level diffs missed (a seam that shifted across multiple tickets but no single ticket captured it cleanly), not new instances of below-threshold churn.
 
-5. **Apply confirmed late-stage updates.** Append any newly-discovered deviations to the relevant ticket's `## Deviations` (it's late, but better than missing them). Surface ADR candidates for explicit decision.
+5. **Apply confirmed late-stage updates.** Append any newly-discovered deviations to the relevant ticket's `## Deviations` (it's late, but better than missing them). Surface ADR candidates for explicit decision. If the fact-check returns `_None._` across the board, that's a clean PRD — proceed to synthesis.
 
 6. **Read inputs for synthesis:**
    - `prd.md` — section structure and intent.
@@ -102,5 +104,6 @@ Refuses if any ticket isn't `done` (lists outstanding tickets) or if PRD is alre
 - **Don't fabricate outcomes.** If you can't tell from the running retro, deviations, and fact-checker output what happened in a section, ask the user.
 - **Don't lose ticket-level granularity.** Reference specific tickets by number when a lesson is anchored in one.
 - **Don't include `## Refactor` or `## Cross-cutting` if there are no entries.** Omit them entirely.
-- **Don't skip the fact-check step even if every `/done` already fact-checked cleanly.** PRD-level diff often surfaces things ticket-level diffs miss.
+- **Don't pad sections with below-threshold deviations to look thorough.** Internal refactors, private renames, formatting churn — none of that belongs in a synthesized retro. If a section's tickets had no above-threshold divergence, label it `Exact match` and move on.
+- **Don't skip the fact-check step even if every `/done` already fact-checked cleanly.** PRD-level diff often surfaces things ticket-level diffs miss — particularly seams that shifted gradually across tickets where no single ticket captured the cumulative move.
 - **Don't clear `.active` if it points to a different PRD than the one being closed.** The user may have switched context manually.
