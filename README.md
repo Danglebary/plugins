@@ -17,4 +17,4 @@ Add this marketplace to Claude Code, then install the plugin you want:
 
 ## License
 
-[MIT](./LICENSE).
+[MIT](./LICENSE)
