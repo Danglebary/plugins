@@ -1,4 +1,4 @@
-# danglebary-plugins
+# danglebary/plugins
 
 A [Claude Code](https://docs.claude.com/en/docs/claude-code) plugin marketplace.
 
