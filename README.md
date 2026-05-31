@@ -11,8 +11,8 @@ A [Claude Code](https://docs.claude.com/en/docs/claude-code) plugin marketplace.
 Add this marketplace to Claude Code, then install the plugin you want:
 
 ```
-/plugin marketplace add danglebary/danglebary-plugins
-/plugin install agentic-flow@danglebary-plugins
+/plugin marketplace add danglebary/plugins
+/plugin install agentic-flow@danglebary/plugins
 ```
 
 ## License
