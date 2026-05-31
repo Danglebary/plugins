@@ -22,6 +22,8 @@ Implementation prescription belongs in a ticket only when the prescription is it
 
 A deviation is captured when implementation diverges from spec at the behavioral or seam level. Anything below that threshold is noise — it crowds out the deviations that matter and turns retros into commentary on formatting choices.
 
+This threshold gates what gets *documented* as a deviation — not what gets *done*. "Below threshold" means "doesn't earn a `## Deviations` entry," never "not worth doing." Whether a change is worth making and whether it's worth recording are independent judgments: a refactor pass routinely lands internal cleanups — a sharpened test, a clearer private helper, a deduplicated block — that are correct to make *and* correct to leave undocumented. Make the cleanup on its merits; just don't write a Deviation line for it.
+
 In-scope (capture as a deviation):
 - behavioral divergence from any Acceptance criterion (changed, added, dropped)
 - new module created, deleted, split, or merged
