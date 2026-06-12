@@ -46,7 +46,9 @@ Refuses on `open` (frozen scope — adding tickets violates lock; do new work as
 
 9. **Set `.active`** by writing the PRD slug to `docs/prds/.active`.
 
-10. **Report** the final ticket list to the user. Recommend `/next-ticket` to start.
+10. **Offer the PRD-branch bootstrap.** The planning docs just written (prd.md, tickets/) are untracked; offer: *"Cut the PRD branch (`prd-<NNN>-<slug>`) now and commit the planning docs on it?"* On accept, cut the branch from the default branch and commit prd.md + tickets/ as one planning commit. On decline, `/next-ticket` falls back to its lazy branch creation. (Offered, not automatic — same convention as every other git mutation in this workflow.)
+
+11. **Report** the final ticket list to the user. Recommend `/next-ticket` to start.
 
 ## PRD too big
 

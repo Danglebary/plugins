@@ -37,6 +37,7 @@ LOOP per ticket:
   7. (work the ticket: /tdd)
   8. /done                                      → fact-checks deviations, flips status, appends retro entry
   9. /improve-codebase-architecture (recommended) → per-ticket refactor pass with reviewer subagents
+     (accept the gated close-out offer)         → merge ticket branch --no-ff, verify green, delete branch
 
 10. /retro                                      → synthesize retro.md, flips PRD → done
 ```
@@ -73,3 +74,8 @@ The canonical vocabulary used by `agentic-flow` itself lives in [`CONTEXT.md`](.
 - **`(refactor)` marker on deviations.** Seam-level changes from `/improve-codebase-architecture` land in the same ticket's `## Deviations` section with a `(refactor)` prefix, so `/retro` can group them into the synthesized retro's optional `## Refactor` section.
 - **Behavioral / seam-level / code-shape — three abstraction levels.** Each artifact captures content at one level: PRDs/tickets/retros are *behavioral* (what changes for a user or caller); deviations and ADRs are *seam-level* (module boundaries, public APIs); inline comments are *code-shape* (why this code is shaped this way, gated on non-obvious WHY). Tickets are written in behavioral voice, not implementation prescription. Deviations capture only behavioral or seam-level divergence — internal renames, formatting, and idiomatic refactors inside a module are below threshold and don't get captured. See [`skills/_shared/ABSTRACTION-LEVELS-PRINCIPLE.md`](./skills/_shared/ABSTRACTION-LEVELS-PRINCIPLE.md).
 - **Disk is the primary signal.** `agentic-flow:deviation-fact-checker` compares ticket diffs against `## Deviations` from a fresh session — conversation context is bonus, not load-bearing. Skills are designed to work the same way without prior context.
+- **Git mutations are offered, never automatic.** Merges, branch deletions, and planning commits are gated offers the user accepts or declines; the merge-back is the user's control point. Skills read the merge convention from `docs/agentic-flow.toml` / the repo's CLAUDE.md rather than improvising. An unanswered offer or ratification question blocks — it is never consent.
+- **Announced checkpoints block.** When a skill declares a confirm gate (outcome label, ADR candidates, retro drop-list, plan approval), it presents and ends the turn. "Flag-then-proceed in the same breath" converts a review gate into a notification.
+- **`.agentic-flow/` is the scratch directory.** Git-ignored, per-repo: diff artifacts for the fact-checker (`diff.patch`), session handoffs (`handoff.md`). Never a committed artifact; `/setup-agentic-flow` adds the ignore entry.
+- **Candidate inclusion ≠ deviation recording.** The seam-level threshold gates what gets *documented* in `## Deviations`, not what's worth *proposing or doing*. `/improve-codebase-architecture` includes worthwhile below-seam cleanups as candidates; it just doesn't record them.
+- **External facts are verified before they freeze.** Any load-bearing claim about an external system (stdlib, build APIs, language semantics) is verified against the installed toolchain before it lands in an ADR or determines a reviewer finding's severity.

@@ -47,6 +47,8 @@ Ask: "What should the public interface look like? Which behaviors are most impor
 
 **You can't test everything.** Confirm with the user exactly which behaviors matter most. Focus testing effort on critical paths and complex logic, not every possible edge case.
 
+**Plan-gate discipline.** The proposed interface and test plan carry three marks before approval is requested: (1) state whether the design derives from first principles for this problem or from precedent/diff-minimization — "smallest change" is not an argument; argue from the repo's recorded design philosophy (CLAUDE.md weighting, ADRs); (2) mark each load-bearing constraint as **user-stated** or **assumed**; (3) note the strongest alternative shape and why it loses. User approval is a **blocking** checkpoint — present the plan and end the turn; don't start the tracer bullet in the same breath.
+
 ### 2. Tracer Bullet
 
 Write ONE test that confirms ONE thing about the system:
