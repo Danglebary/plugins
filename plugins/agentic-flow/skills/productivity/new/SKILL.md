@@ -32,15 +32,23 @@ Decide based on length:
 
 - **If the prompt fits comfortably in chat** (roughly under 2,000 characters — short enough to copy-paste and skim quickly), output it inline in a single fenced code block so the user can copy it cleanly.
 
-- **If it's longer than that**, write the full prompt to `prompt.md` in the root of the project, and output a short bootstrap prompt in chat that points the new agent at the file. The bootstrap must instruct the new agent to **delete `prompt.md` after reading and understanding it** — the file is scratch context, not a project artifact, and leaving it around pollutes the repo.
+- **If it's longer than that**, write the full prompt to `.agentic-flow/handoff.md` (create the directory if needed; it's git-ignored — repo root risks an accidental commit), and output a short bootstrap prompt in chat that points the new agent at the file. The bootstrap must instruct the new agent to **delete the file after reading and understanding it** — it's scratch context, not a project artifact.
 
 Example bootstrap prompt for the long case:
 
 ```
-Read prompt.md in the project root — it contains everything you need to get up to speed on the current task. Once you've read it and you're confident you understand the context, delete prompt.md (it's transient scratch context, not part of the project) and confirm you're ready to continue.
+Read .agentic-flow/handoff.md — it contains everything you need to get up to speed on the current task. Verify the volatile state it lists before trusting it. Once you've read it and you're confident you understand the context, delete the file (it's transient scratch context, not part of the project) and confirm you're ready to continue.
 ```
 
 Adjust the wording to fit, but keep the deletion instruction — it's the part that's easiest to drop and most annoying to clean up later.
+
+### Handoff template — three sections that earn their keep
+
+When writing the long-form handoff, structure it with these sections (plus whatever the work needs):
+
+- **Settled decisions — do not re-litigate.** A fenced list of choices already made with the user. This stops the new agent from re-opening what's closed; it's the single highest-value section.
+- **Reserved user decisions — ask, don't assume.** Choices deliberately left open that only the user can make. Frame each so the new agent asks instead of guessing.
+- **Volatile state — verify on arrival, do not trust.** Git branch, working-tree status, anything that may drift between sessions. Label it explicitly as verify-first: the handoff is written at time T and read at time T+n, and state *does* drift.
 
 ## A few things to watch for
 

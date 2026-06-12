@@ -32,6 +32,9 @@ In-scope (capture as a deviation):
 - IO surface changed (network, filesystem, database, external service)
 - dependency edges between modules added or removed
 - a seam change that produces a caller-visible behavior change
+- shared tooling surface changed (build graph wiring, benchmark or test-harness entry points, developer-facing scripts) — anything a contributor working outside the ticket's module would invoke or depend on
+
+Tooling-surface changes internal to one module's own tests or scaffolding stay below threshold. This ruling is scope-independent: the same change gets the same verdict at ticket scope (`/done`) and PRD scope (`/retro`) — if it passed one, it must not flag at the other.
 
 Out-of-scope (don't capture):
 - internal control flow within a module's private code

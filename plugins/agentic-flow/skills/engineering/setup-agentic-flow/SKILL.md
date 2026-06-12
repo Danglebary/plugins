@@ -111,7 +111,19 @@ Format reference: [CONTEXT-FORMAT.md](../../_shared/CONTEXT-FORMAT.md).
 # Default is "serial". /next-ticket may prompt to confirm at the start of the
 # second ticket of the first PRD; the choice is then persisted here.
 strategy = "serial"
+# Merge convention for ticket → PRD and PRD → main merges. /done's close-out
+# offer and /next-ticket's reachability recovery read this instead of guessing.
+# merge = "no-ff"
+
+[ticket_start]
+# When true, /next-ticket dispatches a research sub-agent as a standing
+# ticket-start step: map relevant code/docs, verify external-toolchain
+# assumptions, assess whether /tdd fits. The config is the standing consent —
+# no per-ticket prompt.
+# research_opener = true
 ```
+
+Also ensure `.agentic-flow/` is in the repo's `.gitignore` (append if missing). It's the workflow's scratch directory — diff artifacts for the fact-checker, session handoff files — never a committed artifact.
 
 All options ship with defaults uncommented and alternatives in comments — this is the discoverability mechanism for what knobs exist.
 

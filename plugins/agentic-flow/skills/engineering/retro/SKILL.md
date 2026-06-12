@@ -24,6 +24,8 @@ Refuses if any ticket isn't `done` (lists outstanding tickets) or if PRD is alre
 2. **Verify all tickets are done.** Read every ticket file in `tickets/`. If any has `status: open` or `in-progress`, refuse with a list of outstanding tickets.
 
 3. **Determine the PRD-branch diff range.** PRD branch (`prd-<NNN>-<slug>`) vs `main` (or repo default). If non-standard branching, ask the user for the range.
+   
+   **Verify the diff is complete before fact-checking it:** every `done` ticket's work must be reachable from the PRD branch tip. If a ticket branch was never merged back, the PRD diff is silently missing that ticket — stop and offer the close-out merge (`--no-ff`, verify green) before proceeding. Materialize the diff to `.agentic-flow/diff.patch`, same convention as `/done`.
 
 4. **Invoke `agentic-flow:deviation-fact-checker`** with:
    - The PRD (`prd.md`)
@@ -51,9 +53,9 @@ Refuses if any ticket isn't `done` (lists outstanding tickets) or if PRD is alre
 
 9. **Optional Cross-cutting appendix.** If lessons don't fit any PRD section or the Refactor section (e.g. terminology issues that spanned multiple sections, CONTEXT.md updates that landed mid-PRD), capture them here. Omit when empty.
 
-10. **Restructure `retro.md` in place.** Replace the running form with the synthesized form. The running form is preserved in git history.
+10. **Restructure `retro.md` in place — non-destructively.** Before writing, **inventory every section of the current `retro.md` that the synthesized form will not carry forward** — anything beyond the running per-ticket entries: findings notes, analysis writeups, co-resident deliverables from tickets or spikes. For each, either fold it into the synthesis or relocate it to its defined home (`docs/spikes/` for findings-type deliverables, the relevant ticket file, or wherever the user directs). **Present the drop-list and destinations to the user and wait for confirmation before rewriting** — this checkpoint is blocking. Only the running per-ticket entries are fair game to consume silently; they're what the synthesis is *made of*. The running form is preserved in git history, but git history is where content goes to be forgotten — relocation, not history, is the recovery path. (A synthesis pass once silently deleted a ticket's entire findings deliverable; this gate exists because of it.)
 
-11. **Flip the PRD** `status` from `open` to `done`.
+11. **Flip the PRD** `status` from `open` to `done`. Same ordering discipline as `/done`: read the file → edit the status → only then any git commands, never batched in parallel.
 
 12. **Clear `.active`** by deleting `docs/prds/.active` *if it points to this PRD*. (If the user has manually set `.active` to a different PRD, leave it alone.)
 
@@ -107,3 +109,5 @@ Refuses if any ticket isn't `done` (lists outstanding tickets) or if PRD is alre
 - **Don't pad sections with below-threshold deviations to look thorough.** Internal refactors, private renames, formatting churn — none of that belongs in a synthesized retro. If a section's tickets had no above-threshold divergence, label it `Exact match` and move on.
 - **Don't skip the fact-check step even if every `/done` already fact-checked cleanly.** PRD-level diff often surfaces things ticket-level diffs miss — particularly seams that shifted gradually across tickets where no single ticket captured the cumulative move.
 - **Don't clear `.active` if it points to a different PRD than the one being closed.** The user may have switched context manually.
+- **Don't drop content the synthesis didn't write.** Anything in `retro.md` beyond the running per-ticket entries gets inventoried and relocated with user confirmation, never silently consumed by the rewrite.
+- **Don't apply a different deviation threshold than `/done` did.** The threshold (including its tooling-surface ruling) lives in [ABSTRACTION-LEVELS-PRINCIPLE.md](../../_shared/ABSTRACTION-LEVELS-PRINCIPLE.md) alone — a change that passed the per-ticket fact-check must not flag at PRD scope under a stricter reading.

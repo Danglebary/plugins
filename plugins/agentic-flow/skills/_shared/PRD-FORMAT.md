@@ -31,6 +31,13 @@ Abandoned PRDs are moved to `docs/prds/_abandoned/<NNN>-<slug>/` (preserving the
 
 Preserving abandoned PRDs is intentional: what didn't pan out is often as informative as what shipped.
 
+## Sibling vehicles — ideas and spikes
+
+Not every captured thought is PRD-weight. Two lighter vehicles sit alongside the PRD tier (`/to-prd` asks the fit question at capture time):
+
+- **Ideas** — `docs/prds/ideas/<slug>.md`, un-numbered. A banked thought not ready to commit to. Promoted to a numbered PRD when it's time to build; it gets its number then, never before. The `ideas/` directory doesn't participate in numbering globs.
+- **Spikes** — `docs/spikes/<slug>.md`. An investigation whose deliverable is *findings*, not behavior. No tickets, no retro, no status lifecycle. Findings that justify building feed a new PRD. Spike docs are also the defined relocation home for findings-type deliverables that `/retro`'s synthesis would otherwise drop.
+
 ## Body sections
 
 Five required sections, each a meaningful unit to retrospect on. The synthesized retro mirrors these sections with outcome labels.

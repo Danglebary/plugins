@@ -11,6 +11,16 @@ Ask **one question at a time**. Wait for the user's response before continuing.
 
 If a question can be answered by exploring the codebase, explore the codebase instead of asking.
 
+> **Protected behaviors — do not weaken in any rewrite of this skill.** Code-grounding (explore instead of asking; cross-reference user claims against code) and the per-question recommendation are this skill's two demonstrably load-bearing mechanics — each has overturned a PRD's central premise before tickets were cut. Any future edit to this file keeps both mandatory.
+
+## Recommendation discipline
+
+Every recommendation you present carries three marks:
+
+1. **Derivation** — state whether it derives from first principles for *this* problem, or from precedent/diff-minimization. "Smallest change" and "least churn" are not arguments on their own; argue from the repo's recorded design philosophy (its CLAUDE.md weighting, ADRs), not generic caution. If your first instinct was the lowest-lift option, say so and check it against the long-term shape before presenting.
+2. **Constraint provenance** — mark each load-bearing constraint as **user-stated** or **assumed**. An assumed constraint silently narrowing the design space is how non-goals get smuggled in; surfacing it lets the user strike it.
+3. **Counterargument** — present the strongest case *against* your recommendation, not just for it. The recommendation-plus-counterargument shape is what lets the user's pushback land productively; without it, grilling degrades into ratification.
+
 ## State contract
 
 - **PRD state required**: `drafting` (when operating on a PRD); refuses on `open` and `done` PRDs
@@ -64,6 +74,16 @@ Don't couple `CONTEXT.md` to implementation details. Only include terms that are
 ### Offer ADRs sparingly — three-gate test
 
 Only offer an ADR when all three gates pass (hard to reverse, surprising without context, real trade-off) — see [ADR-FORMAT.md](../../_shared/ADR-FORMAT.md). If any gate is missing, the decision lives in the PRD's Approach section instead.
+
+**Toolchain-fact gate:** before freezing an ADR, verify every load-bearing claim about an external system (stdlib behavior, build-system APIs, language defaults, third-party semantics) against the installed toolchain — read its source, run a probe program, or dispatch a research sub-agent. Four ADRs in one project rotted on unverified external facts, all foreseeably; "the docs say so" and "I recall" are not verification. Mint ADRs inline as decisions land — don't defer them to end-of-grill.
+
+### End-of-grill self-check
+
+Before declaring the grill complete, run and report a self-check:
+
+- **Deferred ADRs?** Any decision that passed the three gates but wasn't minted inline — mint it now.
+- **Invalidated early answers?** Any early-grill resolution contradicted or made stale by a later answer — surface it and re-resolve rather than leaving the record inconsistent.
+- **Unverified toolchain facts?** Any external-system claim that slipped into a decision without the verification above.
 
 ## Refusing to run
 

@@ -34,9 +34,12 @@ If `.active` is missing, prompts the user to specify a PRD or run `/next-prd`. I
 5. **Recommend.** Present the ready tickets ordered by ticket number. Recommend the lowest-numbered ready ticket as the default. If only one is ready, just say so. If none are ready, see "No ready tickets" below.
 
 6. **Optional flip and branch creation.** If the user accepts the recommendation:
-   - Flip the ticket's `status` from `open` to `in-progress`.
-   - Cut the appropriate git branch (see "Git branch creation" below).
+   - Cut the appropriate git branch (see "Git branch creation" below), after the dependency-reachability check passes.
+   - Flip the ticket's `status` from `open` to `in-progress`: **read the ticket file → edit the status** — never batch the frontmatter edit in parallel with git commands.
+   - **The flip is a working-tree edit, not a commit.** Never create a commit just for the status flip — it rides along with the ticket's first real commit. The only git this skill runs is branch creation and read-only checks (status, merge-base).
    - Otherwise, leave status unchanged and let the user pick differently.
+
+7. **Standing ticket-start step (config-driven).** Read `docs/agentic-flow.toml`. If `[ticket_start] research_opener = true`, dispatch a research sub-agent as part of ticket start — no per-ticket confirm needed; the config *is* the standing consent. The sub-agent's brief: map the code and docs relevant to this ticket's Goal and Acceptance criteria, verify any external-toolchain assumptions the ticket or PRD makes (stdlib APIs, build semantics, library behavior) against the installed toolchain, and assess whether `/tdd` fits the work. Relay its findings before implementation starts. If the key is absent or false, skip silently.
 
 ## Git branch creation
 
@@ -48,8 +51,10 @@ When flipping a ticket to `in-progress`, also cut its branch. Branch naming: `pr
 
 **Second-and-later ticket of a PRD:**
 - Read `docs/agentic-flow.toml`'s `[branching] strategy` value.
-- If `serial`: cut the ticket branch from the PRD branch (assumes the previous ticket has merged).
+- If `serial`: cut the ticket branch from the PRD branch.
 - If `stacked`: cut the ticket branch from the previous ticket's branch (typically the most recently `done` ticket).
+
+**Dependency-reachability check (before cutting, both strategies):** for every ticket in the new ticket's `depends_on`, verify its work is reachable from the intended cut point — find the dependency's close commit (or its branch tip if the branch still exists) and check ancestry with `git merge-base --is-ancestor`. If a `done` ticket's branch was never merged back, **stop and offer the close-out merge** (`--no-ff` per the repo convention, verify green, delete branch) before cutting. Cutting from a stale parent silently builds the new ticket on a tree missing its dependency's work — this happened and shipped a real defect.
 - If `agentic-flow.toml` doesn't have the strategy set yet (this is the second ticket of the *first* PRD in this repo), ask the user once: *"Use serial or stacked branching for tickets in this repo?"* Write the choice to `docs/agentic-flow.toml`.
 
 If the repo uses non-traditional branching (trunk-based with feature flags, stacked-diff tooling like Graphite), degrade gracefully — ask the user which branch to cut from rather than refusing.

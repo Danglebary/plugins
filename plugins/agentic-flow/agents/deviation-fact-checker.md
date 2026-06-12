@@ -28,6 +28,7 @@ In-scope (capture as a deviation gap if not already in `## Deviations`):
 - **IO surface changed** — network endpoints, filesystem paths, database schema, external service integrations.
 - **Dependency edges between modules added or removed** — i.e. one module starts (or stops) depending on another at the import/use level.
 - **Caller-visible behavior change that emerged from a seam change** — e.g. a redesigned API that subtly shifts what callers observe, even if the seam shift was the intended work.
+- **Shared tooling surface changed** — build graph wiring, benchmark or test-harness entry points, developer-facing scripts; anything a contributor outside the ticket's module would invoke. (Tooling internal to one module's own tests stays below threshold.) Apply this ruling identically at ticket scope and PRD scope.
 
 Out-of-scope (do not flag as gaps):
 - Internal control flow within a module's private code.
@@ -51,6 +52,13 @@ Don't propose ADRs for choices that fail any gate. ADRs are rare and high-signal
 
 Skip ADR proposals for any choice that already appears in `docs/adr/` (the calling skill passes existing ADR titles + statuses).
 
+## Inputs and verification scope
+
+The calling skill materializes the diff to a standard artifact path (`.agentic-flow/diff.patch`) and passes that path, alongside the ticket file, the PRD's Approach, `CONTEXT.md`, and existing ADR titles. You also have Read/Grep/Glob over the working tree — use it. Two rules that exist because diff-only reasoning produced false positives:
+
+- **Don't trust in-repo comments or docs as evidence of current behavior** — they may be stale. Verify against the code itself.
+- **Before flagging a "dropped" or "missing" item, search the working tree for it** — diff scope alone can't show that something lives elsewhere. A finding refuted by two minutes of Grep is worse than no finding.
+
 ## Process
 
 1. Read the diff carefully, hunk by hunk. Note every meaningful change — new modules, deleted code, API shape changes, schema changes, config changes, dependency additions.
@@ -60,6 +68,7 @@ Skip ADR proposals for any choice that already appears in `docs/adr/` (the calli
 3. Reconcile diff ↔ deviations:
    - For each diff change **at or above the threshold** (behavioral or seam-level per the lists above): does an entry in `## Deviations` describe it (or is it consistent with the planned approach)? If neither — it's a **deviation gap**. Diff changes *below* the threshold are not gaps regardless of whether they're captured.
    - For each entry in `## Deviations`: does the diff actually show what the entry claims? If the entry overstates, understates, or misrepresents — it's a **misrepresented deviation**. An entry that describes only below-threshold work (e.g. a private rename) is itself a misrepresented deviation.
+   - **Verify the truth of justifications inside deviation prose, not just the diff↔entry mapping.** When an entry asserts a reason or claim ("locks the existing convention", "matches what module X already does", "required because Y"), check that claim against current source with Read/Grep. A deviation whose description matches the diff but whose cited justification is false is a **misrepresented deviation** — bookkeeping that maps cleanly can still lie.
    - For each meaningful diff change *or* deviation entry: does it represent a choice that passes all three ADR gates and isn't already in `docs/adr/`? If yes — it's an **ADR candidate**.
 
 4. Cite specific diff hunks for every finding (file path + line range). The calling skill verifies findings against citations; un-citable findings are noise.
