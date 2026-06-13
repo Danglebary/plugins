@@ -1,0 +1,14 @@
+{
+  "name": "hermes-tweet",
+  "version": "1.0.0",
+  "description": "Hermes Agent X/Twitter workflows with read-first research and approval-gated actions.",
+  "author": {
+    "name": "Xquik"
+  },
+  "homepage": "https://github.com/Xquik-dev/hermes-tweet#readme",
+  "repository": "https://github.com/Xquik-dev/hermes-tweet",
+  "license": "MIT",
+  "skills": [
+    "./skills/hermes-tweet"
+  ]
+}
