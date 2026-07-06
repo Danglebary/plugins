@@ -1,10 +1,12 @@
-# reviewers.md format
+# Reviewers manifest format
 
-`docs/reviewers.md` is the per-repo manifest of reviewer agents that `/improve-codebase-architecture` dispatches when surfacing deepening opportunities.
+The Reviewers manifest is the per-repo list of reviewer agents that `/improve-codebase-architecture` dispatches when surfacing deepening opportunities.
 
 Populated by `/setup-agentic-flow` during bootstrap based on default-on rules + heuristic detection of repo content. The user reviews and confirms the list. Re-running `/setup-agentic-flow` refreshes the manifest if the plugin ships new reviewers or repo content has changed enough to re-run detection.
 
-## File path
+**Storage.** Naming rules, maintenance, and anti-patterns apply in both stores (see [STORE.md](./STORE.md)). **Files store**: `docs/reviewers.md`, structured as below. **Notion store**: the Reviewers database — one row per agent with `Agent`, `Kind` (default/specialized), and `Signal` properties; see [NOTION-RESOLVER.md](./NOTION-RESOLVER.md).
+
+## File path (files store)
 
 `docs/reviewers.md` at the repo root (alongside other `docs/` content).
 

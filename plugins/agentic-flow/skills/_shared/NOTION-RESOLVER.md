@@ -1,8 +1,8 @@
-# Notion resolver — pure-search protocol
+# Notion resolver — the notion store's pure-search protocol
 
-The single mechanism every agentic-flow skill depends on. There are **no local files**: no `docs/prds/`, no `.active`, no `agentic-flow.toml`. Each skill resolves its databases by searching Notion at the start of every run.
+The mechanism behind the **notion store** (see [STORE.md](./STORE.md)). In this store there are **no local planning files**: no `docs/prds/`, no `.active`, no `agentic-flow.toml`. Each skill resolves its databases by searching Notion at the start of every run.
 
-This document is the contract. Every skill's Process begins with "resolve databases (see NOTION-RESOLVER.md)".
+This document is the notion backend's contract: the resolution protocol, the five database schemas, the file-to-Notion mapping, single-active enforcement, and the root-page-body config.
 
 ## The anchor: one root page
 
@@ -22,7 +22,7 @@ Agentic-Flow                (private root page; config lives in its body)
 ## Resolution steps (run once per skill invocation)
 
 1. `notion-search` — `query: "Agentic-Flow"`, `query_type: internal`, small `page_size`.
-2. **0 results** → not set up. Tell the user to run `/setup-agentic-flow`. Stop.
+2. **0 results** → not set up in Notion. If `docs/agentic-flow.toml` doesn't exist either, tell the user to run `/setup-agentic-flow`. Stop.
    **>1 exact-title match** → collision. Refuse and ask the user which root to use; do not guess.
 3. `notion-fetch` the root page ID. The response lists child databases with `<data-source url="collection://…">` tags.
 4. Match children **by title** (`PRDs`, `Tickets`, `Glossary`, `ADRs`, `Reviewers`) and capture each `data_source_id`.
@@ -54,7 +54,7 @@ CREATE TABLE (
 )
 ```
 
-**Why `Number` is a plain field, not `UNIQUE_ID`.** `UNIQUE_ID` auto-increments on *every* row, which would burn a PRD number on every idea and spike — violating the file-model rule that only committed PRDs are numbered and numbers are assigned on promotion. The file workflow already computes numbers in skill code (globbing directories); the Notion version does the same via a max-`Number` query over `Kind = PRD` rows (including `Abandoned`, so retired numbers stay reserved). Spikes and Ideas leave `Number` blank until promoted.
+**Why `Number` is a plain field, not `UNIQUE_ID`.** `UNIQUE_ID` auto-increments on *every* row, which would burn a PRD number on every idea and spike — violating the rule that only committed PRDs are numbered and numbers are assigned on promotion. The files store computes numbers in skill code (globbing directories); the notion store does the same via a max-`Number` query over `Kind = PRD` rows (including `Abandoned`, so retired numbers stay reserved). Spikes and Ideas leave `Number` blank until promoted.
 
 **Kind semantics.** `Status`, `Active`, tickets, and retros apply to `Kind = PRD` only. A `Spike` row carries its findings in the page body and skips the lifecycle entirely; an `Idea` row is one paragraph parked until promotion (flip `Kind → PRD`, assign `Number`, set `Status = Drafting`).
 
@@ -91,9 +91,9 @@ CREATE TABLE (
 CREATE TABLE ("Agent" TITLE, "Kind" SELECT('default':blue, 'specialized':purple), "Signal" RICH_TEXT)
 ```
 
-## File-model → Notion mapping
+## Files-store → notion-store mapping
 
-| Old (file) | New (Notion) | Notes |
+| files | notion | Notes |
 |---|---|---|
 | `status:` frontmatter | `Status` select | Read via `notion-fetch`, write via `update-page` |
 | `docs/prds/.active` (pointer) | `Active` checkbox | See single-active enforcement below |
@@ -109,7 +109,7 @@ CREATE TABLE ("Agent" TITLE, "Kind" SELECT('default':blue, 'specialized':purple)
 
 ## Config (in the root page body)
 
-`docs/agentic-flow.toml` is gone. Its keys live as a small config block in the body of the `Agentic-Flow` root page — `/setup-agentic-flow` writes it, and `/next-ticket`, `/done`, and `/improve-codebase-architecture` read it. The load-bearing keys:
+In the notion store there is no `docs/agentic-flow.toml`. Its keys live as a small config block in the body of the `Agentic-Flow` root page — `/setup-agentic-flow` writes it, and `/next-ticket`, `/done`, and `/improve-codebase-architecture` read it. The load-bearing keys:
 
 - `branching.strategy` — `serial` (ticket branches cut from the PRD branch) or `stacked` (cut from the previous ticket's branch). `/next-ticket` prompts once on the second ticket of the first PRD if unset, then writes the choice back into the root body.
 - `ticket_start.research_opener` — `true` dispatches a research sub-agent at ticket start (the config *is* the standing consent).

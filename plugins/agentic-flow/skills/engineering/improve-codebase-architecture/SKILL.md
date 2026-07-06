@@ -1,18 +1,20 @@
 ---
 name: improve-codebase-architecture
-description: Find deepening opportunities post-/done by dispatching reviewer agents listed in docs/reviewers.md against the just-closed ticket's diff. Merges results through the deepening framework, presents candidates, drops into a grilling loop on accepted ones. Refactor changes get captured in the ticket's ## Deviations with (refactor) marker. Use after /done for a per-ticket refactor pass.
+description: Find deepening opportunities post-/done by dispatching reviewer agents listed in the Reviewers manifest against the just-closed ticket's diff. Merges results through the deepening framework, presents candidates, drops into a grilling loop on accepted ones. Refactor changes get captured in the ticket's ## Deviations with (refactor) marker. Use after /done for a per-ticket refactor pass.
 ---
 
 # Improve Codebase Architecture
 
-Surface architectural friction and propose **deepening opportunities** — refactors that turn shallow modules into deep ones. The aim is testability and AI-navigability.
+Surface architectural friction and propose **deepening opportunities** — refactors that turn shallow modules into deep ones. The aim is testability and AI-navigability. The code and its diff stay in git; the Reviewers manifest, Glossary, ADRs, and ticket deviations live in the store.
 
 In the agentic-flow workflow, this skill runs **per ticket** after `/done`, before the next ticket starts. Architectural rot accumulates ticket-by-ticket; catching it while context is fresh beats end-of-PRD reckoning.
 
+Resolve the store first — see [STORE.md](../../_shared/STORE.md).
+
 ## State contract
 
-- **PRD state required**: `open` (typical, post-`/done`)
-- **Ticket state required**: `done` (typical: just-closed ticket whose diff is the review target)
+- **PRD state required**: `Open` (typical, post-`/done`)
+- **Ticket state required**: `Done` (typical: just-closed ticket whose diff is the review target)
 - **Transition**: none (may create ADRs inline; appends `(refactor)` entries to ticket's `## Deviations`)
 
 May also run ad-hoc at any PRD/ticket state for general architecture review, but the per-ticket pattern is the typical use.
@@ -31,11 +33,11 @@ This skill is _informed_ by the project's domain model. The domain language give
 
 ## Process
 
-1. **Read `CONTEXT.md` and any ADRs in the area you're touching.** Domain naming should come from `CONTEXT.md`; ADRs constrain what's already settled.
+1. **Read the Glossary and any ADRs in the area you're touching.** Domain naming should come from the Glossary; ADRs constrain what's already settled.
 
-2. **Read `docs/reviewers.md`.** Each entry is a namespaced agent name (e.g. `agentic-flow:qa-engineer` for plugin-shipped, bare names for repo-specific in `.claude/agents/`). **Verify each name resolves.** If any listed agent isn't registered, refuse with a clear list of missing names. Silent skipping is the trap to avoid (incomplete review presented as complete). Format references: [REVIEWERS-FORMAT.md](../../_shared/REVIEWERS-FORMAT.md), [AGENT-FORMAT.md](../../_shared/AGENT-FORMAT.md).
+2. **Read the Reviewers manifest.** Each entry is a namespaced agent name (e.g. `agentic-flow:qa-engineer` for plugin-shipped, bare names for repo-specific in `.claude/agents/`). **Verify each name resolves.** If any listed agent isn't registered, refuse with a clear list of missing names. Silent skipping is the trap to avoid (incomplete review presented as complete). Format references: [REVIEWERS-FORMAT.md](../../_shared/REVIEWERS-FORMAT.md), [AGENT-FORMAT.md](../../_shared/AGENT-FORMAT.md).
 
-3. **Determine the diff range.** Default: the just-closed ticket's branch diff vs its parent (PRD branch in `serial` mode, previous ticket's branch in `stacked` mode per `docs/agentic-flow.toml`). Ad-hoc invocation: ask the user for the scope (specific files, full repo walk, etc.).
+3. **Determine the diff range.** *(Git.)* Default: the just-closed ticket's branch diff vs its parent (PRD branch in `serial` mode, previous ticket's branch in `stacked` mode per the config). Ad-hoc invocation: ask the user for the scope (specific files, full repo walk, etc.).
 
 4. **Dispatch each reviewer in parallel** via the Agent tool. Every reviewer brief contains:
    - The diff (or scope) and the steering prompt: *"Review the following changes through your area of expertise. Identify deepening opportunities or architectural concerns per your lens. Output structured findings with file/line citations."*
@@ -51,7 +53,7 @@ This skill is _informed_ by the project's domain model. The domain language give
    - **Adversarially verify reviewer factual claims against source before relaying them.** Reviewers argue from the diff and their own priors; a finding built on a false premise must die here, not in front of the user.
    - **Convergence count is a ranking input.** Independent reviewers converging on the same finding is a severity oracle — surface convergence explicitly ("4 of 5 reviewers flagged this").
 
-   If `docs/reviewers.md` is missing or empty, fall back to a generic exploration looking for the same kinds of friction:
+   If the Reviewers manifest is missing or empty, fall back to a generic exploration looking for the same kinds of friction:
    - Where does understanding one concept require bouncing between many small modules?
    - Where are modules **shallow** — interface nearly as complex as the implementation?
    - Where have pure functions been extracted just for testability, but the real bugs hide in how they're called (no **locality**)?
@@ -64,7 +66,7 @@ This skill is _informed_ by the project's domain model. The domain language give
    - **Solution** — plain English description of what would change, argued from the repo's recorded design philosophy (CLAUDE.md weighting, ADRs) — not from generic churn or diff-size caution. State whether it derives from first principles or precedent, and mark load-bearing constraints as user-stated vs assumed.
    - **Benefits** — explained in terms of locality and leverage, and how tests would improve
 
-   **Use CONTEXT.md vocabulary for the domain, and [LANGUAGE.md](LANGUAGE.md) vocabulary for the architecture.** If `CONTEXT.md` defines "Order," talk about "the Order intake module" — not "the FooBarHandler," and not "the Order service."
+   **Use Glossary vocabulary for the domain, and [LANGUAGE.md](LANGUAGE.md) vocabulary for the architecture.** If the Glossary defines "Order," talk about "the Order intake module" — not "the FooBarHandler," and not "the Order service."
 
    **ADR conflicts**: if a candidate contradicts an existing ADR, only surface it when the friction is real enough to warrant revisiting the ADR. Mark it clearly (e.g. _"contradicts ADR-0007 — but worth reopening because…"_). Don't list every theoretical refactor an ADR forbids.
 
@@ -74,8 +76,8 @@ This skill is _informed_ by the project's domain model. The domain language give
 
 7. **Grilling loop.** Once the user picks a candidate, walk the design tree with them — constraints, dependencies, the shape of the deepened module, what sits behind the seam, what tests survive. Side effects happen inline as decisions crystallize:
    - **User defers a candidate to a named future ticket?** Append it to that ticket's `## Implementation notes` (or a `### Deferred steers` subsection there) immediately. A deferral that lives only in chat evaporates at the session boundary — reviewers re-proposed exactly such items in past runs.
-   - **Naming a deepened module after a concept not in `CONTEXT.md`?** Add the term to `CONTEXT.md` — same discipline as `/grill-me` (see [CONTEXT-FORMAT.md](../../_shared/CONTEXT-FORMAT.md)). Create the file lazily if it doesn't exist.
-   - **Sharpening a fuzzy term during the conversation?** Update `CONTEXT.md` right there.
+   - **Naming a deepened module after a concept not in the Glossary?** Add the term to the Glossary — same discipline as `/grill-me` (see [CONTEXT-FORMAT.md](../../_shared/CONTEXT-FORMAT.md)).
+   - **Sharpening a fuzzy term during the conversation?** Update the Glossary right there.
    - **User rejects the candidate with a load-bearing reason?** Offer an ADR, framed as: _"Want me to record this as an ADR so future architecture reviews don't re-suggest it?"_ Only offer when the reason would actually be needed by a future explorer to avoid re-suggesting the same thing — skip ephemeral reasons ("not worth it right now") and self-evident ones. See [ADR-FORMAT.md](../../_shared/ADR-FORMAT.md).
    - **Need to classify dependencies before deepening?** See [DEEPENING.md](DEEPENING.md) for the four dependency categories.
    - **Want to explore alternative interfaces for the deepened module?** See [INTERFACE-DESIGN.md](INTERFACE-DESIGN.md) for the parallel sub-agent pattern.
@@ -99,6 +101,6 @@ This skill is _informed_ by the project's domain model. The domain language give
 - **Don't let reviewers' raw output through unfiltered.** Adversarially review their candidates against the deepening framework — drop noise, surface signal.
 - **Don't skip the `(refactor)` marker on deviations.** That marker is what makes retro synthesis work.
 - **Don't capture below-threshold cleanups as `(refactor)` entries.** Internal renames, control-flow tidy-up, dedup that doesn't cross a module boundary — none of that belongs in `## Deviations`. The threshold is the seam, not the line. If the refactor pass produced no seam-level moves, append nothing.
-- **Don't run reviewer dispatch silently if `docs/reviewers.md` lists agents that don't exist.** Fail loudly with a clear list.
+- **Don't run reviewer dispatch silently if the Reviewers manifest lists agents that don't exist.** Fail loudly with a clear list.
 - **Don't filter candidates by the deviation-recording threshold.** Dropping a worthwhile cheap cleanup because it "wouldn't be a recordable deviation" conflates the two bars — inclusion is about worth, recording is about seams.
 - **Don't merge the pass's work yourself.** Offer the merge; the user owns it. And never ship a contract the user was asked about but didn't answer.

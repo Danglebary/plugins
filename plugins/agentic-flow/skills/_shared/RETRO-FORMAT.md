@@ -1,8 +1,10 @@
 # Retro format
 
-The retro is a two-pass document paired to each PRD at `docs/prds/<NNN>-<slug>/retro.md`. It accumulates per-ticket entries during the PRD's lifecycle, then is restructured in place at PRD close.
+The retro is a two-pass document paired to each PRD. It accumulates per-ticket entries during the PRD's lifecycle, then is restructured in place at PRD close.
 
-## File path
+**Storage.** Entry format, outcome labels, and the synthesized structure apply in both stores (see [STORE.md](./STORE.md)). **Files store**: the file below. **Notion store**: the running retro lives as a section in the PRD row's body — see [NOTION-RESOLVER.md](./NOTION-RESOLVER.md).
+
+## File path (files store)
 
 `docs/prds/<NNN>-<slug>/retro.md`
 

@@ -7,12 +7,7 @@
     {
       "name": "agentic-flow",
       "source": "./plugins/agentic-flow",
-      "description": "AI-augmented software development workflow: PRD/ticket/retro hierarchy with plugin-shipped reviewer agents."
-    },
-    {
-      "name": "agentic-flow-notion",
-      "source": "./plugins/agentic-flow-notion",
-      "description": "Notion-backed variant of agentic-flow: PRDs, tickets, glossary, ADRs, and reviewers as Notion databases. Requires agentic-flow for the shared agents and tdd skill."
+      "description": "AI-augmented software development workflow: PRD/ticket/retro hierarchy with plugin-shipped reviewer agents. Planning artifacts live in a per-repo store — in-repo markdown files or Notion databases."
     }
   ]
 }

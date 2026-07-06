@@ -1,6 +1,6 @@
 ---
 name: grill-me
-description: Interview the user relentlessly about a plan or design until shared understanding is reached, resolving each branch of the decision tree. Updates CONTEXT.md inline as terms sharpen and offers ADRs when decisions are durable. Use when user wants to stress-test a plan, refine a draft PRD, or says "grill me".
+description: Interview the user relentlessly about a plan or design until shared understanding is reached, resolving each branch of the decision tree. Updates the Glossary inline as terms sharpen and offers ADRs when decisions are durable. Use when user wants to stress-test a plan, refine a draft PRD, or says "grill me".
 ---
 
 # Grill me
@@ -11,7 +11,9 @@ Ask **one question at a time**. Wait for the user's response before continuing.
 
 If a question can be answered by exploring the codebase, explore the codebase instead of asking.
 
-> **Protected behaviors — do not weaken in any rewrite of this skill.** Code-grounding (explore instead of asking; cross-reference user claims against code) and the per-question recommendation are this skill's two demonstrably load-bearing mechanics — each has overturned a PRD's central premise before tickets were cut. Any future edit to this file keeps both mandatory.
+> **Protected behaviors — do not weaken in any rewrite of this skill.** Code-grounding (explore instead of asking; cross-reference user claims against code) and the per-question recommendation are this skill's two demonstrably load-bearing mechanics — each has overturned a PRD's central premise before tickets were cut. Any future edit to this file keeps both mandatory. These behaviors are store-independent — code stays in git and grilling is grounded against it.
+
+Resolve the store first — see [STORE.md](../../_shared/STORE.md).
 
 ## Recommendation discipline
 
@@ -23,11 +25,11 @@ Every recommendation you present carries three marks:
 
 ## State contract
 
-- **PRD state required**: `drafting` (when operating on a PRD); refuses on `open` and `done` PRDs
+- **PRD state required**: `Drafting` (when operating on a PRD); refuses on `Open` and `Done` PRDs
 - **Ticket state required**: n/a
 - **Transition**: none
 
-When invoked outside any PRD context (e.g. generic design conversation with no `prd.md` involved), state-gating doesn't apply.
+When invoked outside any PRD context (e.g. generic design conversation with no PRD involved), state-gating doesn't apply.
 
 ## Two stages in the agentic-flow workflow
 
@@ -38,12 +40,9 @@ The skill behaves the same way in both stages — only the depth of questioning 
 
 ## Domain awareness
 
-Look for existing documentation during grilling:
+Look for existing documentation during grilling: the **Glossary** (the living domain vocabulary) and the **ADRs** (cross-PRD durable decisions) — both live in the store.
 
-- `CONTEXT.md` at repo root — the living domain glossary.
-- `docs/adr/` — cross-PRD durable decisions.
-
-Create files lazily — only when you have something to write. If `CONTEXT.md` doesn't exist, create it when the first term is resolved. If `docs/adr/` doesn't exist, create it when the first ADR is needed.
+Create artifacts lazily — only when you have something to write. Files store: if `CONTEXT.md` doesn't exist, create it when the first term is resolved; if `docs/adr/` doesn't exist, create it when the first ADR is needed. (Notion store: the databases already exist from setup; rows are created lazily.)
 
 Format references: [CONTEXT-FORMAT.md](../../_shared/CONTEXT-FORMAT.md), [ADR-FORMAT.md](../../_shared/ADR-FORMAT.md).
 
@@ -51,7 +50,7 @@ Format references: [CONTEXT-FORMAT.md](../../_shared/CONTEXT-FORMAT.md), [ADR-FO
 
 ### Challenge against the glossary
 
-When the user uses a term that conflicts with `CONTEXT.md`, call it out immediately. *"Your glossary defines `Cancellation` as X, but you seem to mean Y — which is it?"*
+When the user uses a term that conflicts with the Glossary, call it out immediately. *"Your glossary defines `Cancellation` as X, but you seem to mean Y — which is it?"*
 
 ### Sharpen fuzzy language
 
@@ -65,11 +64,11 @@ When domain relationships are being discussed, stress-test them with specific sc
 
 When the user states how something works, check whether the code agrees. If you find a contradiction, surface it: *"Your code cancels entire Orders, but you just said partial cancellation is possible — which is right?"*
 
-### Update CONTEXT.md inline
+### Update the Glossary inline
 
-When a term is resolved, update `CONTEXT.md` right there. Don't batch these up — capture them as they happen. Use the format in [CONTEXT-FORMAT.md](../../_shared/CONTEXT-FORMAT.md).
+When a term is resolved, update the Glossary right there. Don't batch these up — capture them as they happen. Use the format in [CONTEXT-FORMAT.md](../../_shared/CONTEXT-FORMAT.md).
 
-Don't couple `CONTEXT.md` to implementation details. Only include terms that are meaningful to domain experts.
+Don't couple the Glossary to implementation details. Only include terms that are meaningful to domain experts.
 
 ### Offer ADRs sparingly — three-gate test
 
@@ -87,13 +86,13 @@ Before declaring the grill complete, run and report a self-check:
 
 ## Refusing to run
 
-If grilling is being requested for a `done` PRD, refuse and suggest a new PRD instead. The PRD is a closed chapter; re-litigation goes through a fresh PRD.
+If grilling is being requested for a `Done` PRD, refuse and suggest a new PRD instead. The PRD is a closed chapter; re-litigation goes through a fresh PRD.
 
 ## Anti-patterns
 
 - **Don't ask more than one question at a time.** Multi-question prompts collapse the decision tree — the user can't engage with each branch on its own merit.
 - **Don't accept the first answer if it doesn't actually resolve the branch.** Probe further when the answer is hedged, vague, or sidesteps the question. The point is to reach shared understanding, not check off questions.
-- **Don't propose ADRs that fail any of the three gates.** Easy-to-reverse, unsurprising, or no-real-trade-off decisions belong in the PRD's `## Approach` section, not in `docs/adr/`.
-- **Don't write implementation details into `CONTEXT.md`.** Only domain-meaningful terms belong there. If a term is only useful to people reading the code, it doesn't go in the glossary.
-- **Don't batch CONTEXT.md updates until end-of-session.** Capture each term as it resolves — batching loses precision and risks losing entries entirely.
-- **Don't grill in a vacuum.** Read `CONTEXT.md` and existing ADRs before starting; cross-reference against actual code when the user makes claims about how it works.
+- **Don't propose ADRs that fail any of the three gates.** Easy-to-reverse, unsurprising, or no-real-trade-off decisions belong in the PRD's `## Approach` section, not in the ADRs.
+- **Don't write implementation details into the Glossary.** Only domain-meaningful terms belong there. If a term is only useful to people reading the code, it doesn't go in the glossary.
+- **Don't batch Glossary updates until end-of-session.** Capture each term as it resolves — batching loses precision and risks losing entries entirely.
+- **Don't grill in a vacuum.** Read the Glossary and existing ADRs before starting; cross-reference against actual code when the user makes claims about how it works.

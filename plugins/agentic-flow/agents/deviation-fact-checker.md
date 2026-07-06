@@ -50,11 +50,11 @@ A choice in the diff warrants an ADR only when **all three** gates pass:
 
 Don't propose ADRs for choices that fail any gate. ADRs are rare and high-signal; padding the list erodes their value.
 
-Skip ADR proposals for any choice that already appears in `docs/adr/` (the calling skill passes existing ADR titles + statuses).
+Skip ADR proposals for any choice already recorded as an ADR (the calling skill passes existing ADR titles + statuses).
 
 ## Inputs and verification scope
 
-The calling skill materializes the diff to a standard artifact path (`.agentic-flow/diff.patch`) and passes that path, alongside the ticket file, the PRD's Approach, `CONTEXT.md`, and existing ADR titles. You also have Read/Grep/Glob over the working tree — use it. Two rules that exist because diff-only reasoning produced false positives:
+The calling skill materializes the diff to a standard artifact path (`.agentic-flow/diff.patch`) and passes that path, alongside the ticket content (Goal, Acceptance criteria, `## Deviations`), the PRD's Approach, the Glossary, and existing ADR titles. You also have Read/Grep/Glob over the working tree — use it. Two rules that exist because diff-only reasoning produced false positives:
 
 - **Don't trust in-repo comments or docs as evidence of current behavior** — they may be stale. Verify against the code itself.
 - **Before flagging a "dropped" or "missing" item, search the working tree for it** — diff scope alone can't show that something lives elsewhere. A finding refuted by two minutes of Grep is worse than no finding.
@@ -63,17 +63,17 @@ The calling skill materializes the diff to a standard artifact path (`.agentic-f
 
 1. Read the diff carefully, hunk by hunk. Note every meaningful change — new modules, deleted code, API shape changes, schema changes, config changes, dependency additions.
 
-2. Read the ticket file's `## Deviations` section. Read the PRD's `## Approach` and the ticket's `## Acceptance criteria` for context on what was *planned*.
+2. Read the ticket's `## Deviations` section. Read the PRD's `## Approach` and the ticket's `## Acceptance criteria` for context on what was *planned*.
 
 3. Reconcile diff ↔ deviations:
    - For each diff change **at or above the threshold** (behavioral or seam-level per the lists above): does an entry in `## Deviations` describe it (or is it consistent with the planned approach)? If neither — it's a **deviation gap**. Diff changes *below* the threshold are not gaps regardless of whether they're captured.
    - For each entry in `## Deviations`: does the diff actually show what the entry claims? If the entry overstates, understates, or misrepresents — it's a **misrepresented deviation**. An entry that describes only below-threshold work (e.g. a private rename) is itself a misrepresented deviation.
    - **Verify the truth of justifications inside deviation prose, not just the diff↔entry mapping.** When an entry asserts a reason or claim ("locks the existing convention", "matches what module X already does", "required because Y"), check that claim against current source with Read/Grep. A deviation whose description matches the diff but whose cited justification is false is a **misrepresented deviation** — bookkeeping that maps cleanly can still lie.
-   - For each meaningful diff change *or* deviation entry: does it represent a choice that passes all three ADR gates and isn't already in `docs/adr/`? If yes — it's an **ADR candidate**.
+   - For each meaningful diff change *or* deviation entry: does it represent a choice that passes all three ADR gates and isn't already recorded as an ADR? If yes — it's an **ADR candidate**.
 
 4. Cite specific diff hunks for every finding (file path + line range). The calling skill verifies findings against citations; un-citable findings are noise.
 
-5. Use `CONTEXT.md` vocabulary when naming domain concepts in findings.
+5. Use the Glossary's vocabulary when naming domain concepts in findings.
 
 ## Output format
 
@@ -112,7 +112,7 @@ _None._
 
 - **Don't reorder or rename the three sections.** The output contract is load-bearing — calling skills parse these headings.
 - **Don't skip a section even when empty.** Always render all three; use `_None._` for empties.
-- **Don't propose ADRs that fail any gate.** A choice that's easy to reverse, unsurprising, or not a real trade-off doesn't belong in `docs/adr/`. Better to say `_None._` than to pad.
+- **Don't propose ADRs that fail any gate.** A choice that's easy to reverse, unsurprising, or not a real trade-off doesn't belong in the ADRs. Better to say `_None._` than to pad.
 - **Don't propose duplicate ADRs.** Skip choices already covered by an existing ADR (the caller passes the list).
 - **Don't flag below-threshold changes** as deviation gaps — internal control flow, private renames, formatting, idiomatic refactors inside a module, comment edits, and test internals are noise. The threshold is the seam, not the line. When in doubt, ask: *would a reader of the ticket+code be surprised by this divergence, or might a future ticket need to know about it?* If neither — drop it.
 - **Don't pad sections to look thorough.** `_None._` is the correct output when the diff is below threshold or fully covered by existing entries. A clean fact-check is a successful fact-check.

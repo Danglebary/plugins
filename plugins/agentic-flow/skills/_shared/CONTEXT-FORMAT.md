@@ -1,14 +1,14 @@
-# CONTEXT.md format
+# Glossary format (CONTEXT.md)
 
-`CONTEXT.md` is a living glossary of domain terms used in the codebase. It lives at the repo root (single-context repos) or per-context per `CONTEXT-MAP.md` (multi-context repos).
+The Glossary is a living record of domain terms used in the codebase — the shared vocabulary between humans and agents about *what the system models*.
 
 It is updated inline by `/grill-me` (and any other skill where a term gets sharpened). It does not represent a snapshot in time — it is the *current* canonical vocabulary.
 
-## File path
+**Storage.** What belongs (and doesn't) applies in both stores (see [STORE.md](./STORE.md)). **Files store**: `CONTEXT.md`, structured as below. **Notion store**: the Glossary database — one row per term with `Term`, `Definition`, and `Relationships` properties; see [NOTION-RESOLVER.md](./NOTION-RESOLVER.md).
 
-`CONTEXT.md` at repo root.
+## File path (files store)
 
-For multi-context repos, see `CONTEXT-MAP.md` at the root pointing to per-context `CONTEXT.md` files.
+`CONTEXT.md` at repo root (single-context repos), or per-context per `CONTEXT-MAP.md` (multi-context repos).
 
 ## Structure
 

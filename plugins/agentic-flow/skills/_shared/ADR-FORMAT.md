@@ -1,8 +1,10 @@
 # ADR format
 
-An ADR (Architectural Decision Record) captures a cross-PRD durable decision. Lives at `docs/adr/<NNNN>-<slug>.md`.
+An ADR (Architectural Decision Record) captures a cross-PRD durable decision.
 
 ADRs are rare by design. Created inline by `/grill-me` (and by `/improve-codebase-architecture`'s grilling loop, when a load-bearing reason emerges for rejecting a refactor candidate) only when **all three gates** of the three-gate test pass.
+
+**Storage.** The three-gate test, body sections, and anti-patterns apply in both stores (see [STORE.md](./STORE.md)). **Files store**: the file path and frontmatter below. **Notion store**: a row in the ADRs database — see the row mapping below and [NOTION-RESOLVER.md](./NOTION-RESOLVER.md).
 
 ## Three-gate test
 
@@ -14,19 +16,29 @@ A decision warrants an ADR if and only if all three are true:
 
 If any of the three is missing, the decision belongs in the PRD's Approach section (PRD-local), or nowhere at all.
 
-## File path
+## File path (files store)
 
 `docs/adr/<NNNN>-<slug>.md`
 
 `<NNNN>` is repo-global, four-digit zero-padded, chronological. `<slug>` is kebab-case.
 
-## Frontmatter
+## Frontmatter (files store)
 
 ```yaml
 ---
 status: accepted | superseded
 ---
 ```
+
+## Row mapping (notion store)
+
+| files store | ADRs database |
+|---|---|
+| `docs/adr/<NNNN>-<slug>.md` | a row in the ADRs database |
+| `<NNNN>` repo-global number | the `ADR ID` (`UNIQUE_ID PREFIX 'ADR'`) |
+| Title heading | the `Title` property |
+| `status:` frontmatter | the `Status` select (`Proposed` / `Accepted` / `Superseded`) |
+| Context / Decision / Consequences / Alternatives | the row **body**, one `##` heading each; a one-line summary may go in the `Decision` property |
 
 ADRs are written `accepted`. The only other state is `superseded`, applied when a later ADR replaces this one (and references the superseding ADR by ID in the body).
 
@@ -84,4 +96,4 @@ Use a single Postgres instance as the write model for all persistent state.
 - **Don't write ADRs for reversible decisions.** A decision you can change cheaply doesn't need a record — change it when wrong.
 - **Don't write ADRs for obvious decisions.** "We use TypeScript" doesn't need an ADR if no one would ask "why TypeScript?"
 - **Don't skip the Alternatives section.** Without alternatives, the ADR is a declaration, not a decision.
-- **Don't edit accepted ADRs.** Supersede them — write a new ADR that references the old one and flip the old one's status to `superseded`.
+- **Don't edit accepted ADRs.** Supersede them — write a new ADR (or ADRs row) that references the old one and flip the old one's status to `superseded` (`Superseded`).
