@@ -33,7 +33,7 @@ When the conversation's shape makes the answer obvious, say which vehicle you're
 
 3. **Sketch the major modules** the PRD will touch. Look for opportunities to surface deep modules — small interfaces hiding complex behavior. These populate the **Modules touched** section.
 
-4. **Write the PRD** with the five-section structure below. Files: `docs/prds/<NNN>-<slug>/prd.md` with `status: drafting` frontmatter. Notion: a PRDs row (`create-pages`) with `Kind = PRD`, `Status = Drafting`, `Number`, `Slug`; leave `Active` unchecked and `Branch`/`Diff base` blank (set later by `/to-tickets`); the five sections go in the row body, headings byte-identical across PRDs so `/retro` can locate them. Use vocabulary from the Glossary. Respect any ADRs in the area you're touching.
+4. **Write the PRD** with the five-section structure below. Files: `docs/prds/<NNN>-<slug>/prd.md` with `status: drafting` frontmatter. Notion: a PRDs row (`notion-create-pages`) with `Kind = PRD`, `Status = Drafting`, `Number`, `Slug`; leave `Active` unchecked and `Branch`/`Diff base` blank (set later by `/to-tickets`); the five sections go in the row body, headings byte-identical across PRDs so `/retro` can locate them. Use vocabulary from the Glossary. Respect any ADRs in the area you're touching.
 
 5. **Do NOT create tickets or a retro.** Those are downstream skills' responsibilities (`/to-tickets`, `/done`).
 

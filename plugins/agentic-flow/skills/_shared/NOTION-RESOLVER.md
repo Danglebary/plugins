@@ -1,17 +1,19 @@
-# Notion resolver — the notion store's pure-search protocol
+# Notion resolver — the notion store's backend contract
 
-The mechanism behind the **notion store** (see [STORE.md](./STORE.md)). In this store there are **no local planning files**: no `docs/prds/`, no `.active`, no `agentic-flow.toml`. Each skill resolves its databases by searching Notion at the start of every run.
+The mechanism behind the **notion store** (see [STORE.md](./STORE.md)). In this store there are **no planning artifacts on disk**: no `docs/prds/`, no `.active`. Config lives in `.agentic-flow/settings.toml` like every repo's (see STORE.md); the databases live in Notion.
 
-This document is the notion backend's contract: the resolution protocol, the five database schemas, the file-to-Notion mapping, single-active enforcement, and the root-page-body config.
+This document is the notion backend's contract: the resolution path, the five database schemas, the file-to-Notion mapping, single-active enforcement, and the tool names.
+
+Targets the hosted Notion MCP (`mcp.notion.com`, API `2025-09-03`, data-source model). Every tool is prefixed `notion-`.
 
 ## The anchor: one root page
 
-A single workspace-level **private** page titled exactly `Agentic-Flow` is the anchor. It is the *only* title that must remain search-stable — the child databases are found by fetching the root, not by searching for them independently. Rename a child database and the workflow still works; rename the root and it breaks. (The user has committed to not renaming it.)
+A single workspace-level **private** page titled `Agentic-Flow` is the anchor. All five databases are its children; skills find them by fetching the root, never by searching for them independently.
 
 Root layout (all children created by `/setup-agentic-flow`):
 
 ```
-Agentic-Flow                (private root page; config lives in its body)
+Agentic-Flow                (private root page)
 ├── PRDs        (database)
 ├── Tickets     (database)
 ├── Glossary    (database)   ← replaces CONTEXT.md
@@ -19,25 +21,29 @@ Agentic-Flow                (private root page; config lives in its body)
 └── Reviewers   (database)   ← replaces docs/reviewers.md
 ```
 
-## Resolution steps (run once per skill invocation)
+## Resolution (once per skill invocation)
 
-1. `notion-search` — `query: "Agentic-Flow"`, `query_type: internal`, small `page_size`.
-2. **0 results** → not set up in Notion. If `docs/agentic-flow.toml` doesn't exist either, tell the user to run `/setup-agentic-flow`. Stop.
+**Hot path — no search.** `/setup-agentic-flow` caches the root page id in `.agentic-flow/settings.toml` (`store.notion.root_page_id`). Skills read the id and `notion-fetch` it directly:
+
+1. Read `root_page_id` from `.agentic-flow/settings.toml`.
+2. `notion-fetch` the root page id. The response lists child databases with `<data-source url="collection://…">` tags.
+3. Match children **by title** (`PRDs`, `Tickets`, `Glossary`, `ADRs`, `Reviewers`) and capture each `data_source_id`.
+4. Hold the resolved IDs for the whole invocation. Skills are single-run, so resolve once — don't re-resolve mid-skill.
+
+No search, no index-lag guard, no title-collision guard, no "never rename the root" constraint — the id is stable across renames.
+
+**Cold start / recovery — search as bootstrap.** When `settings.toml` is absent (fresh clone of a repo that keeps `.agentic-flow/` out of git) or the cached id no longer fetches (root deleted/moved), fall back to search:
+
+1. `notion-search` — `query: "Agentic-Flow"`, `query_type: internal`, small `page_size`. Caveats: `notion-search` is semantic, not exact-match, and without a Notion AI plan it is workspace-limited — treat results as candidates to verify by title, not authoritative.
+2. **0 results** → not set up in Notion. Tell the user to run `/setup-agentic-flow`. Stop.
    **>1 exact-title match** → collision. Refuse and ask the user which root to use; do not guess.
-3. `notion-fetch` the root page ID. The response lists child databases with `<data-source url="collection://…">` tags.
-4. Match children **by title** (`PRDs`, `Tickets`, `Glossary`, `ADRs`, `Reviewers`) and capture each `data_source_id`.
-5. Hold the resolved IDs for the whole invocation. Skills are single-run, so resolve once — don't re-search mid-skill.
+3. On success, **re-cache**: write the found id back to `settings.toml` (`store.notion.root_page_id`), then proceed via the hot path.
 
-## Search index lag — the one real pure-search hazard
-
-Notion search is eventually consistent: a database created seconds ago may not appear yet. This only bites at the seam between `/setup-agentic-flow` (which creates the databases) and the next skill. Because skills run in separate, human-initiated invocations, lag normally clears on its own. Two guards:
-
-- **Resolvers retry.** On a miss, wait briefly and re-search, up to 3 attempts, before declaring "not set up."
-- **Setup verifies by ID, not search.** `/setup-agentic-flow` confirms each created database is fetchable by its returned ID before finishing, and warns the user that the very next skill may need a moment for search to catch up.
+Search is eventually consistent — a page created seconds ago may not appear yet. This only matters on the cold-start path; retry up to 3 times with a brief wait before declaring "not set up." Setup itself never relies on search to verify what it just created — it confirms each database by fetching its returned ID directly.
 
 ## Schemas
 
-Created by `/setup-agentic-flow`. **Ordering matters** — Tickets references PRDs, so PRDs is created first.
+Created by `/setup-agentic-flow` via `notion-create-database`. **Ordering matters** — Tickets references PRDs, so PRDs is created first. The `CREATE TABLE (…)` framing below is literal: row queries (max-`Number`, `Active = true`, tickets-by-PRD) go through **`notion-query-data-sources`**, which takes SQL.
 
 **PRDs** — holds all three `to-prd` vehicles (PRD / Spike / Idea), distinguished by `Kind`.
 ```sql
@@ -54,7 +60,7 @@ CREATE TABLE (
 )
 ```
 
-**Why `Number` is a plain field, not `UNIQUE_ID`.** `UNIQUE_ID` auto-increments on *every* row, which would burn a PRD number on every idea and spike — violating the rule that only committed PRDs are numbered and numbers are assigned on promotion. The files store computes numbers in skill code (globbing directories); the notion store does the same via a max-`Number` query over `Kind = PRD` rows (including `Abandoned`, so retired numbers stay reserved). Spikes and Ideas leave `Number` blank until promoted.
+**Why `Number` is a plain field, not `UNIQUE_ID`.** `UNIQUE_ID` auto-increments on *every* row, which would burn a PRD number on every idea and spike — violating the rule that only committed PRDs are numbered and numbers are assigned on promotion. The files store computes numbers in skill code (globbing directories); the notion store does the same via a max-`Number` query (`notion-query-data-sources`) over `Kind = PRD` rows (including `Abandoned`, so retired numbers stay reserved). Spikes and Ideas leave `Number` blank until promoted.
 
 **Kind semantics.** `Status`, `Active`, tickets, and retros apply to `Kind = PRD` only. A `Spike` row carries its findings in the page body and skips the lifecycle entirely; an `Idea` row is one paragraph parked until promotion (flip `Kind → PRD`, assign `Number`, set `Status = Drafting`).
 
@@ -67,7 +73,7 @@ CREATE TABLE (
   "PRD"       RELATION('<prds_ds_id>'),
   "Ticket ID" UNIQUE_ID PREFIX 'TKT'
 )
--- step 2: update-data-source to add the self-relation once the ds_id is known
+-- step 2: notion-update-data-source to add the self-relation once the ds_id is known
 --   "Depends on" RELATION('<tickets_ds_id>', DUAL 'Blocks' 'blocks')
 ```
 
@@ -95,7 +101,7 @@ CREATE TABLE ("Agent" TITLE, "Kind" SELECT('default':blue, 'specialized':purple)
 
 | files | notion | Notes |
 |---|---|---|
-| `status:` frontmatter | `Status` select | Read via `notion-fetch`, write via `update-page` |
+| `status:` frontmatter | `Status` select | Read via `notion-fetch`, write via `notion-update-page` |
 | `docs/prds/.active` (pointer) | `Active` checkbox | See single-active enforcement below |
 | dir name `prd-003-auth` (implicit branch link) | `Branch` property | Now explicit — this is how `/done` and `/retro` find the diff range |
 | `depends_on: [...]` | `Depends on` relation | Acyclicity still validated in skill code; Notion won't enforce it |
@@ -103,24 +109,16 @@ CREATE TABLE ("Agent" TITLE, "Kind" SELECT('default':blue, 'specialized':purple)
 | `docs/spikes/<slug>.md`, `docs/prds/ideas/<slug>.md` | PRDs rows with `Kind = Spike` / `Kind = Idea` | No `Number`, no lifecycle; body holds findings/idea |
 | 5-section `prd.md` body | page content written by `/to-prd` | See template limitation below |
 
+Config does **not** map — `.agentic-flow/settings.toml` serves both stores (see STORE.md).
+
 ## Single-active enforcement
 
-`.active` was one file — atomically one PRD. Notion has no cross-row "only one true" constraint, so the invariant lives in skill code. Any skill that sets a PRD active **first queries `PRDs` for `Active = true` rows and clears them** (`update-page`), then sets the new one. `/retro` clears it on close. Treat clear-then-set as one logical step and always clear first, so a crash between the two never leaves two actives.
-
-## Config (in the root page body)
-
-In the notion store there is no `docs/agentic-flow.toml`. Its keys live as a small config block in the body of the `Agentic-Flow` root page — `/setup-agentic-flow` writes it, and `/next-ticket`, `/done`, and `/improve-codebase-architecture` read it. The load-bearing keys:
-
-- `branching.strategy` — `serial` (ticket branches cut from the PRD branch) or `stacked` (cut from the previous ticket's branch). `/next-ticket` prompts once on the second ticket of the first PRD if unset, then writes the choice back into the root body.
-- `ticket_start.research_opener` — `true` dispatches a research sub-agent at ticket start (the config *is* the standing consent).
-- merge convention (e.g. `--no-ff`) — read by `/done`'s and `/improve`'s close-out merge offer; may also live in the repo's `CLAUDE.md`.
-
-These are workflow config, not planning artifacts, so they sit in the root body rather than a database. `.agentic-flow/diff.patch` remains a **local git-ignored scratch file** — it's a view of the git diff for the fact-checker, about the code (which is in git), not a planning artifact, so it does not move to Notion.
+`.active` was one file — atomically one PRD. Notion has no cross-row "only one true" constraint, so the invariant lives in skill code. Any skill that sets a PRD active **first queries `PRDs` for `Active = true` rows** (`notion-query-data-sources`) **and clears them** (`notion-update-page`), then sets the new one. `/retro` clears it on close. Treat clear-then-set as one logical step and always clear first, so a crash between the two never leaves two actives.
 
 ## Template limitation
 
-The MCP exposes `create-pages` with `template_id` but **no template-creation tool**. So the 5-section PRD body (Problem / Goals / Non-goals / Approach / Modules touched) is written as page **content** by `/to-prd`, not enforced by a Notion database template. Keep the section headings byte-identical across PRDs so `/retro` can locate each section by heading when it synthesizes.
+The MCP exposes `notion-create-pages` with `template_id` but **no template-creation tool**. So the 5-section PRD body (Problem / Goals / Non-goals / Approach / Modules touched) is written as page **content** by `/to-prd`, not enforced by a Notion database template. Keep the section headings byte-identical across PRDs so `/retro` can locate each section by heading when it synthesizes.
 
 ## Tools each skill must load first
 
-`create-database`, `create-pages`, `fetch`, `search` were loaded during design. Skills that flip status or edit rows also need **`update-page`**, and setup's two-step Tickets creation needs **`update-data-source`** — neither was in the initial tool set, so a real run must `tool_search` for them before use.
+Core set: `notion-create-database`, `notion-create-pages`, `notion-fetch`, `notion-search`, `notion-query-data-sources`. Skills that flip status or edit rows also need **`notion-update-page`**, and setup's two-step Tickets creation needs **`notion-update-data-source`** — load via tool search before use if not already available.

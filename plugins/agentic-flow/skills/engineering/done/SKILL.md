@@ -24,7 +24,7 @@ Warns rather than refuses on `Open → Done` (a user who did the work without fl
 2. **Determine the diff range and materialize the diff artifact.** *(Git — identical in both stores.)*
    - Default: the ticket branch's diff vs its parent (the PRD branch in `serial` mode, the previous ticket's branch in `stacked` mode per the config).
    - Fallback (non-standard branching): ask the user for the diff range.
-   - Write the diff to the standard artifact path: `git diff <range> > .agentic-flow/diff.patch` (create `.agentic-flow/` if needed; it's git-ignored). The fact-checker has no git access — this file is its only view of the diff, so don't improvise a different handoff per run.
+   - Write the diff to the standard artifact path: `git diff <range> > .agentic-flow/diff.patch` (create `.agentic-flow/` if needed; its deny-by-default `.gitignore` keeps scratch uncommitted). The fact-checker has no git access — this file is its only view of the diff, so don't improvise a different handoff per run.
 
 3. **Invoke `agentic-flow:deviation-fact-checker`** with, at minimum:
    - The diff artifact path (`.agentic-flow/diff.patch`)

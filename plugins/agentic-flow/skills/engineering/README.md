@@ -2,7 +2,7 @@
 
 Skills for daily code work. Planning artifacts live in the store — in-repo files or Notion databases, per [STORE.md](../_shared/STORE.md); each workflow skill resolves the store at the start of its run.
 
-- **[setup-agentic-flow](./setup-agentic-flow/SKILL.md)** — Idempotent per-repo bootstrap. Asks which store to use and provisions it (files: `docs/prds/`, `docs/adr/`, `docs/reviewers.md`, `CONTEXT.md`, `docs/agentic-flow.toml`; notion: the `Agentic-Flow` root page and its five databases); populates the Reviewers manifest from default + heuristic-detected reviewer agents.
+- **[setup-agentic-flow](./setup-agentic-flow/SKILL.md)** — Idempotent per-repo bootstrap. Asks which store to use and whether `.agentic-flow/` is committed or ignored, writes `.agentic-flow/settings.toml`, and provisions the store (files: `docs/prds/`, `docs/adr/`, `docs/reviewers.md`, `CONTEXT.md`; notion: the `Agentic-Flow` root page and its five databases); populates the Reviewers manifest from default + heuristic-detected reviewer agents.
 - **[next-prd](./next-prd/SKILL.md)** — Exploration of what to work on next. Reads PRDs, retros, the Glossary, and ADRs; surfaces gaps and priorities as a conversation.
 - **[grill-me](./grill-me/SKILL.md)** — Interview the user relentlessly about a plan or design. Updates the Glossary inline and offers ADRs via the three-gate test.
 - **[to-prd](./to-prd/SKILL.md)** — Synthesize the current conversation into a frozen PRD (Status: Drafting). Does not interview.

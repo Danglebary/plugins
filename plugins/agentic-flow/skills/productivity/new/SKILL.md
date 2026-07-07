@@ -32,7 +32,7 @@ Decide based on length:
 
 - **If the prompt fits comfortably in chat** (roughly under 2,000 characters — short enough to copy-paste and skim quickly), output it inline in a single fenced code block so the user can copy it cleanly.
 
-- **If it's longer than that**, write the full prompt to `.agentic-flow/handoff.md` (create the directory if needed; it's git-ignored — repo root risks an accidental commit), and output a short bootstrap prompt in chat that points the new agent at the file. The bootstrap must instruct the new agent to **delete the file after reading and understanding it** — it's scratch context, not a project artifact.
+- **If it's longer than that**, write the full prompt to `.agentic-flow/handoff.md` (create the directory if needed; its deny-by-default `.gitignore` keeps scratch like this uncommitted — repo root risks an accidental commit), and output a short bootstrap prompt in chat that points the new agent at the file. The bootstrap must instruct the new agent to **delete the file after reading and understanding it** — it's scratch context, not a project artifact.
 
 Example bootstrap prompt for the long case:
 

@@ -7,7 +7,7 @@ Skills reference these via `../../_shared/<filename>.md` (two `..` — SKILL.md 
 ## Store docs
 
 - [STORE.md](./STORE.md) — the store contract: the two backends (files / notion), resolution order, the artifact map, single-active discipline. **Skills are store-neutral; this is where their vocabulary resolves to concrete storage.**
-- [NOTION-RESOLVER.md](./NOTION-RESOLVER.md) — the notion backend: pure-search resolution protocol, the five database schemas, root-page-body config, search-lag guards
+- [NOTION-RESOLVER.md](./NOTION-RESOLVER.md) — the notion backend: id-based resolution (search as cold-start bootstrap only), the five database schemas, tool names
 
 ## Format docs
 

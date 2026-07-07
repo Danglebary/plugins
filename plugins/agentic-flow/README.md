@@ -19,7 +19,7 @@ In a new repo, run:
 /setup-agentic-flow
 ```
 
-This asks which store to use, then provisions it: for the **files store**, the directories `agentic-flow` uses (`docs/prds/`, `docs/adr/`), a `docs/reviewers.md` populated from default + heuristic-detected reviewer agents, a `CONTEXT.md` skeleton, and a `docs/agentic-flow.toml` config file; for the **notion store**, a private `Agentic-Flow` root page with PRDs, Tickets, Glossary, ADRs, and Reviewers databases, with config in the root page body.
+This asks which store to use and whether `.agentic-flow/` should be committed or git-ignored, writes `.agentic-flow/settings.toml` (the declarative store selector and workflow config, plus a deny-by-default `.agentic-flow/.gitignore` for scratch), then provisions the store: for the **files store**, the directories `agentic-flow` uses (`docs/prds/`, `docs/adr/`), a `docs/reviewers.md` populated from default + heuristic-detected reviewer agents, and a `CONTEXT.md` skeleton; for the **notion store**, a private `Agentic-Flow` root page with PRDs, Tickets, Glossary, ADRs, and Reviewers databases, its id cached in `settings.toml`.
 
 ## The workflow
 
@@ -77,6 +77,6 @@ The canonical vocabulary used by `agentic-flow` itself lives in [`CONTEXT.md`](.
 - **The store is the primary signal.** `agentic-flow:deviation-fact-checker` compares ticket diffs against `## Deviations` from a fresh session — conversation context is bonus, not load-bearing. Skills are designed to work the same way without prior context.
 - **Git mutations are offered, never automatic.** Merges, branch deletions, and planning commits are gated offers the user accepts or declines; the merge-back is the user's control point. Skills read the merge convention from the config / the repo's CLAUDE.md rather than improvising. An unanswered offer or ratification question blocks — it is never consent.
 - **Announced checkpoints block.** When a skill declares a confirm gate (outcome label, ADR candidates, retro drop-list, plan approval), it presents and ends the turn. "Flag-then-proceed in the same breath" converts a review gate into a notification.
-- **`.agentic-flow/` is the scratch directory.** Git-ignored, per-repo, in both stores: diff artifacts for the fact-checker (`diff.patch`), session handoffs (`handoff.md`). Never a committed artifact; `/setup-agentic-flow` adds the ignore entry.
+- **`.agentic-flow/` holds durable settings and ephemeral scratch.** `settings.toml` (the store selector + config) is durable; diff artifacts for the fact-checker (`diff.patch`) and session handoffs (`handoff.md`) are scratch. Its own deny-by-default `.gitignore` (scaffolded by setup) means scratch can never be committed; whether the directory itself is committed or hidden via the root `.gitignore` is the user's per-repo choice, asked once by `/setup-agentic-flow`.
 - **Candidate inclusion ≠ deviation recording.** The seam-level threshold gates what gets *documented* in `## Deviations`, not what's worth *proposing or doing*. `/improve-codebase-architecture` includes worthwhile below-seam cleanups as candidates; it just doesn't record them.
 - **External facts are verified before they freeze.** Any load-bearing claim about an external system (stdlib, build APIs, language semantics) is verified against the installed toolchain before it lands in an ADR or determines a reviewer finding's severity.
