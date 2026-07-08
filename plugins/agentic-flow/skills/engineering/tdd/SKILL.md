@@ -96,4 +96,4 @@ Lenses and stop conditions: see [refactoring.md](refactoring.md).
 
 ## Working within an `agentic-flow` ticket
 
-If TDD runs inside an in-progress `agentic-flow` ticket, append behavioral or seam-level divergences from the ticket's plan to its `## Deviations` as they emerge — disk-as-primary means the deviation should be on disk by the time `/done` runs, not held back for `/done` to discover. Threshold and rationale-placement: see [ABSTRACTION-LEVELS-PRINCIPLE.md](../../_shared/ABSTRACTION-LEVELS-PRINCIPLE.md).
+If TDD runs inside an in-progress `agentic-flow` ticket, append behavioral or seam-level divergences from the ticket's plan to its `## Deviations` as they emerge — store-as-primary means the deviation should be in the store (see [STORE.md](../../_shared/STORE.md)) by the time `/done` runs, not held back for `/done` to discover. Threshold and rationale-placement: see [ABSTRACTION-LEVELS-PRINCIPLE.md](../../_shared/ABSTRACTION-LEVELS-PRINCIPLE.md).

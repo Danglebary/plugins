@@ -2,9 +2,16 @@
 
 Reference documents shared across multiple skills. Not skills themselves — these files do not appear in `plugin.json` and are not invoked directly.
 
-Skills reference these via `../../_shared/<filename>.md` (two `..` — SKILL.md sits two levels below `skills/`). Two kinds of reference doc, distinguished by filename suffix: **format docs** (`<NAME>-FORMAT.md`) define the canonical shape of a document type; **principle docs** (`<NAME>-PRINCIPLE.md`) capture cross-cutting rules applying across multiple skills.
+Skills reference these via `../../_shared/<filename>.md` (two `..` — SKILL.md sits two levels below `skills/`). Three kinds of reference doc: **store docs** define where planning artifacts live; **format docs** (`<NAME>-FORMAT.md`) define the canonical shape of a document type; **principle docs** (`<NAME>-PRINCIPLE.md`) capture cross-cutting rules applying across multiple skills.
+
+## Store docs
+
+- [STORE.md](./STORE.md) — the store contract: the two backends (files / notion), resolution order, the artifact map, single-active discipline. **Skills are store-neutral; this is where their vocabulary resolves to concrete storage.**
+- [NOTION-RESOLVER.md](./NOTION-RESOLVER.md) — the notion backend: id-based resolution (search as cold-start bootstrap only), the five database schemas, tool names
 
 ## Format docs
+
+Format docs define each artifact's *content shape* (sections, voice, thresholds), which applies in both stores, plus its files-store encoding (paths, frontmatter). The notion-store encodings live in [NOTION-RESOLVER.md](./NOTION-RESOLVER.md).
 
 - [PRD-FORMAT.md](./PRD-FORMAT.md) — frozen multi-ticket scope document
 - [TICKET-FORMAT.md](./TICKET-FORMAT.md) — single unit of work nested under a PRD

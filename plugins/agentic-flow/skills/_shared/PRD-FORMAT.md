@@ -1,20 +1,24 @@
 # PRD format
 
-A PRD is the frozen multi-ticket scope document at `docs/prds/<NNN>-<slug>/prd.md`. It is written in a `drafting` state, locked when `/to-tickets` runs (transitioning to `open`), and marked `done` when `/retro` synthesizes the retro.
+A PRD is the frozen multi-ticket scope document. It is written in a `Drafting` state, locked when `/to-tickets` runs (transitioning to `Open`), and marked `Done` when `/retro` synthesizes the retro.
 
-## File path
+**Storage.** The section structure, lifecycle, and anti-patterns here apply in both stores (see [STORE.md](./STORE.md)). The file path and frontmatter below are the **files store** encoding; in the **notion store** a PRD is a row in the PRDs database (`Kind = PRD`) whose properties replace the frontmatter and whose body holds the same five sections — see [NOTION-RESOLVER.md](./NOTION-RESOLVER.md).
+
+## File path (files store)
 
 `docs/prds/<NNN>-<slug>/prd.md`
 
 `<NNN>` is repo-global, three-digit zero-padded, chronological. `<slug>` is kebab-case.
 
-## Frontmatter
+## Frontmatter (files store)
 
 ```yaml
 ---
 status: drafting | open | done
 ---
 ```
+
+(Notion store: the `Status` select — `Drafting` / `Open` / `Done` / `Abandoned`.)
 
 State transitions:
 
@@ -27,7 +31,7 @@ Per-skill state contracts are documented in each skill's `## State contract` sub
 
 ## Abandoned PRDs
 
-Abandoned PRDs are moved to `docs/prds/_abandoned/<NNN>-<slug>/` (preserving the full PRD directory). They do not get a status value. Numbers stay immutable across both the active and `_abandoned/` directories — numbering algorithms (e.g. `/to-prd`'s "highest existing prefix + 1") glob both locations.
+Abandoned PRDs are moved to `docs/prds/_abandoned/<NNN>-<slug>/` (preserving the full PRD directory; notion store: flip `Status = Abandoned`). Numbers stay immutable across both the active and `_abandoned/` directories — numbering algorithms (e.g. `/to-prd`'s "highest existing prefix + 1") glob both locations (notion store: the max-`Number` query includes `Abandoned` rows).
 
 Preserving abandoned PRDs is intentional: what didn't pan out is often as informative as what shipped.
 
@@ -35,8 +39,8 @@ Preserving abandoned PRDs is intentional: what didn't pan out is often as inform
 
 Not every captured thought is PRD-weight. Two lighter vehicles sit alongside the PRD tier (`/to-prd` asks the fit question at capture time):
 
-- **Ideas** — `docs/prds/ideas/<slug>.md`, un-numbered. A banked thought not ready to commit to. Promoted to a numbered PRD when it's time to build; it gets its number then, never before. The `ideas/` directory doesn't participate in numbering globs.
-- **Spikes** — `docs/spikes/<slug>.md`. An investigation whose deliverable is *findings*, not behavior. No tickets, no retro, no status lifecycle. Findings that justify building feed a new PRD. Spike docs are also the defined relocation home for findings-type deliverables that `/retro`'s synthesis would otherwise drop.
+- **Ideas** — `docs/prds/ideas/<slug>.md` (notion store: a PRDs row with `Kind = Idea`), un-numbered. A banked thought not ready to commit to. Promoted to a numbered PRD when it's time to build; it gets its number then, never before. Ideas don't participate in numbering.
+- **Spikes** — `docs/spikes/<slug>.md` (notion store: a PRDs row with `Kind = Spike`). An investigation whose deliverable is *findings*, not behavior. No tickets, no retro, no status lifecycle. Findings that justify building feed a new PRD. Spike docs are also the defined relocation home for findings-type deliverables that `/retro`'s synthesis would otherwise drop.
 
 ## Body sections
 
@@ -60,7 +64,7 @@ High-level technical direction. PRD-local decisions live here. Cross-PRD decisio
 
 ### 5. Modules touched
 
-Which parts of the codebase this PRD will touch. High-signal — feeds `/improve-codebase-architecture` later. Use the language from CONTEXT.md.
+Which parts of the codebase this PRD will touch. High-signal — feeds `/improve-codebase-architecture` later. Use the language from the Glossary (`CONTEXT.md` in the files store).
 
 ## Example
 

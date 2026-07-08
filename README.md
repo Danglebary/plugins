@@ -4,7 +4,7 @@ A [Claude Code](https://docs.claude.com/en/docs/claude-code) plugin marketplace.
 
 ## Plugins
 
-- **[agentic-flow](./plugins/agentic-flow/)** — A small, composable set of skills for AI-augmented software development. PRD/ticket/retro hierarchy with plugin-shipped reviewer agents.
+- **[agentic-flow](./plugins/agentic-flow/)** — A small, composable set of skills for AI-augmented software development. PRD/ticket/retro hierarchy with plugin-shipped reviewer agents; planning artifacts live in a per-repo store — in-repo markdown files or Notion databases.
 
 ## Install
 

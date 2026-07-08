@@ -1,8 +1,10 @@
 # Retro format
 
-The retro is a two-pass document paired to each PRD at `docs/prds/<NNN>-<slug>/retro.md`. It accumulates per-ticket entries during the PRD's lifecycle, then is restructured in place at PRD close.
+The retro is a two-pass document paired to each PRD. It accumulates per-ticket entries during the PRD's lifecycle, then is restructured in place at PRD close.
 
-## File path
+**Storage.** Entry format, outcome labels, and the synthesized structure apply in both stores (see [STORE.md](./STORE.md)). **Files store**: the file below. **Notion store**: the running retro lives as a section in the PRD row's body — see [NOTION-RESOLVER.md](./NOTION-RESOLVER.md).
+
+## File path (files store)
 
 `docs/prds/<NNN>-<slug>/retro.md`
 
@@ -40,7 +42,7 @@ One section per PRD section (Problem / Goals / Non-goals / Approach / Modules to
 Plus two optional appendices:
 
 - **`## Refactor`** — appears when one or more tickets had `(refactor)`-marked entries in their `## Deviations` section (i.e., `/improve-codebase-architecture` ran and produced changes during the PRD's lifecycle). Captures *cumulative* refactor work across all tickets, with the same outcome-label vocabulary. Omitted when no `(refactor)` deviations exist.
-- **`## Cross-cutting`** — for lessons that don't fit any single PRD section (e.g. terminology issues spanning multiple sections, CONTEXT.md updates that landed mid-PRD). Omitted when empty.
+- **`## Cross-cutting`** — for lessons that don't fit any single PRD section (e.g. terminology issues spanning multiple sections, Glossary updates that landed mid-PRD). Omitted when empty.
 
 ### Section format
 
@@ -87,7 +89,7 @@ Extracted `validateSession` into a deep module (ticket 002) and pulled cookie-si
 
 ## Cross-cutting
 
-- "Session" appeared in code as both `Session` (the DB model) and `session` (the cookie value). Added to CONTEXT.md mid-PRD to disambiguate.
+- "Session" appeared in code as both `Session` (the DB model) and `session` (the cookie value). Added to the Glossary mid-PRD to disambiguate.
 ```
 
 ## Anti-patterns

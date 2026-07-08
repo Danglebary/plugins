@@ -50,10 +50,10 @@ The Markdown body is the agent's system prompt. Structure freely, but a typical 
 
 The plugin ships two kinds at `agents/`:
 
-- **Reviewer agents** (e.g. `qa-engineer`, `software-architect`, `security-engineer`, plus specialized like `rust-expert`) — invoked by `/improve-codebase-architecture` per the manifest in `docs/reviewers.md`. Each provides a candidate-finding lens on a code diff.
-- **Workflow agents** (e.g. `deviation-fact-checker`) — invoked by specific workflow skills (`/done`, `/retro`) for structured analytical tasks. Not in `docs/reviewers.md`.
+- **Reviewer agents** (e.g. `qa-engineer`, `software-architect`, `security-engineer`, plus specialized like `rust-expert`) — invoked by `/improve-codebase-architecture` per the Reviewers manifest (`docs/reviewers.md` or the Reviewers database — see [STORE.md](./STORE.md)). Each provides a candidate-finding lens on a code diff.
+- **Workflow agents** (e.g. `deviation-fact-checker`) — invoked by specific workflow skills (`/done`, `/retro`) for structured analytical tasks. Not in the Reviewers manifest.
 
-Same AGENT.md format in either case. The distinction is which skill invokes them and whether they're listed in `docs/reviewers.md`.
+Same AGENT.md format in either case. The distinction is which skill invokes them and whether they're listed in the Reviewers manifest.
 
 ## Output contracts for workflow agents
 
@@ -83,4 +83,4 @@ Each finding cites the specific diff hunk(s) that support it (file path + line r
 - **Don't put `agents/` inside `.claude-plugin/`.** The loader looks at the plugin root only.
 - **Don't use non-standard frontmatter fields.** Stick to `name`, `description`, `tools`, `model`.
 - **Don't make agents broad or generalist.** Narrow expertise is what makes dispatch reliable and output trustworthy.
-- **Don't list workflow agents in `docs/reviewers.md`.** That manifest is for reviewer agents only.
+- **Don't list workflow agents in the Reviewers manifest.** That manifest is for reviewer agents only.

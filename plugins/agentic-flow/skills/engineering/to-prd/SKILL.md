@@ -1,43 +1,43 @@
 ---
 name: to-prd
-description: Synthesize the current conversation into a frozen PRD document at docs/prds/<NNN>-<slug>/prd.md with status drafting. Does not interview — just captures what's already been discussed. Use when the user wants to write up the current conversation as a PRD.
+description: Synthesize the current conversation into a frozen PRD in the store (docs/prds/ file or Notion PRDs row) with status Drafting. Does not interview — just captures what's already been discussed. Also handles spikes and banked ideas. Use when the user wants to write up the current conversation as a PRD.
 ---
 
 # To PRD
 
-Take the current conversation context and synthesize it into a `drafting` PRD document. **Do NOT interview the user** — just synthesize what's already been discussed. Interviewing is `/grill-me`'s job.
+Take the current conversation context and synthesize it into a `Drafting` PRD. **Do NOT interview the user** — just synthesize what's already been discussed. Interviewing is `/grill-me`'s job.
 
-Format reference: [PRD-FORMAT.md](../../_shared/PRD-FORMAT.md).
+Resolve the store first — see [STORE.md](../../_shared/STORE.md). Format reference: [PRD-FORMAT.md](../../_shared/PRD-FORMAT.md).
 
 ## State contract
 
 - **PRD state required**: n/a (creates new)
 - **Ticket state required**: n/a
-- **Transition**: writes new PRD as `status: drafting`. Does **not** touch `docs/prds/.active` — that pointer represents what's actively being implemented, not what's being designed.
+- **Transition**: writes a new PRD with Status `Drafting`. Does **not** touch the active pointer — active represents what's actively being *implemented*, not what's being designed.
 
 ## Fit check — PRD-weight, spike-weight, or idea?
 
-Before numbering anything, ask the fit question once: **"Is this PRD-weight work, a spike, or an idea to bank?"** Three vehicles, by readiness:
+Before numbering anything, ask the fit question once: **"Is this PRD-weight work, a spike, or an idea to bank?"** Three vehicles, by readiness (see STORE.md's artifact map for where each lives per store):
 
-- **PRD** — scoped buildable work with known goals. The process below.
-- **Spike** — an open question needing investigation, where the deliverable is *findings*, not behavior. Write a single findings doc at `docs/spikes/<slug>.md` and skip PRD ceremony entirely (no tickets, no retro, no status lifecycle — a spike that went through full PRD ceremony once burned ~20 turns of pure overhead). If a spike's findings later justify building, *that* becomes a PRD.
-- **Idea** — not ready to commit. Write it to `docs/prds/ideas/<slug>.md`, un-numbered (numbers are assigned when an idea is promoted to a real PRD, never before). One paragraph to a page; enough to re-find the thought, no more.
+- **PRD** — scoped buildable work with known goals. Gets a number, `Drafting` status, and the five-section body. The process below.
+- **Spike** — an open question needing investigation, where the deliverable is *findings*, not behavior. Write a single findings artifact (files: `docs/spikes/<slug>.md`; notion: a PRDs row with `Kind = Spike`) and skip PRD ceremony entirely — no number, no tickets, no retro, no status lifecycle. (A spike that went through full PRD ceremony once burned ~20 turns of pure overhead.) If a spike's findings later justify building, *that* becomes a PRD.
+- **Idea** — not ready to commit. Bank it un-numbered (files: `docs/prds/ideas/<slug>.md`; notion: a PRDs row with `Kind = Idea`). Numbers are assigned when an idea is promoted to a real PRD, never before. One paragraph to a page; enough to re-find the thought, no more.
 
 When the conversation's shape makes the answer obvious, say which vehicle you're choosing and why rather than asking.
 
 ## Process
 
-1. **Determine the next PRD number.** Look in `docs/prds/` AND `docs/prds/_abandoned/` for the highest existing `<NNN>-` prefix (the un-numbered `ideas/` tier doesn't participate). Use `<NNN+1>`, three-digit zero-padded. PRD numbers are immutable (never reused).
+1. **Determine the next PRD number.** Abandoned PRDs keep their numbers reserved, so include them: files — highest `<NNN>-` prefix across `docs/prds/` AND `docs/prds/_abandoned/` (the un-numbered `ideas/` tier doesn't participate); notion — max `Number` across `Kind = PRD` rows including `Abandoned`. Use `<N+1>`, three-digit zero-padded. PRD numbers are immutable (never reused).
 
-2. **Pick a slug.** Kebab-case, descriptive, short (3–5 words). Should match the PRD topic — e.g. `add-user-authentication`, not `auth-stuff`.
+2. **Pick a slug.** Kebab-case, descriptive, short (3–5 words). Should match the PRD topic — e.g. `add-user-authentication`, not `auth-stuff`. The slug feeds the branch name `prd-<NNN>-<slug>` (files: it's the directory name; notion: store it in the `Slug` property).
 
 3. **Sketch the major modules** the PRD will touch. Look for opportunities to surface deep modules — small interfaces hiding complex behavior. These populate the **Modules touched** section.
 
-4. **Write the PRD** at `docs/prds/<NNN>-<slug>/prd.md` using the structure below. Use vocabulary from `CONTEXT.md`. Respect any ADRs in the area you're touching.
+4. **Write the PRD** with the five-section structure below. Files: `docs/prds/<NNN>-<slug>/prd.md` with `status: drafting` frontmatter. Notion: a PRDs row (`notion-create-pages`) with `Kind = PRD`, `Status = Drafting`, `Number`, `Slug`; leave `Active` unchecked and `Branch`/`Diff base` blank (set later by `/to-tickets`); the five sections go in the row body, headings byte-identical across PRDs so `/retro` can locate them. Use vocabulary from the Glossary. Respect any ADRs in the area you're touching.
 
-5. **Do NOT create `tickets/` or `retro.md`.** Those are downstream skills' responsibilities (`/to-tickets`, `/done`).
+5. **Do NOT create tickets or a retro.** Those are downstream skills' responsibilities (`/to-tickets`, `/done`).
 
-6. **Set status to `drafting`.** Never `open` — the lock transition is `/to-tickets`'s job.
+6. **Status is `Drafting`, never `Open`.** The lock transition is `/to-tickets`'s job.
 
 ## PRD structure
 
@@ -66,8 +66,10 @@ High-level technical direction. PRD-local decisions live here. Cross-PRD decisio
 
 ## Modules touched
 
-Which parts of the codebase, using CONTEXT.md vocabulary.
+Which parts of the codebase, using Glossary vocabulary.
 ```
+
+(Notion: no frontmatter — properties carry it — and the title is the row's `Name`, not repeated as a body heading.)
 
 ## After writing
 
@@ -79,3 +81,5 @@ Suggest the user run `/grill-me` to refine the draft before `/to-tickets` locks 
 - **Don't include specific file paths or code snippets.** Modules-level granularity only. Specific paths go stale fast.
 - **Don't write `Decisions`, `Open questions`, or `Next steps` sections.** See PRD-FORMAT.md anti-patterns.
 - **Don't auto-invoke `/to-tickets`.** That's a separate user decision after grilling refines the PRD.
+- **Don't number a spike or idea.** Numbers are for committed PRDs, assigned on promotion.
+- **Don't set the active pointer.** `to-prd` designs; it never marks a PRD as the one being implemented.
