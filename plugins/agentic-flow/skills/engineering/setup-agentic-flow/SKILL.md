@@ -127,6 +127,9 @@ Activated when specific signals are present. Initial set (extends as the reviewe
 | `agentic-flow:typescript-expert` | `tsconfig.json` exists |
 | `agentic-flow:zig-expert` | `build.zig` exists |
 | `agentic-flow:ux-ui-expert` | Repo ships a user-facing UI surface, regardless of language: web (React/Vue/Svelte/Angular/Solid in `package.json`; Phoenix LiveView in `mix.exs`; Elm; Gleam Lustre; Rust Yew/Leptos/Dioxus in `Cargo.toml`; Go Templ in `go.mod`; Django/Rails/server-rendered templates), TUI (ratatui, bubbletea, textual, Ink, brick), or native (SwiftUI, Jetpack Compose, Qt, GTK, Tauri, Electron, Flutter). Ask the user if unclear. |
+| `agentic-flow:dx-expert` | Repo ships a developer-facing surface: a CLI (`bin/`, `cmd/`, clap/cobra/commander/argparse deps), a library or SDK with a public API, a plugin or extension, or a config-driven tool. Ask the user if unclear. |
+| `agentic-flow:prompt-expert` | Repo contains LLM-facing prompt artifacts: Claude Code plugins or skills (`.claude-plugin/`, `SKILL.md`, `agents/*.md`), instruction files (`CLAUDE.md`, `.claude/`), system prompts or prompt templates assembled in code, or LLM pipeline definitions. |
+| `agentic-flow:technical-editor` | Repo's product or spec surface is a substantial prose corpus: multi-document specs or contracts, RFC/ADR sets, documentation-as-product, or plugin/skill prose. Ask the user if unclear. |
 
 (Detection rules expand as new specialized reviewers ship in plugin updates.)
 
