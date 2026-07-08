@@ -1,0 +1,4 @@
+# deny by default, whitelist durable files
+*
+!.gitignore
+!settings.toml
