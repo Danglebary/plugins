@@ -41,7 +41,7 @@ Refuses on `Open` (frozen scope — adding tickets violates lock; do new work as
    - `## Implementation notes` — optional; omit the section header if there's nothing useful to say. Use this only for *load-bearing* implementation constraints (e.g. *"use the existing SessionStore"*, *"no new dependencies"*) — i.e. seam-level constraints surfacing as hints, not code-shape directives.
    - `## Deviations` — placeholder body: `_None yet._`.
 
-8. **Record the branch link.** The PRD branch is `prd-<NNN>-<slug>`. Files: implicit — the PRD directory name already encodes it; nothing to write. Notion: write `Branch = prd-<NNN>-<slug>` and `Diff base = main` (or the repo default) on the PRD row — this is what `/done` and `/retro` read to find the git diff range; with directories gone, the link must be explicit.
+8. **Record the branch link.** The PRD branch is `prd-<NNN>-<slug>`. Files: implicit — the PRD directory name already encodes it; nothing to write. Notion: write `Branch = prd-<NNN>-<slug>` and `Diff base` on the PRD row — this is what `/done` and `/retro` read to find the git diff range; with directories gone, the link must be explicit. Resolve `Diff base` to the repo's **actual** default branch (e.g. `git symbolic-ref --short refs/remotes/origin/HEAD`, falling back to the current branch or asking) — don't hard-code `main`; `/retro` reads the property literally, so a `master`/`trunk` repo would otherwise get the wrong range.
 
 9. **Flip the PRD status** from `Drafting` to `Open`.
 

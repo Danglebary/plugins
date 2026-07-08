@@ -32,7 +32,7 @@ This file is also the workflow's **config** — one discoverable toml for both b
 
 1. `.agentic-flow/settings.toml` present → read `store.backend`. Offline, no network, nothing to disambiguate.
 2. Absent, but `docs/prds/` exists → an orphaned files-store (a shared repo where `.agentic-flow/` wasn't committed). Infer `backend = "files"` and offer to regenerate `settings.toml`.
-3. Absent, no committed planning artifacts → not set up. Tell the user to run `/setup-agentic-flow`. Stop. (In a repo whose team keeps agentic-flow out of git, this is *correct* — a fresh checkout legitimately has no signal; setup's notion cold-start re-finds the root page and re-caches its id.)
+3. Absent, no committed planning artifacts → not set up. Tell the user to run `/setup-agentic-flow`. Stop. **A workflow skill never searches Notion here** — with no `settings.toml` it can't know the backend is notion, so bootstrapping an existing notion store is `/setup-agentic-flow`'s job, not a skill's. (In a repo whose team keeps agentic-flow out of git this is *correct* — a fresh checkout legitimately has no signal; setup's bootstrap search re-finds the root page and re-caches its id — see [NOTION-RESOLVER.md](./NOTION-RESOLVER.md).)
 
 Resolve once and hold the result for the whole invocation — skills are single-run; don't re-detect mid-skill.
 

@@ -32,14 +32,16 @@ Agentic-Flow                (private root page)
 
 No search, no index-lag guard, no title-collision guard, no "never rename the root" constraint — the id is stable across renames.
 
-**Cold start / recovery — search as bootstrap.** When `settings.toml` is absent (fresh clone of a repo that keeps `.agentic-flow/` out of git) or the cached id no longer fetches (root deleted/moved), fall back to search:
+**Recovery — cached id no longer fetches (skill-reachable).** `settings.toml` exists, so the backend is already known to be notion, but `root_page_id` 404s (root deleted or moved). A skill re-finds the root by search, re-caches, and proceeds via the hot path:
 
 1. `notion-search` — `query: "Agentic-Flow"`, `query_type: internal`, small `page_size`. Caveats: `notion-search` is semantic, not exact-match, and without a Notion AI plan it is workspace-limited — treat results as candidates to verify by title, not authoritative.
-2. **0 results** → not set up in Notion. Tell the user to run `/setup-agentic-flow`. Stop.
+2. **0 results** → the root is gone; tell the user to re-run `/setup-agentic-flow`. Stop.
    **>1 exact-title match** → collision. Refuse and ask the user which root to use; do not guess.
-3. On success, **re-cache**: write the found id back to `settings.toml` (`store.notion.root_page_id`), then proceed via the hot path.
+3. On success, write the found id back to `settings.toml` (`store.notion.root_page_id`), then proceed via the hot path.
 
-Search is eventually consistent — a page created seconds ago may not appear yet. This only matters on the cold-start path; retry up to 3 times with a brief wait before declaring "not set up." Setup itself never relies on search to verify what it just created — it confirms each database by fetching its returned ID directly.
+**Bootstrap — no `settings.toml` (setup only).** This is the *only* search-driven entry, and only `/setup-agentic-flow` reaches it. A workflow skill with no `settings.toml` can't tell it's a notion repo, so it stops at STORE.md's resolution step 3 ("not set up — run `/setup-agentic-flow`") and never searches. Setup does: on a fresh clone of a repo that keeps `.agentic-flow/` out of git, it runs the same `notion-search` + verify-by-title as above, and on a hit re-caches the id and continues in re-run mode instead of creating a duplicate root.
+
+Search is eventually consistent — a page created seconds ago may not appear yet. On either path, retry up to 3 times with a brief wait before declaring "not found." Setup never relies on search to verify what it *just* created — it confirms each database by fetching its returned ID directly.
 
 ## Schemas
 
@@ -55,7 +57,7 @@ CREATE TABLE (
   "Slug"      RICH_TEXT COMMENT 'kebab topic slug; used to build the branch name prd-NNN-slug',
   "Active"    CHECKBOX,
   "Branch"    RICH_TEXT COMMENT 'git branch this PRD maps to, e.g. prd-003-auth; set by /to-tickets',
-  "Diff base" RICH_TEXT COMMENT 'branch/ref to diff against, default main',
+  "Diff base" RICH_TEXT COMMENT 'branch/ref to diff against; set to the repo default branch, not hard-coded main',
   "Tags"      MULTI_SELECT('backend':blue, 'frontend':green, 'infra':orange, 'confidential':red)
 )
 ```

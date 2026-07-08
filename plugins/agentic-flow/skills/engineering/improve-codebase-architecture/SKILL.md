@@ -39,10 +39,12 @@ This skill is _informed_ by the project's domain model. The domain language give
 
 3. **Determine the diff range.** *(Git.)* Default: the just-closed ticket's branch diff vs its parent (PRD branch in `serial` mode, previous ticket's branch in `stacked` mode per the config). Ad-hoc invocation: ask the user for the scope (specific files, full repo walk, etc.).
 
-4. **Dispatch each reviewer in parallel** via the Agent tool. Every reviewer brief contains:
+4. **Dispatch each reviewer in parallel** via the Agent tool. Reviewer agents have no store access — `Read/Grep/Glob` over the working tree only — so the brief must carry every planning input they need: resolve each from the store (step 1) and inline it. Every reviewer brief contains:
    - The diff (or scope) and the steering prompt: *"Review the following changes through your area of expertise. Identify deepening opportunities or architectural concerns per your lens. Output structured findings with file/line citations."*
+   - **The closed ticket's `## Goal` and `## Acceptance criteria`** — the contract the change was meant to satisfy (the qa lens tests against it).
    - **The closed ticket's `## Deviations`** — already-settled divergences are not findings.
-   - **Settled ADR titles**, marked *"do not re-litigate"*.
+   - **The Glossary's domain vocabulary** (terms + one-line definitions) — so findings name concepts in the project's language, not generic placeholders like "the OrderHandler."
+   - **Settled ADR titles + their one-line decision**, marked *"do not re-litigate"*.
    - **The PRD's open-ticket list** — work already scheduled is not a finding.
    - **Deferred candidates from previous passes** (see step 7) — already deferred is not a new finding.
    - Two output requirements: *"verify any severity-determining claim about an external system (stdlib, build APIs, language semantics) against the installed toolchain before asserting it"*, and *"for each area of your lens you examined and found clean, say 'checked, clean' — silence is indistinguishable from not-looked."*
