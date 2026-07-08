@@ -1,6 +1,6 @@
 ---
 name: improve-codebase-architecture
-description: Find deepening opportunities post-/done by dispatching reviewer agents listed in the Reviewers manifest against the just-closed ticket's diff. Merges results through the deepening framework, presents candidates, drops into a grilling loop on accepted ones. Refactor changes get captured in the ticket's ## Deviations with (refactor) marker. Use after /done for a per-ticket refactor pass.
+description: "Find deepening opportunities post-/done by dispatching reviewer agents listed in the Reviewers manifest against the just-closed ticket's diff. Merges results through the deepening framework, presents candidates, drops into a grilling loop on accepted ones. Refactor changes get captured in the ticket's ## Deviations with (refactor) marker. Use after /done for a per-ticket refactor pass."
 ---
 
 # Improve Codebase Architecture

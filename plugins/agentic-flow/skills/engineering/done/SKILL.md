@@ -1,6 +1,6 @@
 ---
 name: done
-description: Close the current ticket. Invokes the deviation-fact-checker sub-agent to compare the ticket diff against ## Deviations, surfaces gaps and ADR candidates for review, appends a retro entry, and flips ticket status to Done. Recommends /improve-codebase-architecture next for a per-ticket refactor pass. Use when finishing a ticket.
+description: "Close the current ticket. Invokes the deviation-fact-checker sub-agent to compare the ticket diff against ## Deviations, surfaces gaps and ADR candidates for review, appends a retro entry, and flips ticket status to Done. Recommends /improve-codebase-architecture next for a per-ticket refactor pass. Use when finishing a ticket."
 ---
 
 # Done
@@ -87,7 +87,7 @@ Warns rather than refuses on `Open → Done` (a user who did the work without fl
 - **Don't restructure the running retro.** This skill appends only. Restructuring is `/retro`'s job at PRD close.
 - **Don't write what was done in the retro entry.** That's redundant with the ticket. Capture *insight*, not *log*.
 - **Don't trust the fact-checker's drafts blindly.** Review each finding against the cited diff. Drop noise — particularly any "gap" that's actually below threshold (private rename, formatting, internal refactor inside a module).
-- **Don't pad `## Deviations` to look thorough.** If nothing seam-level moved and behavior matched spec, leave the section empty (or at `_None yet._`). A clean ticket is a clean ticket; manufactured deviations turn retros into commentary on noise.
+- **Don't pad `## Deviations` to look thorough.** If nothing seam-level moved and behavior matched spec, the section reads `_None._` at close (step 5) — never invent entries to fill it. A clean ticket is a clean ticket; manufactured deviations turn retros into commentary on noise.
 - **Don't auto-invoke `/improve-codebase-architecture`.** Recommend it; let the user choose to invoke (or defer if no refactor seems needed).
 - **Don't skip the fact-check step even when impl just happened in this session.** Store-as-primary means the fact-checker runs every time, regardless of conversation context.
 - **Don't merge without an explicit yes.** The close-out merge offer is a gate, not a notification — silence or an unanswered question means stop, not proceed.
