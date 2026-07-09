@@ -12,6 +12,7 @@ Every diff a lifecycle skill consumes is produced by one deterministic mechanism
 | Scope | `<head>` | `<base>` — files store | `<base>` — notion store |
 |---|---|---|---|
 | Ticket (`/done`, `/improve-codebase-architecture`) | the ticket branch | the PRD branch | the PRD branch |
+| Ticket, post-merge (`/improve-codebase-architecture`'s ad-hoc arm) | the ticket's `--no-ff` merge commit | the merge commit's first parent (`<merge-commit>^1`) | same |
 | PRD (`/retro`) | the PRD branch | the resolved default branch (procedure below) | the PRD row's recorded `Diff base` property |
 
 ### Resolving the default branch
@@ -62,4 +63,4 @@ On the files store, close-out commits legitimately put store-artifact hunks in t
 
 ## Consumers
 
-`/done` (ticket scope), `/retro` (PRD scope), and `/improve-codebase-architecture` (ticket scope) run the script per this doc instead of carrying their own git prose. `/next-ticket` is not an invoker: it cuts a ticket branch from the ticket-scope row's base (the PRD branch), so it cites that base, but its dependency-reachability check stays its own single-command prose — the script stays single-purpose.
+`/done` (ticket scope), `/retro` (PRD scope), and `/improve-codebase-architecture` (ticket scope, plus the post-merge row for its ad-hoc arm) run the script per this doc instead of carrying their own git prose. `/next-ticket` is not an invoker: it cuts a ticket branch from the ticket-scope row's base (the PRD branch), so it cites that base, but its dependency-reachability check stays its own single-command prose — the script stays single-purpose.

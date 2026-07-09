@@ -1,5 +1,5 @@
 ---
-status: open
+status: in progress
 depends_on: [001, 002]
 ---
 
@@ -25,4 +25,5 @@ depends_on: [001, 002]
 
 ## Deviations
 
-_None yet._
+- Added an exit-5 recovery arm to `/improve`'s diff step beyond the ticket's ACs, per the PRD's "re-entry generally" clause: store-artifact dirt with the `done` flip uncommitted routes back to `/done`'s resume; with the flip committed it's `/improve`'s own interrupted pass, resumed at the close-out gates.
+- DIFF-MATERIALIZATION.md's resolving table gained a post-merge row (`<head>` = the ticket's `--no-ff` merge commit, `<base>` = `<merge-commit>^1`) so the ad-hoc arm's range is convention-owned rather than skill-authored prose.
