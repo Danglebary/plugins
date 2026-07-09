@@ -6,7 +6,7 @@ Skills for daily code work. Planning artifacts live in the store — in-repo fil
 - **[next-prd](./next-prd/SKILL.md)** — Exploration of what to work on next. Reads PRDs, retros, the Glossary, and ADRs; surfaces gaps and priorities as a conversation. Hands off to a high-level `/grill-me`.
 - **[grill-me](./grill-me/SKILL.md)** — Interview the user relentlessly about a plan or design. Updates the Glossary inline and offers ADRs via the three-gate test.
 - **[to-prd](./to-prd/SKILL.md)** — Synthesize the current conversation into a frozen PRD (Status: Drafting). Does not interview.
-- **[to-tickets](./to-tickets/SKILL.md)** — Break a PRD into dependency-ordered vertical-slice tickets. Flips PRD `Drafting → Open` and ends at the gated PRD-branch bootstrap — cut from the default branch, planning artifacts committed as its first commit.
+- **[to-tickets](./to-tickets/SKILL.md)** — Break a PRD into dependency-ordered vertical-slice tickets. Flips PRD `Drafting → Open` and ends at the gated PRD-branch bootstrap — cut from the default branch, planning artifacts committed as its first commit (files store; on notion, the cut plus the `Branch`/`Diff base` property writes).
 - **[next-ticket](./next-ticket/SKILL.md)** — Recommend the next ready ticket within the current PRD. Computes blocked from dependencies.
 - **[tdd](./tdd/SKILL.md)** — Test-driven development with a red-green-refactor loop. Builds features or fixes bugs one vertical slice at a time.
 - **[done](./done/SKILL.md)** — Close the current ticket. Invokes the deviation-fact-checker against the ticket diff, flips status, appends a retro entry, commits the close-out edits at one gated offer, then forks: merge now, or defer to `/improve-codebase-architecture`'s refactor pass.

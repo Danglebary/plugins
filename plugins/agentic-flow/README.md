@@ -56,7 +56,7 @@ LOOP per ticket:
 - **[next-prd](./skills/engineering/next-prd/SKILL.md)** — Exploration of what to work on next. Reads PRDs, retros, the Glossary, and ADRs; surfaces gaps and priorities as a conversation. Hands off to a high-level `/grill-me`.
 - **[grill-me](./skills/engineering/grill-me/SKILL.md)** — Interview the user relentlessly about a plan or design. Updates the Glossary inline and offers ADRs via the three-gate test.
 - **[to-prd](./skills/engineering/to-prd/SKILL.md)** — Synthesize the current conversation into a frozen PRD (Status: Drafting). Does not interview.
-- **[to-tickets](./skills/engineering/to-tickets/SKILL.md)** — Break a PRD into dependency-ordered vertical-slice tickets. Flips PRD `Drafting → Open` and ends at the gated PRD-branch bootstrap — cut from the default branch, planning artifacts committed as its first commit.
+- **[to-tickets](./skills/engineering/to-tickets/SKILL.md)** — Break a PRD into dependency-ordered vertical-slice tickets. Flips PRD `Drafting → Open` and ends at the gated PRD-branch bootstrap — cut from the default branch, planning artifacts committed as its first commit (files store; on notion, the cut plus the `Branch`/`Diff base` property writes).
 - **[next-ticket](./skills/engineering/next-ticket/SKILL.md)** — Recommend the next ready ticket within the current PRD. Computes blocked from dependencies.
 - **[tdd](./skills/engineering/tdd/SKILL.md)** — Test-driven development with a red-green-refactor loop. Builds features or fixes bugs one vertical slice at a time.
 - **[done](./skills/engineering/done/SKILL.md)** — Close the current ticket. Invokes the deviation-fact-checker against the ticket diff, flips status, appends a retro entry, commits the close-out edits at one gated offer, then forks: merge now, or defer to `/improve-codebase-architecture`'s refactor pass.
@@ -72,7 +72,7 @@ LOOP per ticket:
 The canonical vocabulary used by `agentic-flow` itself lives in [`CONTEXT.md`](./CONTEXT.md). A few load-bearing rules to know before modifying skills:
 
 - **Skills are store-neutral.** Skills name artifacts and operations (a PRD's Status, the active PRD, the Glossary); [STORE.md](./skills/_shared/STORE.md) maps them to the files or notion backend. Store-specific mechanics belong in the store docs, not in skill prose — a skill mentions a backend inline only when the two genuinely diverge.
-- **Frozen artifacts never edit.** Once a PRD flips to `Open`, it is immutable. Once it flips to `Done`, the synthesized retro is immutable too. `/to-tickets` only runs on a `Drafting` PRD; mid-flight scope additions are deliberate, manual exceptions.
+- **Frozen artifacts never edit.** Once a PRD flips to `Open`, it is immutable. Once it flips to `Done`, the synthesized retro is immutable too. `/to-tickets` creates tickets only on a `Drafting` PRD — its one sanctioned `Open`-PRD invocation is the bootstrap re-entry (tickets exist, the branch bootstrap didn't land), which adds no scope; mid-flight scope additions are deliberate, manual exceptions.
 - **Forward-looking work always lives in a new PRD.** No "follow-ups" or "future work" sections on PRDs or retros — forward-looking lessons motivate the *next* PRD.
 - **ADRs only when all three gates pass:** hard to reverse, surprising without context, the result of a real trade-off. Strictness keeps ADRs rare and high-signal.
 - **Vertical slicing.** Tickets are end-to-end thin slices, not horizontal layers.

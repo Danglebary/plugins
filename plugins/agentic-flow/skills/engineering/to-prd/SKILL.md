@@ -29,7 +29,7 @@ When the conversation's shape makes the answer obvious, say which vehicle you're
 
 1. **Determine the next PRD number.** Abandoned PRDs keep their numbers reserved, so include them: files — highest `<NNN>-` prefix across `docs/prds/` AND `docs/prds/_abandoned/` (the un-numbered `ideas/` tier doesn't participate); notion — max `Number` across `Kind = PRD` rows including `Abandoned`. Use `<N+1>`, three-digit zero-padded. PRD numbers are immutable (never reused).
 
-2. **Pick a slug.** Kebab-case, descriptive, short (3–5 words). Should match the PRD topic — e.g. `add-user-authentication`, not `auth-stuff`. The slug feeds the branch name `prd-<NNN>-<slug>` (files: it's the directory name; notion: store it in the `Slug` property).
+2. **Pick a slug.** Kebab-case, descriptive, short (3–5 words). Should match the PRD topic — e.g. `add-user-authentication`, not `auth-stuff`. The slug is one component: it feeds the PRD directory name `<NNN>-<slug>` (files store) and the branch name `prd-<NNN>-<slug>` (both stores); notion: store the bare slug in the `Slug` property.
 
 3. **Sketch the major modules** the PRD will touch. Look for opportunities to surface deep modules — small interfaces hiding complex behavior. These populate the **Modules touched** section.
 
