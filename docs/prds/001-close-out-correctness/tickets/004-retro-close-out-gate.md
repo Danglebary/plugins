@@ -28,3 +28,4 @@ depends_on: [001, 002]
 ## Deviations
 
 - (refactor) Hardened the interrupted-close discriminator: hybrid-rewrite tiebreaker (restore committed running form, re-synthesize), arm-2 verifies observable state instead of trusting the flip-last invariant, mid-close resume explicitly re-runs the fact-check, the already-synthesized guard is stated store-neutrally (giving notion its resume routing), step 13's enumeration unions drop-list relocation destinations, and CLOSE-OUT.md's resting-state table gained the precondition-failure/foreign-dirt refusal its newest consumer contradicted.
+- (refactor) Closure is now verified positively at both scopes — a close commit is the commit that flipped the status, located by searching branch history of the artifact's path — replacing deleted-branch⇒merged inference; the deferred-merge re-entry gained a step-1 identification arm and a clean-tree guard before the re-offer.
