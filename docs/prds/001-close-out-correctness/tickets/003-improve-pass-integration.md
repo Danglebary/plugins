@@ -1,5 +1,5 @@
 ---
-status: in progress
+status: done
 depends_on: [001, 002]
 ---
 
