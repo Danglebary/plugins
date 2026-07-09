@@ -5,6 +5,10 @@
 SCRIPT="$BATS_TEST_DIRNAME/materialize-diff.sh"
 
 setup() {
+  # Shield fixtures from the contributor's global/system git config — a stray
+  # commit.gpgsign, core.hooksPath, or diff.* setting would otherwise leak in
+  # and make pass/fail machine-dependent.
+  export GIT_CONFIG_GLOBAL=/dev/null GIT_CONFIG_NOSYSTEM=1
   REPO="$BATS_TEST_TMPDIR/repo"
   mkdir -p "$REPO"
   cd "$REPO"
@@ -121,6 +125,60 @@ commit_on() {
   run cat .agentic-flow/diff.patch
   [[ "$output" == *work.txt* ]]
   [[ "$output" != *mainline.txt* ]]
+}
+
+@test "artifact keeps a/ b/ prefixes even when the repo sets diff.noprefix" {
+  git config diff.noprefix true
+  git config diff.mnemonicPrefix true
+  commit_on ticket work.txt
+  run bash "$SCRIPT" main ticket
+  [ "$status" -eq 0 ]
+  grep -q 'diff --git a/work.txt b/work.txt' .agentic-flow/diff.patch
+}
+
+@test "a symlinked artifact path refuses with exit 7 and does not write through it" {
+  commit_on ticket work.txt
+  echo PRECIOUS > "$BATS_TEST_TMPDIR/decoy.txt"
+  mkdir -p .agentic-flow
+  ln -s "$BATS_TEST_TMPDIR/decoy.txt" .agentic-flow/diff.patch
+  run bash "$SCRIPT" main ticket
+  [ "$status" -eq 7 ]
+  [[ "$output" == *diff.patch* ]]
+  [ "$(cat "$BATS_TEST_TMPDIR/decoy.txt")" = "PRECIOUS" ]
+}
+
+@test "a committed symlinked artifact (passing the dirty preflight) still refuses with exit 7" {
+  git switch -qc ticket
+  echo PRECIOUS > "$BATS_TEST_TMPDIR/decoy.txt"
+  mkdir -p .agentic-flow
+  printf '*\n!.gitignore\n' > .agentic-flow/.gitignore
+  ln -s "$BATS_TEST_TMPDIR/decoy.txt" .agentic-flow/diff.patch
+  git add -f .agentic-flow
+  echo work > work.txt
+  git add work.txt
+  git commit -qm work
+  run bash "$SCRIPT" main ticket
+  [ "$status" -eq 7 ]
+  [ "$(cat "$BATS_TEST_TMPDIR/decoy.txt")" = "PRECIOUS" ]
+}
+
+@test ".agentic-flow itself as a symlink refuses with exit 7" {
+  commit_on ticket work.txt
+  mkdir "$BATS_TEST_TMPDIR/elsewhere"
+  ln -s "$BATS_TEST_TMPDIR/elsewhere" .agentic-flow
+  run bash "$SCRIPT" main ticket
+  [ "$status" -eq 7 ]
+  [ ! -e "$BATS_TEST_TMPDIR/elsewhere/diff.patch" ]
+}
+
+@test "a symlinked .gitignore refuses with exit 7 rather than writing through it" {
+  commit_on ticket work.txt
+  echo PRECIOUS > "$BATS_TEST_TMPDIR/decoy.txt"
+  mkdir -p .agentic-flow
+  ln -s "$BATS_TEST_TMPDIR/decoy.txt" .agentic-flow/.gitignore
+  run bash "$SCRIPT" main ticket
+  [ "$status" -eq 7 ]
+  [ "$(cat "$BATS_TEST_TMPDIR/decoy.txt")" = "PRECIOUS" ]
 }
 
 @test "a commit sha is accepted as base" {

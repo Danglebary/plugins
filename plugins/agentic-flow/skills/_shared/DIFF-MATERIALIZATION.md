@@ -14,13 +14,15 @@ Every diff a lifecycle skill consumes is produced by one deterministic mechanism
 | Ticket (`/done`, `/improve-codebase-architecture`) | the ticket branch | the PRD branch | the PRD branch |
 | PRD (`/retro`) | the PRD branch | the resolved default branch (procedure below) | the PRD row's recorded `Diff base` property |
 
-### Resolving the default branch (files store)
+### Resolving the default branch
 
-One procedure, cited by every skill that needs the default branch — `/retro`'s diff base here, and `/to-tickets`' PRD-branch cut point — so the cut point and the eventual diff base cannot disagree:
+One procedure, cited by every skill that needs the default branch, so the cut point and the eventual diff base cannot disagree:
 
 1. `git symbolic-ref --short refs/remotes/origin/HEAD` → strip the `origin/` prefix.
 2. If that fails (no remote, or the remote HEAD isn't cached): whichever one of `main` / `master` exists locally.
 3. If both or neither exist: ask the user — never guess.
+
+It is **store-neutral** — the store only changes *when* a consumer runs it. `/to-tickets` runs it to cut the PRD branch in both stores (and, on notion, records the result as the PRD row's `Diff base`). `/retro` runs it live on the files store for its diff base; on notion it reads the `Diff base` `/to-tickets` already recorded. Never resolve the default branch by falling back to the current branch — that is the guess step 3 forbids, and a `Diff base` recorded from the wrong branch silently mis-scopes `/retro`'s eventual diff.
 
 ## Invocation
 
@@ -41,6 +43,7 @@ On success it writes the merge-base three-dot diff (`base...head`) to `.agentic-
 | 4 | head is an ancestor of base — arguments reversed | re-check the resolution; don't retry blind |
 | 5 | dirty tree — tracked files have uncommitted modifications (paths on stderr) | relay the paths; the work must be committed before close-out proceeds |
 | 6 | empty diff | nothing to fact-check or review — never record a vacuous "clean" result |
+| 7 | unsafe scratch path — `.agentic-flow` or an artifact within it is a symlink (path on stderr) | a hostile or misconfigured repo — surface it, stop |
 
 Two semantics guarantees worth naming:
 
@@ -59,4 +62,4 @@ On the files store, close-out commits legitimately put store-artifact hunks in t
 
 ## Consumers
 
-`/done` (ticket scope), `/retro` (PRD scope), and `/improve-codebase-architecture` (ticket scope) run the script per this doc instead of carrying their own git prose. `/next-ticket` is not an invoker: its branch cut cites the base-resolution procedure above, but its dependency-reachability check stays its own single-command prose — the script stays single-purpose.
+`/done` (ticket scope), `/retro` (PRD scope), and `/improve-codebase-architecture` (ticket scope) run the script per this doc instead of carrying their own git prose. `/next-ticket` is not an invoker: it cuts a ticket branch from the ticket-scope row's base (the PRD branch), so it cites that base, but its dependency-reachability check stays its own single-command prose — the script stays single-purpose.

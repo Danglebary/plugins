@@ -17,6 +17,7 @@
 #   4  head is an ancestor of base (arguments reversed?)
 #   5  dirty tree — tracked files have uncommitted modifications
 #   6  empty diff
+#   7  unsafe scratch path — .agentic-flow or an artifact within it is a symlink
 set -euo pipefail
 
 refuse() {
@@ -55,8 +56,17 @@ dirty=$(git status --porcelain --untracked-files=no)
 git diff --quiet "${base_sha}...${head_sha}" &&
   refuse 6 "empty diff for ${base}...${head} (merge-base $(git rev-parse --short "$merge_base"))"
 
+# Refuse to write through a symlinked scratch path. A hostile repo can commit
+# .agentic-flow/diff.patch (or .agentic-flow itself) as a symlink pointing
+# outside the tree; committed symlinks are tracked-and-unmodified, so the dirty
+# preflight passes and a plain redirect would clobber the link's target.
+for path in .agentic-flow .agentic-flow/.gitignore .agentic-flow/diff.patch; do
+  [[ -L "$path" ]] && refuse 7 "unsafe scratch path — refusing to write through symlink: ${path}"
+done
+
 mkdir -p .agentic-flow
 if [[ ! -f .agentic-flow/.gitignore ]]; then
+  # Keep this heredoc in sync with the template of record in STORE.md.
   cat > .agentic-flow/.gitignore <<'EOF'
 # deny by default, whitelist durable files
 *
@@ -65,7 +75,11 @@ if [[ ! -f .agentic-flow/.gitignore ]]; then
 EOF
 fi
 
-git diff --no-color --no-ext-diff "${base_sha}...${head_sha}" > .agentic-flow/diff.patch
+# Explicit prefixes + fixed context pin the artifact format against the user
+# repo's diff.* config (diff.noprefix, diff.mnemonicPrefix, diff.context) — the
+# fact-checker parses this file, so its shape is a published contract.
+git diff --no-color --no-ext-diff --src-prefix=a/ --dst-prefix=b/ -U3 \
+  "${base_sha}...${head_sha}" > .agentic-flow/diff.patch
 
 file_count=$(git diff --name-only "${base_sha}...${head_sha}" | wc -l | tr -d ' ')
 echo "wrote .agentic-flow/diff.patch — ${base}...${head}, ${file_count} file(s), merge-base $(git rev-parse --short "$merge_base")"
