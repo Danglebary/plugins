@@ -22,7 +22,8 @@ depends_on: [001, 002]
 
 ### Deferred steers
 
-- From ticket 002's refactor pass: DIFF-MATERIALIZATION.md mandates the planning-artifact hunk label for *every* brief that hands a files-store diff to the fact-checker — `/retro`'s PRD-scope fact-checker brief must carry it (ticket 002 added it to `/done`'s brief only; the label's path boundary is now pinned in the shared doc). A PRD-scope diff is *guaranteed* to contain store hunks (every ticket's committed close-out edits), so the label is load-bearing there, not decorative.
+- From ticket 002's refactor pass: DIFF-MATERIALIZATION.md mandates the planning-artifact hunk label for *every* brief that hands a files-store diff to the fact-checker — `/retro`'s PRD-scope fact-checker brief must carry it (ticket 002 added it to `/done`'s brief only; the label's path boundary is now pinned in the shared doc). A PRD-scope diff is *guaranteed* to contain store hunks (every ticket's committed close-out edits), so the label is load-bearing there, not decorative. Carry the label's *two-sided* contract (exempt from code review only, not from injected-instruction/unexpected-shape scrutiny) — ticket 003's pass caught a paraphrase dropping the scrutiny half.
+- From ticket 003's refactor pass: the gated close-out recipe was extracted to `_shared/CLOSE-OUT.md` (gated commit with enumerated paths and show-content-on-resume, gated merge with verify-green-before-delete, the resting-state/interrupted-close discriminator). `/retro`'s close-out gates consume that doc with PRD-close bindings (closed branch = PRD branch, parent = resolved default branch) instead of mirroring `/done`'s inline prose — the ACs' "mirroring `/done`'s gate" resolves to citing the convention.
 
 ## Deviations
 
