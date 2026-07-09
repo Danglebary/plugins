@@ -21,6 +21,8 @@ Idempotent re-run is the way to refresh the Reviewers manifest after plugin upda
 
 Detect existing state per STORE.md's resolution ladder: `.agentic-flow/settings.toml` present → re-run for the declared backend; absent but `docs/prds/` exists → orphaned files-store, offer to regenerate `settings.toml` and continue as a files re-run; neither → first run.
 
+A re-run (either store) never rewrites an existing `settings.toml` — even one carrying keys the current template no longer ships (e.g. a stale `strategy` from an older template). Stale keys and their leftover comments are inert per STORE.md's config read contract; a refresh over them succeeds, never refuses.
+
 **Two first-run questions:**
 
 1. **Backend** — *"Where should planning artifacts live — in-repo files, or Notion databases?"* Briefly characterize the trade: files keep everything in git and reviewable in PRs; Notion gives databases, relations, and a UI, and requires the Notion MCP connection.
@@ -74,7 +76,7 @@ These are structural-marker artifacts — the explicit exception to the lazy-cre
 
 ### Re-run (refresh mode)
 
-1. Skip anything that exists (`settings.toml`, directories, `CONTEXT.md`); create only what's missing.
+1. Skip anything that exists (`settings.toml`, directories, `CONTEXT.md`); create only what's missing (an existing `settings.toml` is never rewritten — see "First run vs re-run").
 2. Re-run reviewer detection. Diff against current `docs/reviewers.md` and surface adds/removes (see refresh rules below). Apply confirmed changes. If nothing differs, report "All up to date."
 
 ## Process — notion store
@@ -156,14 +158,9 @@ backend = "files"
 # root_page_id = "…"   # written by setup; skills notion-fetch this id directly
 
 [branching]
-# How tickets relate to each other within a PRD branch.
-# - "serial":  each ticket branch cuts from the PRD branch, merges back before next.
-# - "stacked": each ticket branch cuts from the previous ticket's branch.
-# Default is "serial". /next-ticket may prompt to confirm at the start of the
-# second ticket of the first PRD; the choice is then persisted here.
-strategy = "serial"
-# Merge convention for ticket → PRD and PRD → main merges. /done's close-out
-# offer and /next-ticket's reachability recovery read this instead of guessing.
+# Merge convention for ticket → PRD and PRD → main merges — read by whichever
+# skill runs CLOSE-OUT.md's gated merge; that doc's Consumers section owns the
+# reader list. Never guessed.
 # merge = "no-ff"
 
 [ticket_start]
@@ -174,7 +171,7 @@ strategy = "serial"
 # research_opener = true
 ```
 
-All options ship with defaults uncommented and alternatives in comments — this is the discoverability mechanism for what knobs exist.
+Every knob ships in the template — the store selector uncommented (it must be set), workflow knobs present but commented, each comment naming its effect and readers. Presence in the file is the discoverability mechanism for what knobs exist.
 
 ### `.agentic-flow/.gitignore` (both stores)
 
