@@ -27,4 +27,4 @@ depends_on: [001, 002]
 
 ## Deviations
 
-_None._
+- (refactor) Hardened the interrupted-close discriminator: hybrid-rewrite tiebreaker (restore committed running form, re-synthesize), arm-2 verifies observable state instead of trusting the flip-last invariant, mid-close resume explicitly re-runs the fact-check, the already-synthesized guard is stated store-neutrally (giving notion its resume routing), step 13's enumeration unions drop-list relocation destinations, and CLOSE-OUT.md's resting-state table gained the precondition-failure/foreign-dirt refusal its newest consumer contradicted.
