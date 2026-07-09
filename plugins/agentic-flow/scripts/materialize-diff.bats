@@ -28,6 +28,20 @@ commit_on() {
   git commit -qm "add $2"
 }
 
+# Merge-now fixture: ticket branch merged --no-ff into an advanced main, branch
+# deleted — the resting state the post-merge row (DIFF-MATERIALIZATION.md)
+# recovers from. Leaves the merge commit's sha in MERGE_SHA.
+merge_now() {
+  commit_on ticket work.txt
+  git switch -q main
+  echo advanced > mainline.txt
+  git add mainline.txt
+  git commit -qm "advance main"
+  git merge -q --no-ff -m "merge ticket" ticket
+  git branch -qd ticket
+  MERGE_SHA=$(git rev-parse main)
+}
+
 @test "missing arguments refuse with exit 1 and print usage" {
   run bash "$SCRIPT"
   [ "$status" -eq 1 ]
@@ -105,6 +119,19 @@ commit_on() {
   echo draft > docs/draft.md
   run bash "$SCRIPT" main ticket
   [ "$status" -eq 0 ]
+}
+
+@test "exit 5 stderr names tracked dirt only, never untracked files" {
+  # Close-out commit gates enumerate untracked store files from git status
+  # precisely because this stderr can never name them — pin the negative.
+  commit_on ticket work.txt
+  echo changed > base.txt
+  mkdir -p docs/prds/ideas
+  echo banked > docs/prds/ideas/stray.md
+  run bash "$SCRIPT" main ticket
+  [ "$status" -eq 5 ]
+  [[ "$output" == *base.txt* ]]
+  [[ "$output" != *stray.md* ]]
 }
 
 @test "empty diff refuses with exit 6 and names both refs" {
@@ -186,6 +213,21 @@ commit_on() {
   commit_on ticket work.txt
   run bash "$SCRIPT" "$base_sha" ticket
   [ "$status" -eq 0 ]
+}
+
+@test "post-merge row: <merge>^1 <merge> yields the merged ticket's changes only" {
+  merge_now
+  run bash "$SCRIPT" "${MERGE_SHA}^1" "$MERGE_SHA"
+  [ "$status" -eq 0 ]
+  run cat .agentic-flow/diff.patch
+  [[ "$output" == *work.txt* ]]
+  [[ "$output" != *mainline.txt* ]]
+}
+
+@test "post-merge row reversed (<merge> <merge>^1) refuses with exit 4" {
+  merge_now
+  run bash "$SCRIPT" "$MERGE_SHA" "${MERGE_SHA}^1"
+  [ "$status" -eq 4 ]
 }
 
 @test "scaffolds .agentic-flow with the deny-by-default .gitignore and writes diff.patch" {

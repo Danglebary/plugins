@@ -47,6 +47,8 @@ A checklist of observable, testable conditions for "done". Each item should be s
 
 **Optional.** An escape hatch for *load-bearing* implementation constraints surfaced during grilling — typically seam-level constraints surfacing as hints (e.g. *"use the existing SessionStore, don't introduce a new one"*, *"must integrate with the existing feature flag system"*, *"no new dependencies"*). Not a place for code-shape directives, design preferences, or general gotchas — those either belong in inline comments next to the code (when implementation lands) or shouldn't be in the ticket at all. Omit the section entirely when there's no load-bearing constraint to capture.
 
+**`### Deferred steers`** — an optional subsection appended *after* ticket creation: other tickets' close-outs and `/improve-codebase-architecture` passes park deferrals here that target this ticket, each entry naming its provenance (*"From ticket NNN's refactor pass: …"*). Steers are still pre-impl constraint material for *this* ticket — the same load-bearing bar applies — they just arrive later and from outside. `/improve`'s reviewer briefs feed them back as already-deferred candidates so reviewers don't re-propose them.
+
 ### 4. Deviations
 
 Appended during implementation. Captures **behavioral or seam-level** divergence from the ticket's planned approach. The bridge between ticket-level execution and PRD-level retro.
