@@ -1,5 +1,5 @@
 ---
-status: open
+status: in progress
 depends_on: [001]
 ---
 
@@ -22,4 +22,5 @@ depends_on: [001]
 
 ## Deviations
 
-_None yet._
+- Extended `/done`'s fact-checker brief with the planning-artifact hunk label — [DIFF-MATERIALIZATION.md](../../../../plugins/agentic-flow/skills/_shared/DIFF-MATERIALIZATION.md) mandates it for every brief that hands over a files-store diff, so consuming the convention without it would breach the shared contract; the criteria list didn't name the brief.
+- Synced the plugin README's workflow chain and both README one-liners for `/done` to the new ending (gated close-out commit, merge-now/defer fork) per the repo's README rules — not named by the criteria.

@@ -1,6 +1,6 @@
 ---
 name: done
-description: "Close the current ticket. Invokes the deviation-fact-checker sub-agent to compare the ticket diff against ## Deviations, surfaces gaps and ADR candidates for review, appends a retro entry, and flips ticket status to Done. Recommends /improve-codebase-architecture next for a per-ticket refactor pass. Use when finishing a ticket."
+description: "Close the current ticket. Materializes the ticket diff via the shared convention (refusing while implementation is uncommitted), invokes the deviation-fact-checker sub-agent to compare it against ## Deviations, surfaces gaps and ADR candidates for review, appends a retro entry, flips ticket status to Done, commits the close-out edits at one gated offer (files store), then forks: merge now or defer to /improve-codebase-architecture. Use when finishing a ticket."
 ---
 
 # Done
@@ -15,16 +15,21 @@ Resolve the store first — see [STORE.md](../../_shared/STORE.md). Format refer
 - **Ticket state required**: `In progress` (typical) or `Open` (warned)
 - **Transition**: ticket `In progress → Done`
 
-Warns rather than refuses on `Open → Done` (a user who did the work without flipping status mid-pairing shouldn't be blocked; warn and confirm). Refuses on already-`Done` tickets.
+Warns rather than refuses on `Open → Done` (a user who did the work without flipping status mid-pairing shouldn't be blocked; warn and confirm). Refuses on already-`Done` tickets — but an interrupted close-out is not one (see Refusing to run).
 
 ## Process
 
 1. **Identify the ticket.** Default to the active PRD's ticket with status `In progress`. If multiple or none, ask.
 
-2. **Determine the diff range and materialize the diff artifact.** *(Git — identical in both stores.)*
-   - Default: the ticket branch's diff vs its parent (the PRD branch in `serial` mode, the previous ticket's branch in `stacked` mode per the config).
-   - Fallback (non-standard branching): ask the user for the diff range.
-   - Write the diff to the standard artifact path: `git diff <range> > .agentic-flow/diff.patch` (create `.agentic-flow/` if needed; its deny-by-default `.gitignore` keeps scratch uncommitted). The fact-checker has no git access — this file is its only view of the diff, so don't improvise a different handoff per run.
+2. **Materialize the ticket diff via the shared convention.** *(Git — identical in both stores.)* Resolve the refs per [DIFF-MATERIALIZATION.md](../../_shared/DIFF-MATERIALIZATION.md): `<base>` is the PRD branch, `<head>` is the ticket branch (non-standard branching: ask the user for the refs). Run the script:
+
+   ```
+   bash "${CLAUDE_PLUGIN_ROOT}/scripts/materialize-diff.sh" <base> <head>
+   ```
+
+   On success the diff is at `.agentic-flow/diff.patch` — the fact-checker has no git access; this artifact is its only view of the diff. On any non-zero exit, follow the shared doc's exit-code table: relay stderr and stop — never fall back to a hand-rolled `git diff`. Exit 5 (dirty tree) gets `/done`-specific interpretation before the stop:
+   - **The dirty paths include implementation** — refuse, naming the convention: *implementation is committed on the ticket branch before `/done` runs*. Print the offending paths from the script's stderr; the user commits, then re-runs `/done`.
+   - **The dirty paths are all store-artifact paths *and* the ticket's status in the working tree is already `done`** — this is `/done`'s own half-applied close-out: a previous run crashed (or was interrupted) between the store edits and the close-out commit. Don't refuse, and don't redo the close — resume at the gated close-out commit (step 10).
 
 3. **Invoke `agentic-flow:deviation-fact-checker`** with, at minimum:
    - The diff artifact path (`.agentic-flow/diff.patch`)
@@ -33,6 +38,7 @@ Warns rather than refuses on `Open → Done` (a user who did the work without fl
    - The Glossary contents (so the agent uses domain vocabulary)
    - Existing ADR titles + statuses (so it doesn't propose duplicates)
    - A reminder that it has Read/Grep over the working tree and must verify claims against current source, not stale comments — every recorded fact-checker false positive traced to diff-only briefing
+   - Files store: the planning-artifact label per [DIFF-MATERIALIZATION.md](../../_shared/DIFF-MATERIALIZATION.md) — store-artifact hunks in the diff (committed deviations, retro entries, status flips) are planning artifacts, not reviewable code
 
    The fact-checker returns three sections (each may be `_None._`):
    - **Deviation gaps** — diff changes at or above the behavioral/seam threshold not captured in `## Deviations`
@@ -71,16 +77,21 @@ Warns rather than refuses on `Open → Done` (a user who did the work without fl
 
 9. **Flip the ticket** status from `In progress` to `Done`. Ordering is strict: **read the ticket → apply the status edit → only then run git commands** — never batch the store edit in parallel with git (see STORE.md; a failed edit inside a parallel batch once cascaded into ~20 cancelled git calls and an abandoned session).
 
-10. **Recommend `/improve-codebase-architecture`** as the next step for a per-ticket refactor pass. Phrase as a suggestion: *"Recommend running `/improve-codebase-architecture` next for a refactor pass on this ticket. Optional but catches architectural rot while context is fresh."*
+10. **Commit the close-out edits (gated).** *(Files store only — notion's store edits are property/body updates independent of git, nothing to commit; proceed directly to step 11.)* Enumerate every store edit this invocation made — the ticket file (materialized deviations + the `done` flip), the running retro, any ADR minted at step 6 — and offer one commit on the ticket branch: *"Commit the close-out edits (`<paths>`) on the ticket branch?"* Rules:
+    - The set is *whatever this invocation edited*, never a fixed list. Stage the enumerated paths explicitly (`git add <path> <path> …`) — never `-A`, never `git add .`.
+    - Re-entry: when step 2 detected a half-applied close-out, resume *here* — the close-out edits already sit in the tree, so enumerate from the dirty store-artifact paths and re-offer this commit, then continue to step 11.
+    - On accept: commit; the tree is clean for whichever arm of step 11 follows.
+    - On decline: stop, and state the wedge plainly — the ticket reads `Done` but the close-out edits are uncommitted; the merge can't proceed, and switching branches would carry the edits along or lose them. Commit or stash these paths before leaving the branch; re-running `/done` resumes at this commit.
 
-11. **Offer the close-out merge (gated).** *(Git — identical in both stores.)* Read the merge convention from the config / the repo's CLAUDE.md (don't improvise it), then offer: *"Merge the ticket branch back (`--no-ff`), verify the build/tests are green on the parent, and delete the ticket branch?"* Rules:
+11. **Fork: merge now, or defer to the refactor pass (gated).** *(Git — identical in both stores.)* Read the merge convention from the config / the repo's CLAUDE.md (don't improvise it), then present exactly two paths and wait:
+    - **Merge now — explicitly skipping the per-ticket refactor pass.** Say so in the offer: accepting means no `/improve-codebase-architecture` pass runs for this ticket before the merge. On accept: merge the ticket branch into the PRD branch per the convention (`--no-ff`), run the repo's verification (build + tests), and delete the ticket branch only after green. If verification fails, stop and surface it — don't delete the branch.
+    - **Defer to `/improve-codebase-architecture`.** Recommend it: *"Run `/improve-codebase-architecture` next for a refactor pass on this ticket — optional but catches architectural rot while context is fresh."* Nothing merges now; its refactor commits land on the ticket branch, and the merge belongs to that pass's own close-out offer.
     - **Offer, never auto-merge.** The merge is the user's control point; an unanswered offer blocks — it is not consent.
-    - If the user is taking the `/improve` recommendation, the merge waits until after that pass (its refactor commits belong on the ticket branch).
-    - On accept: merge `--no-ff`, run the repo's verification (build + tests), and delete the ticket branch only after green. If verification fails, stop and surface it — don't delete the branch.
 
 ## Refusing to run
 
-- If the ticket's status is already `Done`, refuse. Suggest checking git history if the user wants to know what happened.
+- If the ticket's status is already `Done` *and that flip is committed* (files) or recorded (notion), refuse. Suggest checking git history if the user wants to know what happened.
+- An uncommitted `done` flip plus store-artifact-path dirt is **not** an already-closed ticket — it's an interrupted close-out (step 2's second exit-5 case). Resume at the gated close-out commit (step 10) instead of refusing.
 
 ## Anti-patterns
 
@@ -88,7 +99,9 @@ Warns rather than refuses on `Open → Done` (a user who did the work without fl
 - **Don't write what was done in the retro entry.** That's redundant with the ticket. Capture *insight*, not *log*.
 - **Don't trust the fact-checker's drafts blindly.** Review each finding against the cited diff. Drop noise — particularly any "gap" that's actually below threshold (private rename, formatting, internal refactor inside a module).
 - **Don't pad `## Deviations` to look thorough.** If nothing seam-level moved and behavior matched spec, the section reads `_None._` at close (step 5) — never invent entries to fill it. A clean ticket is a clean ticket; manufactured deviations turn retros into commentary on noise.
-- **Don't auto-invoke `/improve-codebase-architecture`.** Recommend it; let the user choose to invoke (or defer if no refactor seems needed).
+- **Don't auto-invoke `/improve-codebase-architecture`.** The defer arm recommends it; the user chooses to invoke it — or merges now, explicitly skipping the pass.
 - **Don't skip the fact-check step even when impl just happened in this session.** Store-as-primary means the fact-checker runs every time, regardless of conversation context.
-- **Don't merge without an explicit yes.** The close-out merge offer is a gate, not a notification — silence or an unanswered question means stop, not proceed.
+- **Don't merge without an explicit yes.** The close-out fork is a gate, not a notification — silence or an unanswered question means stop, not proceed.
+- **Don't stage the close-out commit with `-A` or `git add .`.** Enumerate the paths this invocation edited; blanket staging sweeps unrelated working-tree state into the close-out commit.
+- **Don't hand-roll a diff when the script refuses.** A non-zero exit from `materialize-diff.sh` is a stop with a reason — falling back to `git diff` is exactly the skipped preflight the convention exists to prevent.
 - **Don't treat a passing fact-check as truth-checked findings.** The fact-checker audits diff↔deviation mapping and cited justifications, but a clean run doesn't validate domain claims in spike findings or analysis docs — those need their own review.
