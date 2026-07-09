@@ -68,12 +68,17 @@ In both stores the artifact *content* is identical — section headings, ticket 
 
 ## Branch-link state tests
 
-Two predicates over the branch link route skill preflights. This is their single home; consumers keep inline copies at their decision points, each citing here (the ADR-0002 placement shape: consulted per-run at a decision point → inline with citation).
+Two predicates over the branch link route skill preflights. This is their single home; consumers keep inline copies at their decision points, each citing here (the ADR-0002 placement shape: consulted per-run at a decision point → inline with citation). Two input rules bind every consumer before either predicate runs:
+
+- **Shape gate.** A branch-link value entering any git command must match `prd-<NNN>-<slug>` — digits, kebab-case slug, no whitespace, never `-`-leading or option-shaped. The files-store link is the PRD directory name (already repo-controlled), but notion's `Branch`/`Diff base` are free-text properties writable by workspace collaborators who may have no repo access at all. A non-conforming value is **refused and surfaced as unexpected store shape** — never routed as absent or half-landed, never interpolated into a command.
+- **Remote observation.** "Local or remote" means observed live — `git ls-remote`, or a fetch first — never possibly-stale remote-tracking refs alone. The asymmetry is the reason: a stale view makes the landed test fail safe (a spurious refusal), but the unmerged test fail *unsafe* — a `prd-*` branch created or advanced on the remote escapes the check in exactly the state it exists to refuse. Ancestry (`git merge-base --is-ancestor`) anchors on the freshly-observed remote tip of the resolved default branch when a remote exists, the local tip otherwise.
+
+The predicates:
 
 - **The bootstrap has landed** when the branch `prd-<NNN>-<slug>` exists (local or remote) *and* its follow-through did too — files: the planning commit is on the branch; notion: the PRD row's `Branch` + `Diff base` properties are written. A branch without its follow-through is **half-landed** — a crash between cut and follow-through, owned by `/to-tickets`' bootstrap re-entry. Route there; never classify it as landed or as absent.
 - **A `prd-*` branch is unmerged** when its tip (local or remote) is not an ancestor of the resolved default branch — resolved per [DIFF-MATERIALIZATION.md](./DIFF-MATERIALIZATION.md)'s default-branch procedure, never a guess.
 
-Consumers: `/to-tickets` (serialize-ticketing precondition 2 refuses on any unmerged `prd-*` branch; its State contract and bootstrap re-entry discriminate by the landed test) and `/next-ticket` (refuses ticket start when the active PRD's bootstrap hasn't landed, pointing at `/to-tickets`' re-enterable bootstrap).
+Consumers and their inline copies: `/to-tickets` (its State contract's landed definition; serialize-ticketing precondition 2) and `/next-ticket` (the PRD-branch precondition under "Git branch creation"). What each skill does with a failing test lives in that skill's own prose, not here.
 
 ## `.agentic-flow/` — durable settings, ephemeral scratch
 

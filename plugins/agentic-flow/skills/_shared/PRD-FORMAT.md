@@ -22,7 +22,7 @@ status: drafting | open | done
 
 State transitions:
 
-- `drafting → open` — set by `/to-tickets` when it runs (ticket creation is one-shot; an already-`open` PRD refuses — unless its branch bootstrap hasn't landed, which re-offers only the bootstrap; `/to-tickets`' State contract is the authority).
+- `drafting → open` — set by `/to-tickets` when it runs (ticket creation is one-shot; an already-`open` PRD refuses — unless its branch bootstrap hasn't landed, which re-offers only the bootstrap; the landed test's home is [STORE.md](./STORE.md)'s branch-link state tests, and the refuse-vs-re-offer routing is `/to-tickets`' State contract's).
 - `open → done` — set by `/retro` when it synthesizes.
 
 `/grill-me` and `/to-prd` may edit a `drafting` PRD freely. `/grill-me` refuses on `open` (frozen scope) and `done` (closed chapter). `/to-tickets`' ticket creation is one-shot per PRD — it refuses on `open` with a landed bootstrap (already locked) and on `done`; an `open` PRD whose bootstrap hasn't landed re-offers only the bootstrap. Re-opening a PRD is not supported by skills.
