@@ -5,31 +5,33 @@ description: Break a drafting PRD into dependency-ordered vertical-slice tickets
 
 # To tickets
 
-Take a `Drafting` PRD and break it into vertical-slice tickets, ending at the **PRD-branch bootstrap** that cuts `prd-<NNN>-<slug>` and lands the planning artifacts in git. **Ticket creation is one-shot per PRD** (frozen-scope principle) — but the bootstrap is **re-enterable until it succeeds**: an `Open` PRD with tickets but no branch re-offers only the cut-plus-planning-commit (see Bootstrap re-entry).
+Take a `Drafting` PRD and break it into vertical-slice tickets, ending at the **PRD-branch bootstrap** that cuts `prd-<NNN>-<slug>` and lands the planning artifacts in git. **Ticket creation is one-shot per PRD** (frozen-scope principle) — but the bootstrap is **re-enterable until it succeeds**: an `Open` PRD with tickets whose bootstrap hasn't fully landed re-offers only the missing pieces (see Bootstrap re-entry).
 
 Resolve the store first — see [STORE.md](../../_shared/STORE.md). Format references: [TICKET-FORMAT.md](../../_shared/TICKET-FORMAT.md), [ABSTRACTION-LEVELS-PRINCIPLE.md](../../_shared/ABSTRACTION-LEVELS-PRINCIPLE.md) (ticket voice).
 
 ## State contract
 
-- **PRD state required**: `Drafting`; or `Open` with tickets but no PRD branch — the bootstrap re-entry arm, which re-offers the bootstrap and nothing else
+- **PRD state required**: `Drafting`; or `Open` with tickets whose bootstrap hasn't fully landed — the bootstrap re-entry arm, which re-offers only the missing pieces and nothing else
 - **Ticket state required**: n/a
 - **Transition**: PRD `Drafting → Open`; marks this PRD active (files: writes the PRD directory name — `<NNN>-<slug>` — to `docs/prds/.active`; notion: clears any other row's `Active` first, then sets this one — single-active discipline per STORE.md); ends at the gated bootstrap — cut `prd-<NNN>-<slug>` from the resolved default branch, plus the planning commit (files) / the `Branch` + `Diff base` property writes (notion)
 
-Refuses on `Open` with tickets and an existing PRD branch (frozen scope — adding tickets violates lock; do new work as a new PRD or by manually creating a ticket) and on `Done` (closed chapter).
+**The bootstrap has landed** when the branch `prd-<NNN>-<slug>` exists (local or remote) *and* its follow-through did too — files: the planning commit is on the branch; notion: the `Branch`/`Diff base` properties are written. The discriminator checks the follow-through, not just the cut — a crash between them must route to re-entry, not refusal.
+
+Refuses on `Open` with tickets and a landed bootstrap (frozen scope — adding tickets violates lock; do new work as a new PRD or by manually creating a ticket) and on `Done` (closed chapter).
 
 ## Serialize-ticketing preconditions
 
 Ticketing is serialized; drafting is not. `/to-prd` and `/grill-me` stay runnable from any checkout — a draft PRD is untracked and survives branch switches. `/to-tickets`' ending is the serialization point; it requires all three of:
 
 1. **No other PRD is active.** The active pointer is absent or already names this PRD. On refusal: finish the active PRD (`/retro`), or deliberately clear/repoint the pointer if context-switching.
-2. **No unmerged `prd-*` branch**, local or remote — none whose tip isn't an ancestor of the resolved default branch. On refusal: land it (`/retro` re-offers the merge for a `Done`-but-unmerged PRD) or abandon it.
-3. **The session is on a clean checkout of the default branch**, resolved per [DIFF-MATERIALIZATION.md](../../_shared/DIFF-MATERIALIZATION.md)'s default-branch procedure — never a guess, never a fallback to the current branch. *Clean* means no tracked modifications outside the store-artifact paths (the files-store column of STORE.md's artifact map): grill-minted Glossary/ADR edits are legitimate planning dirt the bootstrap will commit; implementation dirt refuses. On refusal: switch to the default branch, and commit or stash the implementation modifications.
+2. **No unmerged `prd-*` branch**, local or remote — none whose tip isn't an ancestor of the resolved default branch. (In the re-entry arm, this PRD's own half-landed branch is exempt — it is the branch being resumed.) On refusal: land it (`/retro` re-offers the merge for a `Done`-but-unmerged PRD), or abandon that PRD per STORE.md's abandoning row — the `_abandoned/` relocation commits on its branch and merges in preserved form. Never a bare branch delete: the branch carries the PRD's planning artifacts.
+3. **The session is on a clean checkout of the default branch**, resolved per [DIFF-MATERIALIZATION.md](../../_shared/DIFF-MATERIALIZATION.md)'s default-branch procedure — never a guess, never a fallback to the current branch. Files store: *clean* means no tracked modifications outside the store-artifact paths (`docs/prds/**`, `docs/adr/**`, `docs/spikes/**`, `docs/reviewers.md`, `CONTEXT.md` — the files-store column of STORE.md's artifact map): grill-minted Glossary/ADR edits are legitimate planning dirt the bootstrap will commit; implementation dirt refuses. Notion store: *clean* means fully clean — with no planning artifacts on disk, every tracked modification is implementation dirt. On refusal: commit or stash the implementation modifications first, *then* switch to the default branch — switching first carries the dirt with you.
 
-Verify these when the PRD is identified — failing fast beats a proposal conversation that cannot land — and re-verify at the bootstrap, since a long proposal conversation can stale the first check. A refusal names the failing precondition and its instructions; there is no partial proceed.
+Verify these when the PRD is identified — failing fast beats a proposal conversation that cannot land — and re-verify at the bootstrap, since a long proposal conversation can stale the first check. A refusal names **every** failing precondition and its instructions at once — they commonly fail together (an active PRD usually also has an unmerged branch), and reporting one per round-trip walks the user through serial refusals. There is no partial proceed.
 
 ## Process
 
-1. **Identify the PRD.** If the user hasn't specified, ask. Default to the most recent `Drafting` PRD if there's an obvious one. If the PRD is `Open` with tickets but no `prd-<NNN>-<slug>` branch, route to **Bootstrap re-entry** (below). Otherwise refuse if the PRD's status isn't `Drafting`.
+1. **Identify the PRD.** If the user hasn't specified, ask. Default to the most recent `Drafting` PRD if there's an obvious one. If the PRD is `Open` with tickets, check whether the bootstrap has landed (see State contract): any missing piece — no branch, or a branch without its planning commit (files) / `Branch`+`Diff base` writes (notion) — routes to **Bootstrap re-entry** (below); fully landed refuses (frozen scope). Otherwise refuse if the PRD's status isn't `Drafting`.
 
 2. **Verify the serialize-ticketing preconditions** (above). Refuse with the matching instructions if any fail.
 
@@ -57,15 +59,21 @@ Verify these when the PRD is identified — failing fast beats a proposal conver
 
 10. **Mark this PRD active.** Files: write the PRD directory name (`<NNN>-<slug>`) to `docs/prds/.active`. Notion: first clear any `Active = true` rows, then set this row's `Active` (clear-then-set — see STORE.md).
 
-11. **Offer the PRD-branch bootstrap (gated).** Re-verify the serialize-ticketing preconditions, then offer: *"Cut `prd-<NNN>-<slug>` from `<default branch>` and land the planning artifacts?"* An unanswered offer blocks — it is never consent (same gate discipline as [CLOSE-OUT.md](../../_shared/CLOSE-OUT.md)).
-    - **On accept**: cut `prd-<NNN>-<slug>` at the resolved default branch's HEAD (precondition 3 already put the session on it). Then, **files store**: commit all planning artifacts as the branch's first commit — enumerate from `git status` over the store-artifact paths **including untracked files** (the PRD directory with `prd.md` and `tickets/`, the active pointer, grill-minted Glossary/ADR edits), staging the enumerated paths explicitly, never `-A` (CLOSE-OUT.md owns this staging discipline). **Notion store**: no commit — write `Branch = prd-<NNN>-<slug>` and `Diff base` (the resolved default branch) on the PRD row; `/done` and `/retro` read these to find the git diff range.
-    - **On decline**: state the stakes loudly. Files store: *the PRD, its tickets, the active pointer, and any grill-minted Glossary/ADR edits are untracked (or uncommitted) and ride only the working tree until the bootstrap commit lands — nothing in git protects them.* Both stores: no PRD branch exists, so ticket work can't start; re-invoking `/to-tickets` on this PRD re-offers the bootstrap and nothing else.
+11. **Offer the PRD-branch bootstrap (gated).** Re-verify the serialize-ticketing preconditions, then run the gated store commit per [CLOSE-OUT.md](../../_shared/CLOSE-OUT.md) — enumeration, named paths in the offer, paths-only staging, unanswered-offer-blocks, show-content-on-resume all come from there. The bootstrap's bindings:
+    - **The edit set** (authorship-scoped per the convention): *this PRD's* planning artifacts only — its directory (`prd.md`, `tickets/`), the active pointer, and grill-minted Glossary/ADR edits from this PRD's planning — enumerated from `git status` over the store-artifact paths (`docs/prds/**`, `docs/adr/**`, `docs/spikes/**`, `docs/reviewers.md`, `CONTEXT.md` — the files-store column of STORE.md's artifact map) **including untracked files**. A store-path entry this planning run didn't author — another PRD's draft, a banked idea — is excluded and named, never silently swept.
+    - **The offer** — one spelling per store, so re-entry re-runs the matching one. Files: *"Cut `prd-<NNN>-<slug>` from `<default branch>` and commit the planning artifacts (`<paths>`) as its first commit?"* Notion: *"Cut `prd-<NNN>-<slug>` from `<default branch>` and record `Branch` + `Diff base` on the PRD row?"*
+    - **On accept**: cut `prd-<NNN>-<slug>` at the resolved default branch's HEAD (precondition 3 already put the session on it). Then, **files store**: stage the enumerated paths and commit — the planning artifacts land as the branch's first commit. **Notion store**: no commit — write `Branch = prd-<NNN>-<slug>` and `Diff base` (the resolved default branch) on the PRD row; `/done` and `/retro` read these to find the git diff range.
+    - **On decline**: state the stakes loudly. Files store: *the PRD, its tickets, the active pointer, and any grill-minted Glossary/ADR edits are untracked (or uncommitted) and ride only the working tree until the bootstrap commit lands — nothing in git protects them.* Notion store: the rows are safe in the store, but no branch or `Diff base` exists, so the PRD can't be implemented or closed. Both stores: re-invoking `/to-tickets` on this PRD re-offers the bootstrap and nothing else.
 
-12. **Report** the final ticket list to the user. Recommend `/next-ticket` to start.
+12. **Report — forked on the bootstrap outcome.** Accepted: confirm what landed (the branch name and, files store, the planning commit), report the final ticket list, and recommend `/next-ticket` to start. Declined: report the ticket list, but recommend only re-invoking `/to-tickets` to re-offer the bootstrap — per step 11's own stakes, ticket work can't start without the branch; recommending `/next-ticket` here would contradict them. An accepted re-entry ends the same way as an accepted bootstrap, minus the ticket-list report.
 
 ## Bootstrap re-entry
 
-An `Open` PRD with tickets but no `prd-<NNN>-<slug>` branch is, by construction, an interrupted or declined bootstrap. Re-invoking `/to-tickets` on it re-offers **only** the cut-plus-planning-commit — no re-ticketing, no re-proposal; ticket creation stays one-shot. Verify the serialize-ticketing preconditions, idempotently repair the pre-bootstrap edits if the interruption swallowed one (the `Open` flip is present by construction — it is the discriminator; rewrite the active pointer if it's missing), then run step 11's offer verbatim. Notion: the re-offer is the cut plus the `Branch`/`Diff base` writes, idempotent if they already landed.
+An `Open` PRD with tickets whose bootstrap hasn't fully landed (see State contract) is, by construction, an interrupted or declined bootstrap. Re-invoking `/to-tickets` on it re-offers **only the missing pieces** — no re-ticketing, no re-proposal; ticket creation stays one-shot. Three states route here:
+
+- **No `prd-<NNN>-<slug>` branch, local or remote** — declined, or crashed before the cut. Verify the serialize-ticketing preconditions, idempotently repair the pre-bootstrap edits if the interruption swallowed one (the `Open` flip is present by construction — it is the discriminator; rewrite the active pointer if it's missing), then run step 11's offer for the store, in full.
+- **Branch exists, planning commit absent from it** (files) — crashed between cut and commit. Preconditions 1 and 3 apply; precondition 2 exempts this PRD's own branch. Switch to the PRD branch (the untracked planning artifacts ride the switch), then run step 11's commit half only — and because this session didn't author the edits, CLOSE-OUT.md's show-content rule applies: show the enumerated paths' content with the offer, not just their names.
+- **Branch exists, `Branch`/`Diff base` properties unwritten** (notion) — crashed between cut and writes. Re-offer the property writes only, idempotent if one already landed.
 
 ## PRD too big
 
@@ -79,5 +87,5 @@ If you'd produce more than ~10 tickets, the PRD is epic-sized. Stop and tell the
 - **Don't depend on tickets in other PRDs.** Tickets are PRD-scoped. Cross-PRD work means a new PRD.
 - **Don't create the retro here.** `/done` creates it lazily on first append.
 - **Don't write tickets before the user confirms the list.** The proposal step is essential — once written, the PRD locks; re-invocation only ever re-offers the bootstrap, never re-ticketing.
-- **Don't run on an `Open` PRD to "add a few more tickets."** That violates the frozen-scope principle. Either a new PRD or a manual ticket. The only sanctioned `Open`-PRD invocation is the bootstrap re-entry — tickets exist, the branch doesn't.
+- **Don't run on an `Open` PRD to "add a few more tickets."** That violates the frozen-scope principle. Either a new PRD or a manual ticket. The only sanctioned `Open`-PRD invocation is the bootstrap re-entry — tickets exist, the bootstrap didn't fully land.
 - **Don't leave two PRDs active.** Always clear the existing active before setting the new one.
