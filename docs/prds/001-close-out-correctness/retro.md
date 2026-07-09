@@ -35,3 +35,9 @@ A precondition that demands a clean tree can deadlock the very gate it guards �
 **Outcome**: Extended
 
 Ticket 003's encoding drift recurred at this ticket's own start — the flip wrote `in progress` with the corrective steer sitting in the very ticket being started — confirming that only the executed skill prose prevents a failure mode; advisory material read after the fact does not. The fact-checker's audit surface proved to extend past diff↔record mapping into the rationales inside deviation entries: it caught a placement justification claiming "both tests backend-differentiated" where only one is.
+
+## Ticket 007 — Cut the branching-strategy config axis
+
+**Outcome**: Exact match
+
+Config that only an LLM reads as prose makes key removal migration-free: with no parser anywhere, a stale key is inert by construction, and "tolerate old repos" reduced to one stated sentence instead of compatibility behavior. The merge-key comment's consumer list had rotted silently — it named `/next-ticket`, which only routes merges and never reads the convention — so comments naming consumers need re-verification at every edit, not appending. The clean-tree preflight surfaced its own side effect: unrelated working-tree dirt (the `research_opener` enable) must ride the ticket branch as a rider commit, with the Deviations section as the honesty valve.
