@@ -29,3 +29,9 @@ Extracting a convention retroactively exposes conformance gaps in consumers that
 **Outcome**: Extended
 
 A precondition that demands a clean tree can deadlock the very gate it guards — "clean" had to be pinned to exclude the planning dirt the bootstrap exists to commit. Serial ticket slicing means one side of a shared seam ships before the other: stating the end-state contract and recording the front-run as a deviation beat scope-dodging wording the sibling ticket would only rewrite — and the fact-checker proved able to catch the transient cross-skill contradiction, not just diff↔record mismatches.
+
+## Ticket 006 — /next-ticket branch preconditions
+
+**Outcome**: Extended
+
+Ticket 003's encoding drift recurred at this ticket's own start — the flip wrote `in progress` with the corrective steer sitting in the very ticket being started — confirming that only the executed skill prose prevents a failure mode; advisory material read after the fact does not. The fact-checker's audit surface proved to extend past diff↔record mapping into the rationales inside deviation entries: it caught a placement justification claiming "both tests backend-differentiated" where only one is.
