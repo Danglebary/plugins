@@ -66,6 +66,15 @@ Skills name lifecycle states in capitalized prose: PRDs move `Drafting → Open 
 
 In both stores the artifact *content* is identical — section headings, ticket voice, deviation threshold, retro shape all come from the FORMAT docs and [ABSTRACTION-LEVELS-PRINCIPLE.md](./ABSTRACTION-LEVELS-PRINCIPLE.md), which are store-agnostic. The store only decides where that content sits and how properties are encoded.
 
+## Branch-link state tests
+
+Two predicates over the branch link route skill preflights. This is their single home; consumers keep inline copies at their decision points, each citing here (the ADR-0002 placement shape: consulted per-run at a decision point → inline with citation).
+
+- **The bootstrap has landed** when the branch `prd-<NNN>-<slug>` exists (local or remote) *and* its follow-through did too — files: the planning commit is on the branch; notion: the PRD row's `Branch` + `Diff base` properties are written. A branch without its follow-through is **half-landed** — a crash between cut and follow-through, owned by `/to-tickets`' bootstrap re-entry. Route there; never classify it as landed or as absent.
+- **A `prd-*` branch is unmerged** when its tip (local or remote) is not an ancestor of the resolved default branch — resolved per [DIFF-MATERIALIZATION.md](./DIFF-MATERIALIZATION.md)'s default-branch procedure, never a guess.
+
+Consumers: `/to-tickets` (serialize-ticketing precondition 2 refuses on any unmerged `prd-*` branch; its State contract and bootstrap re-entry discriminate by the landed test) and `/next-ticket` (refuses ticket start when the active PRD's bootstrap hasn't landed, pointing at `/to-tickets`' re-enterable bootstrap).
+
 ## `.agentic-flow/` — durable settings, ephemeral scratch
 
 The directory holds both the durable `settings.toml` and ephemeral scratch (`diff.patch`, `handoff.md`). Its own `.agentic-flow/.gitignore` is **deny-by-default**. This block is the **template of record** — two scaffolders write it (`/setup-agentic-flow` at bootstrap, and `scripts/materialize-diff.sh` when it finds the directory absent, e.g. in a fresh clone); both must reproduce it verbatim, so any change here updates both writers:
