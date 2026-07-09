@@ -12,14 +12,17 @@ backend = "files"
 # root_page_id = "…"   # written by setup; skills notion-fetch this id directly
 
 [branching]
+# Retired axis, deliberately retained: this stale `strategy` block is the living
+# instance of the stale-key tolerance (ticket 007, criterion 4) — do not tidy.
 # How tickets relate to each other within a PRD branch.
 # - "serial":  each ticket branch cuts from the PRD branch, merges back before next.
 # - "stacked": each ticket branch cuts from the previous ticket's branch.
 # Default is "serial". /next-ticket may prompt to confirm at the start of the
 # second ticket of the first PRD; the choice is then persisted here.
 strategy = "serial"
-# Merge convention for ticket → PRD and PRD → main merges. /done's close-out
-# offer and /next-ticket's reachability recovery read this instead of guessing.
+# Merge convention for ticket → PRD and PRD → main merges — read by whichever
+# skill runs CLOSE-OUT.md's gated merge; that doc's Consumers section owns the
+# reader list. Never guessed.
 # merge = "no-ff"
 
 [ticket_start]
