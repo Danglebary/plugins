@@ -5,7 +5,7 @@ A Claude Code plugin marketplace repo. Its main plugin, `agentic-flow`, ships a 
 ## Language
 
 **Personal workflow**:
-The workflow agentic-flow itself ships: single-user repos where the plugin performs local merges at close-out gates (ticket branch → PRD branch at `/done`, PRD branch → default branch at `/retro`). agentic-flow's lifecycle skills are single-path — they assume this workflow unconditionally (ADR 0001).
+The workflow agentic-flow itself ships: single-user repos where the plugin performs local merges at close-out gates (ticket branch → PRD branch at `/done`'s close-out fork or its deferred `/improve-codebase-architecture` pass, PRD branch → default branch at `/retro`). agentic-flow's lifecycle skills are single-path — they assume this workflow unconditionally (ADR 0001).
 _Avoid_: "solo mode" (a rejected config-axis framing — separation is by plugin, not by setting).
 
 **Work workflow**:

@@ -9,6 +9,6 @@ Skills for daily code work. Planning artifacts live in the store — in-repo fil
 - **[to-tickets](./to-tickets/SKILL.md)** — Break a PRD into dependency-ordered vertical-slice tickets. Flips PRD `Drafting → Open`.
 - **[next-ticket](./next-ticket/SKILL.md)** — Recommend the next ready ticket within the current PRD. Computes blocked from dependencies.
 - **[tdd](./tdd/SKILL.md)** — Test-driven development with a red-green-refactor loop. Builds features or fixes bugs one vertical slice at a time.
-- **[done](./done/SKILL.md)** — Close the current ticket. Invokes the deviation-fact-checker against the ticket diff, flips status, appends a retro entry, recommends `/improve-codebase-architecture` for a per-ticket refactor pass.
+- **[done](./done/SKILL.md)** — Close the current ticket. Invokes the deviation-fact-checker against the ticket diff, flips status, appends a retro entry, commits the close-out edits at one gated offer, then forks: merge now, or defer to `/improve-codebase-architecture`'s refactor pass.
 - **[improve-codebase-architecture](./improve-codebase-architecture/SKILL.md)** — Per-ticket refactor pass. Dispatches reviewer agents listed in the Reviewers manifest against the just-closed ticket's diff, merges findings through the deepening framework, captures refactor changes in the ticket's `## Deviations` with a `(refactor)` marker.
 - **[retro](./retro/SKILL.md)** — Synthesize the running retro into the structured PRD-close form. Flips PRD `Open → Done`.

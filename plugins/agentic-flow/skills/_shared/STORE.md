@@ -87,7 +87,7 @@ Exactly one PRD is active at a time. **files**: the `.active` file is atomically
 
 ## Writes, edits, and git
 
-- **files**: Read/Edit/Write tools. A status flip is a working-tree edit, never its own commit — it rides along with the ticket's next real commit.
+- **files**: Read/Edit/Write tools. A mid-lifecycle status flip (`Open → In progress`) is a working-tree edit, never its own commit — it rides along with the ticket's next real commit. End-of-lifecycle flips (`→ Done` at ticket or PRD close) have no next commit to ride: they are committed as part of the closing skill's gated close-out commit, together with the rest of that invocation's store edits.
 - **notion**: `notion-create-pages` / `notion-update-page` for writes, `notion-fetch` for reads, `notion-query-data-sources` (SQL) for queries like max-`Number` or `Active = true` (load `notion-update-page` and `notion-update-data-source` via tool search when needed — see [NOTION-RESOLVER.md](./NOTION-RESOLVER.md)). A status flip is a property update, independent of git; it creates no commit.
 
 In both stores: **never batch a store edit in parallel with git commands** — sequential always. (A failed edit inside a parallel batch once cascaded into ~20 cancelled git calls and an abandoned session.)
