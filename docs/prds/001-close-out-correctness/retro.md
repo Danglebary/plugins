@@ -17,3 +17,9 @@ Consuming a shared convention means inheriting its obligations, not just its mec
 **Outcome**: Extended
 
 A skill step that names a state transition without quoting the literal encoding invites drift: `/next-ticket`'s flip wrote `in progress` where STORE.md pins `in-progress`, so a strict frontmatter reader would have missed the ticket — caught only because the fact-checker scrutinizes planning-artifact hunks it is told not to code-review (steer recorded on ticket 006). The close-out recipe now has an inline mirror in `/improve`'s merge gate; mirrors found only by reading the consumed docs end to end are the recurring cost of prose-as-implementation.
+
+## Ticket 004 — /retro close-out gate and PRD merge
+
+**Outcome**: Exact match
+
+Extracting a convention retroactively exposes conformance gaps in consumers that predate it: `/retro`'s existing step order violated CLOSE-OUT.md's flip-last invariant (pointer-clear after flip), invisible until the discriminator that reads flip position had to route this skill's recovery. And a convention with a mechanical core is only as complete as the mechanism's blind spots — the script's tracked-only dirty check can never see an untracked running retro, so the guarantee AC1 wanted needed a per-consumer preflight in skill prose, not another script exit code.
