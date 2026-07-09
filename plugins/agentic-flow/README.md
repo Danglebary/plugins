@@ -30,7 +30,9 @@ This asks which store to use and whether `.agentic-flow/` should be committed or
 2. /grill-me                                    → high-level: what are we trying to do
 3. /to-prd                                      → writes the PRD (Status: Drafting)
 4. /grill-me                                    → detail: sharpen; updates the Glossary, may create ADRs
-5. /to-tickets                                  → creates tickets, flips PRD → Open, marks it active
+5. /to-tickets                                  → creates tickets, flips PRD → Open, marks it active, then:
+   (accept the gated bootstrap offer)           → cut the PRD branch from the default branch, commit the
+                                                  planning artifacts as its first commit (files store)
 
 LOOP per ticket:
   6. /next-ticket                               → recommends next ready ticket
@@ -51,10 +53,10 @@ LOOP per ticket:
 ### Engineering
 
 - **[setup-agentic-flow](./skills/engineering/setup-agentic-flow/SKILL.md)** — Idempotent per-repo bootstrap and refresh. Asks which store to use and provisions it; populates the Reviewers manifest from default + heuristic-detected reviewer agents.
-- **[next-prd](./skills/engineering/next-prd/SKILL.md)** — Exploration of what to work on next. Reads PRDs, retros, the Glossary, and ADRs; surfaces gaps and priorities as a conversation.
+- **[next-prd](./skills/engineering/next-prd/SKILL.md)** — Exploration of what to work on next. Reads PRDs, retros, the Glossary, and ADRs; surfaces gaps and priorities as a conversation. Hands off to a high-level `/grill-me`.
 - **[grill-me](./skills/engineering/grill-me/SKILL.md)** — Interview the user relentlessly about a plan or design. Updates the Glossary inline and offers ADRs via the three-gate test.
 - **[to-prd](./skills/engineering/to-prd/SKILL.md)** — Synthesize the current conversation into a frozen PRD (Status: Drafting). Does not interview.
-- **[to-tickets](./skills/engineering/to-tickets/SKILL.md)** — Break a PRD into dependency-ordered vertical-slice tickets. Flips PRD `Drafting → Open`.
+- **[to-tickets](./skills/engineering/to-tickets/SKILL.md)** — Break a PRD into dependency-ordered vertical-slice tickets. Flips PRD `Drafting → Open` and ends at the gated PRD-branch bootstrap — cut from the default branch, planning artifacts committed as its first commit.
 - **[next-ticket](./skills/engineering/next-ticket/SKILL.md)** — Recommend the next ready ticket within the current PRD. Computes blocked from dependencies.
 - **[tdd](./skills/engineering/tdd/SKILL.md)** — Test-driven development with a red-green-refactor loop. Builds features or fixes bugs one vertical slice at a time.
 - **[done](./skills/engineering/done/SKILL.md)** — Close the current ticket. Invokes the deviation-fact-checker against the ticket diff, flips status, appends a retro entry, commits the close-out edits at one gated offer, then forks: merge now, or defer to `/improve-codebase-architecture`'s refactor pass.

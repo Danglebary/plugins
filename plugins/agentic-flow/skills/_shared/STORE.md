@@ -54,7 +54,7 @@ Skills name lifecycle states in capitalized prose: PRDs move `Drafting → Open 
 | Glossary | `CONTEXT.md` at repo root — [CONTEXT-FORMAT.md](./CONTEXT-FORMAT.md) | Glossary database |
 | ADR | `docs/adr/<NNNN>-<slug>.md` — [ADR-FORMAT.md](./ADR-FORMAT.md) | ADRs row — row mapping in [ADR-FORMAT.md](./ADR-FORMAT.md) |
 | Reviewers manifest | `docs/reviewers.md` — [REVIEWERS-FORMAT.md](./REVIEWERS-FORMAT.md) | Reviewers database |
-| Active pointer | `docs/prds/.active` (one line: the PRD slug) | `Active` checkbox on the PRD row |
+| Active pointer | `docs/prds/.active` (one line: the PRD directory name, `<NNN>-<slug>`) | `Active` checkbox on the PRD row |
 | Config | `.agentic-flow/settings.toml` — **both stores** | same |
 | PRD numbering | highest `<NNN>-` prefix across `docs/prds/` and `docs/prds/_abandoned/` | max-`Number` query (`notion-query-data-sources`) over `Kind = PRD` rows, including `Abandoned` |
 | Ticket numbering | highest prefix across `tickets/` and `tickets/_abandoned/` | highest ticket number among rows related to the PRD, including `Abandoned` |
