@@ -1,5 +1,5 @@
 ---
-status: open
+status: in-progress
 depends_on: []
 ---
 
@@ -18,4 +18,5 @@ The `strategy` config axis no longer exists anywhere: serial is the unconditiona
 
 ## Deviations
 
-_None yet._
+- Criterion 4 needed no behavioral change: setup's refresh mode already skips an existing `settings.toml` wholesale, and nothing in the plugin parses TOML programmatically, so a stale `strategy` key was already inert by construction. Satisfied by stating the tolerance in the files re-run step; the repo's own dogfood `settings.toml` deliberately keeps its stale `strategy = "serial"` as the living instance of the tolerated state.
+- The template's `merge`-key comment didn't just omit `/retro` — it *misattributed* the second reader as `/next-ticket`, which only routes merges to `/done` and never reads the convention itself. The rewrite corrects the attribution rather than appending.

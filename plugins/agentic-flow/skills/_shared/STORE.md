@@ -19,14 +19,13 @@ backend = "notion"       # "files" | "notion"
 root_page_id = "…"       # notion only; cached at setup, skills fetch it directly
 
 [branching]
-strategy = "serial"      # "serial" | "stacked"
 # merge = "no-ff"
 
 [ticket_start]
 # research_opener = true
 ```
 
-This file is also the workflow's **config** — one discoverable toml for both backends (branching strategy, merge convention, ticket-start research opener; future options append here). Skills update it as configuration choices materialize.
+This file is also the workflow's **config** — one discoverable toml for both backends (merge convention, ticket-start research opener; future options append here). Skills update it as configuration choices materialize.
 
 ## Resolving the store (once per skill invocation)
 

@@ -74,7 +74,7 @@ These are structural-marker artifacts — the explicit exception to the lazy-cre
 
 ### Re-run (refresh mode)
 
-1. Skip anything that exists (`settings.toml`, directories, `CONTEXT.md`); create only what's missing.
+1. Skip anything that exists (`settings.toml`, directories, `CONTEXT.md`); create only what's missing. An existing `settings.toml` is left as-is even when it carries keys the current template no longer ships (e.g. a stale `strategy` from an older template) — nothing parses the file; unknown keys are inert and never a refusal.
 2. Re-run reviewer detection. Diff against current `docs/reviewers.md` and surface adds/removes (see refresh rules below). Apply confirmed changes. If nothing differs, report "All up to date."
 
 ## Process — notion store
@@ -156,14 +156,8 @@ backend = "files"
 # root_page_id = "…"   # written by setup; skills notion-fetch this id directly
 
 [branching]
-# How tickets relate to each other within a PRD branch.
-# - "serial":  each ticket branch cuts from the PRD branch, merges back before next.
-# - "stacked": each ticket branch cuts from the previous ticket's branch.
-# Default is "serial". /next-ticket may prompt to confirm at the start of the
-# second ticket of the first PRD; the choice is then persisted here.
-strategy = "serial"
 # Merge convention for ticket → PRD and PRD → main merges. /done's close-out
-# offer and /next-ticket's reachability recovery read this instead of guessing.
+# offer and /retro's PRD merge read this instead of guessing.
 # merge = "no-ff"
 
 [ticket_start]
