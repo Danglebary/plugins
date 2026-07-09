@@ -23,7 +23,7 @@ If no PRD is active, prompts the user to specify a PRD or run `/next-prd`. If th
 
 ## Process
 
-1. **Identify the active PRD** via the store's active pointer (files: `docs/prds/.active`; notion: the `Active = true` row). If missing or it names a `Done` PRD, prompt the user.
+1. **Identify the active PRD** via the store's active pointer (files: `docs/prds/.active`, whose one line is the PRD directory name, `<NNN>-<slug>`; notion: the `Active = true` row). If missing or it names a `Done` PRD, prompt the user.
 
 2. **Read all the PRD's tickets** from the store. Build a map of `id → status` and `id → dependencies`.
 

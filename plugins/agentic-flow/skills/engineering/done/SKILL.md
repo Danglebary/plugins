@@ -11,7 +11,7 @@ Resolve the store first — see [STORE.md](../../_shared/STORE.md). Format refer
 
 ## State contract
 
-- **PRD state required**: `Open` (the active PRD per the store's active pointer)
+- **PRD state required**: `Open` (the active PRD per the store's active pointer — files: `docs/prds/.active`, one line, the PRD directory name `<NNN>-<slug>`)
 - **Ticket state required**: `In progress` (typical) or `Open` (warned)
 - **Transition**: ticket `In progress → Done`
 

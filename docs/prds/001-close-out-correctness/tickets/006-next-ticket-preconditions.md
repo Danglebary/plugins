@@ -22,6 +22,7 @@ depends_on: [002, 005]
 
 - From ticket 003's close-out: `/next-ticket`'s `Open → In progress` flip executed as `status: in progress` where STORE.md and TICKET-FORMAT.md pin the files-store encoding `in-progress` — a strict frontmatter reader would not match the ticket as `In progress`. The flip step should quote the literal encodings (`open | in-progress | done`) rather than naming the transition in prose, so execution can't drift from spec.
 - From ticket 003's refactor pass: the canonical close-out recipe now lives in `_shared/CLOSE-OUT.md` — the dependency-reachability recovery's AC ("mirrors `/done`'s canonical close-out recipe") resolves to consuming that doc (commit gate, then merge gate), not to copying `/done`'s inline prose.
+- From ticket 005's refactor pass: the missing-branch refusal makes this skill the second consumer of the unmerged-`prd-*`/bootstrap-landed check (`/to-tickets`' serialize-ticketing precondition 2 and its State contract's "landed" definition are currently the only home). Mint a citable authority — natural home: DIFF-MATERIALIZATION.md beside the default-branch procedure, or STORE.md's branch-link row — so the inline copies become ADR-0002-shaped cite-the-authority members instead of uncited mirrors.
 
 ## Deviations
 

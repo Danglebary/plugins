@@ -15,6 +15,12 @@ Banked thoughts and in-flight PRDs survive any checkout: spikes and ideas get a 
 - [ ] PRD numbering resolves the highest number across planning directories *and* `prd-*` branch names (local and remote), so a PRD in flight on its branch can never have its number reissued from another checkout.
 - [ ] `/next-prd` and `/next-ticket`, before concluding that no PRDs exist or none is active, check for unmerged `prd-*` branches and name them ("PRD 001 appears in flight on `prd-001-…` — you may be on the wrong checkout") instead of proceeding on the empty view.
 
+## Implementation notes
+
+### Deferred steers
+
+- From ticket 005's refactor pass: the unmerged-`prd-*` warning makes this ticket's skills the third consumer of the unmerged-`prd-*`/bootstrap-landed check. Consume the citable authority ticket 006's steer mints rather than inlining another uncited copy.
+
 ## Deviations
 
 _None yet._

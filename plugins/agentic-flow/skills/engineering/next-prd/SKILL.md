@@ -1,11 +1,11 @@
 ---
 name: next-prd
-description: Exploration of what the project should work on next. Reads existing PRDs, retros, the Glossary, and ADRs from the store, then has a conversation about gaps and priorities. Output is conversation, not a document. Use when starting a new body of work and unsure what to build, or when the user asks "what's next".
+description: Exploration of what the project should work on next. Reads existing PRDs, retros, the Glossary, and ADRs from the store, then has a conversation about gaps and priorities. Output is conversation, not a document; ends by recommending a high-level /grill-me, never /to-prd directly. Use when starting a new body of work and unsure what to build, or when the user asks "what's next".
 ---
 
 # Next PRD
 
-Exploration skill at the front of the agentic-flow workflow. Output is a *conversation*, not a document. The next skill in the chain (`/to-prd`) captures the conversation as a draft PRD.
+Exploration skill at the front of the agentic-flow workflow. Output is a *conversation*, not a document. The next skill in the chain is a **high-level `/grill-me`** that stress-tests the chosen direction; only after that does `/to-prd` capture it as a draft PRD. The full planning chain: `/next-prd` → `/grill-me` (high-level) → `/to-prd` → `/grill-me` (detail) → `/to-tickets`.
 
 Resolve the store first — see [STORE.md](../../_shared/STORE.md).
 
@@ -32,7 +32,7 @@ Resolve the store first — see [STORE.md](../../_shared/STORE.md).
 
 3. **Have a conversation.** Ask the user to react to candidates, propose their own, or steer differently. Use Glossary vocabulary. This is *not* `/grill-me` — figure out *what* to work on, not *how* to build it. Design comes later.
 
-4. **End by recommending `/to-prd`.** When the user signals alignment ("yes, let's do that", "let's write that up"), say: "Want me to run `/to-prd` to capture this as a draft PRD?"
+4. **End by recommending a high-level `/grill-me` — never `/to-prd` directly.** When the user signals alignment ("yes, let's do that", "let's write that up"), say: *"Want me to run `/grill-me` to stress-test this direction before we write it up?"* The high-level grill is where the premise gets challenged before `/to-prd` freezes it into a draft.
 
 ## Empty-state handling
 
@@ -41,7 +41,8 @@ If the store has no PRDs (just-bootstrapped or first PRD), skip the survey and a
 ## Anti-patterns
 
 - **Don't write a PRD here.** That's `/to-prd`'s job. Stay in conversation.
-- **Don't drill into design or implementation.** That's `/grill-me`'s job after `/to-prd` writes the draft.
+- **Don't hand off to `/to-prd` directly.** The chain routes through a high-level `/grill-me` first — a premise nobody stress-tested shouldn't freeze into a draft PRD.
+- **Don't drill into design or implementation.** That's the detail-stage `/grill-me`'s job after `/to-prd` writes the draft.
 - **Don't enumerate more than 3–4 candidates.** Survey, don't list everything.
 - **Don't read every retro and every ADR.** Sample the recent ones; the goal is signal, not coverage.
 - **Don't re-resolve the store mid-skill.** Resolve once at the start (see STORE.md).
