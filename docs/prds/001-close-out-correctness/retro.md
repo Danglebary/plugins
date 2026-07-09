@@ -23,3 +23,9 @@ A skill step that names a state transition without quoting the literal encoding 
 **Outcome**: Exact match
 
 Extracting a convention retroactively exposes conformance gaps in consumers that predate it: `/retro`'s existing step order violated CLOSE-OUT.md's flip-last invariant (pointer-clear after flip), invisible until the discriminator that reads flip position had to route this skill's recovery. And a convention with a mechanical core is only as complete as the mechanism's blind spots — the script's tracked-only dirty check can never see an untracked running retro, so the guarantee AC1 wanted needed a per-consumer preflight in skill prose, not another script exit code.
+
+## Ticket 005 — Planning chain and bootstrap gate
+
+**Outcome**: Extended
+
+A precondition that demands a clean tree can deadlock the very gate it guards — "clean" had to be pinned to exclude the planning dirt the bootstrap exists to commit. Serial ticket slicing means one side of a shared seam ships before the other: stating the end-state contract and recording the front-run as a deviation beat scope-dodging wording the sibling ticket would only rewrite — and the fact-checker proved able to catch the transient cross-skill contradiction, not just diff↔record mismatches.

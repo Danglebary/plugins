@@ -1,5 +1,5 @@
 ---
-status: in-progress
+status: done
 depends_on: [001]
 ---
 
@@ -23,3 +23,4 @@ The planning phase is one codified chain that ends with the PRD branch cut and t
 - The serialize-ticketing preconditions are verified twice, not only at the ending: once when the PRD is identified (failing fast beats a proposal conversation that cannot land) and re-verified at the bootstrap, which stays the authoritative gate per the acceptance criterion.
 - "Clean default-branch checkout" is pinned to *no tracked modifications outside the store-artifact paths*: a fully-clean demand would refuse the very grill-minted Glossary/ADR edits the bootstrap must commit (tracked modifications whenever `CONTEXT.md` or an ADR pre-exists).
 - The bootstrap re-entry arm idempotently restores a missing active pointer before re-offering the cut-plus-planning-commit — a crash between the `Open` flip and the pointer write would otherwise re-enter an ending that commits one artifact short.
+- The decline arm front-runs ticket 006's side of the seam: replacing the removed decline→lazy-creation edge, it states the end-state contract ("no PRD branch exists, so ticket work can't start"), which transiently contradicts `/next-ticket`'s still-lazy prose until ticket 006 lands — chosen over scope-dodging wording that 006 would only have to rewrite.
