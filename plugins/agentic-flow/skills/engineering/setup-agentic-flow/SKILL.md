@@ -178,6 +178,8 @@ All options ship with defaults uncommented and alternatives in comments — this
 
 ### `.agentic-flow/.gitignore` (both stores)
 
+Write the deny-by-default template of record from [STORE.md](../../_shared/STORE.md) verbatim (`scripts/materialize-diff.sh` is the other scaffolder of the same block — keep the two in sync via STORE.md):
+
 ```gitignore
 # deny by default, whitelist durable files
 *

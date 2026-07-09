@@ -49,13 +49,16 @@ The criteria used to decide whether a decision warrants an **ADR**. All three mu
 A subdirectory of `skills/` grouping related skills. Currently `engineering/`, `productivity/`, and `_shared/`. The `_shared/` folder holds **Reference doc**s, not skills.
 
 **Reference doc**:
-A markdown document under `skills/_shared/` referenced by one or more skills. Two kinds: **Format doc**s (the canonical shape of a document type) and **Principle doc**s (cross-cutting rules applying across multiple skills). Distinguished by filename suffix.
+A markdown document under `skills/_shared/` referenced by one or more skills. Four kinds: **Store doc**s (where planning artifacts live — `STORE.md`, `NOTION-RESOLVER.md`), **Format doc**s (the canonical shape of a document type), **Principle doc**s (cross-cutting rules applying across multiple skills), and **Convention doc**s (a shared procedure whose core is a plugin-shipped mechanism). Format and principle docs are distinguished by filename suffix (`-FORMAT.md` / `-PRINCIPLE.md`); store and convention docs carry no suffix.
 
 **Format doc**:
 A **Reference doc** at `skills/_shared/<NAME>-FORMAT.md` that defines the canonical shape of an artifact type (PRD, Ticket, Retro, ADR, Glossary, reviewers) — content shape for both stores plus the files-store encoding. Referenced by skills that produce or read those artifacts.
 
 **Principle doc**:
 A **Reference doc** at `skills/_shared/<NAME>-PRINCIPLE.md` that captures cross-cutting rules applying across multiple skills. Referenced from the SKILL.md files (and other reference docs) that need to enforce or align with the principle.
+
+**Convention doc**:
+A **Reference doc** under `skills/_shared/` that defines a shared procedure whose core is a plugin-shipped mechanism — the invoking skill resolves the store-dependent inputs, the mechanism owns the deterministic part. `DIFF-MATERIALIZATION.md` (paired with `scripts/materialize-diff.sh`) is the first.
 
 **Vertical slice**:
 A **Ticket** scope shape: end-to-end behavior across whatever layers it touches (UI → backend → DB), rather than one layer for many features (a horizontal slice). The default for `/to-tickets`.

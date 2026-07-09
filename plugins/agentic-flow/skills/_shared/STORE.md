@@ -68,7 +68,7 @@ In both stores the artifact *content* is identical — section headings, ticket 
 
 ## `.agentic-flow/` — durable settings, ephemeral scratch
 
-The directory holds both the durable `settings.toml` and ephemeral scratch (`diff.patch`, `handoff.md`). Its own `.agentic-flow/.gitignore` (scaffolded by setup) is **deny-by-default**:
+The directory holds both the durable `settings.toml` and ephemeral scratch (`diff.patch`, `handoff.md`). Its own `.agentic-flow/.gitignore` is **deny-by-default**. This block is the **template of record** — two scaffolders write it (`/setup-agentic-flow` at bootstrap, and `scripts/materialize-diff.sh` when it finds the directory absent, e.g. in a fresh clone); both must reproduce it verbatim, so any change here updates both writers:
 
 ```gitignore
 # deny by default, whitelist durable files
@@ -77,7 +77,7 @@ The directory holds both the durable `settings.toml` and ephemeral scratch (`dif
 !settings.toml
 ```
 
-Scratch can never be committed by accident; durable files are whitelisted one `!` line at a time. (Git nuance baked into the convention: under `*`, whitelisting a file in a future *subdirectory* needs the directory un-ignored first — `!subdir/`, then `!subdir/file`.)
+Scratch can never be committed by accident; durable files are whitelisted one `!` line at a time — update this template and both scaffolders together. (Git nuance baked into the convention: under `*`, whitelisting a file in a future *subdirectory* needs the directory un-ignored first — `!subdir/`, then `!subdir/file`.)
 
 Whether `.agentic-flow/` itself is committed or hidden is the **user's per-repo choice**, asked once by setup: commit it in a personal repo (settings travel with clones); add `.agentic-flow/` to the **root** `.gitignore` in a shared repo where others don't use the workflow.
 
