@@ -57,7 +57,7 @@ Skills name lifecycle states in capitalized prose: PRDs move `Drafting → Open 
 | Reviewers manifest | `docs/reviewers.md` — [REVIEWERS-FORMAT.md](./REVIEWERS-FORMAT.md) | Reviewers database |
 | Active pointer | `docs/prds/.active` (one line: the PRD directory name, `<NNN>-<slug>`) | `Active` checkbox on the PRD row |
 | Config | `.agentic-flow/settings.toml` — **both stores** | same |
-| PRD numbering | highest `<NNN>-` prefix across `docs/prds/` and `docs/prds/_abandoned/` | max-`Number` query (`notion-query-data-sources`) over `Kind = PRD` rows, including `Abandoned` |
+| PRD numbering | highest `<NNN>-` prefix across `docs/prds/`, `docs/prds/_abandoned/`, and `prd-<NNN>-<slug>` branch names, local and remote (the enumeration rule under Branch-link state tests) | max-`Number` query (`notion-query-data-sources`) over `Kind = PRD` rows, including `Abandoned`, plus the same branch-name scan |
 | Ticket numbering | highest prefix across `tickets/` and `tickets/_abandoned/` | highest ticket number among rows related to the PRD, including `Abandoned` |
 | Branch link | implicit — the branch name prefixes the PRD directory name: `prd-` + `<NNN>-<slug>` | explicit `Branch` + `Diff base` properties, written by `/to-tickets` |
 | Spike | `docs/spikes/<slug>.md` | PRDs row, `Kind = Spike`; findings in the body |
@@ -79,7 +79,9 @@ The predicates:
 - **The bootstrap has landed** when the branch `prd-<NNN>-<slug>` exists (local or remote) *and* its follow-through did too — files: the planning commit is on the branch; notion: the PRD row's `Branch` + `Diff base` properties are written. A branch without its follow-through is **half-landed** — a crash between cut and follow-through, owned by `/to-tickets`' bootstrap re-entry. Route there; never classify it as landed or as absent.
 - **A `prd-*` branch is unmerged** when its tip (local or remote) is not an ancestor of the resolved default branch — resolved per [DIFF-MATERIALIZATION.md](./DIFF-MATERIALIZATION.md)'s default-branch procedure, never a guess.
 
-Consumers and their inline copies: `/to-tickets` (its State contract's landed definition; serialize-ticketing precondition 2) and `/next-ticket` (the PRD-branch precondition under "Git branch creation"). What each skill does with a failing test lives in that skill's own prose, not here.
+**Enumeration.** Consumers that sweep for `prd-*` branches (the unmerged sweep, PRD numbering) rather than testing a known link keep only names shaped `prd-<NNN>-<slug>` — the shape gate's pattern applied as a filter, not a refusal: a non-matching name is simply not a PRD branch. The filter is load-bearing because git globs disagree about `/`: `git for-each-ref 'refs/heads/prd-*' 'refs/remotes/*/prd-*'` stops at it, so ticket branches (`prd-<NNN>/ticket-…`) never match, while `git branch --list` and `git ls-remote` patterns cross it and pick ticket branches up.
+
+Consumers and their inline copies: `/to-tickets` (its State contract's landed definition; serialize-ticketing precondition 2), `/next-ticket` (the PRD-branch precondition under "Git branch creation"; the unmerged-`prd-*` sweep on its no-active-PRD path), and `/next-prd` (the unmerged-`prd-*` sweep in its empty-state handling). PRD numbering (`/to-prd`) consumes only the enumeration rule — branch names, never the predicates. What each skill does with a failing test lives in that skill's own prose, not here.
 
 ## `.agentic-flow/` — durable settings, ephemeral scratch
 

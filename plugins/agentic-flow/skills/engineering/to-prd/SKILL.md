@@ -25,9 +25,11 @@ Before numbering anything, ask the fit question once: **"Is this PRD-weight work
 
 When the conversation's shape makes the answer obvious, say which vehicle you're choosing and why rather than asking.
 
+After writing a spike or idea (files store), offer to commit it: *"Commit the banked file (`<path>`) on the current branch?"* (Notion store: rows need no commit.)
+
 ## Process
 
-1. **Determine the next PRD number.** Abandoned PRDs keep their numbers reserved, so include them: files — highest `<NNN>-` prefix across `docs/prds/` AND `docs/prds/_abandoned/` (the un-numbered `ideas/` tier doesn't participate); notion — max `Number` across `Kind = PRD` rows including `Abandoned`. Use `<N+1>`, three-digit zero-padded. PRD numbers are immutable (never reused).
+1. **Determine the next PRD number.** Abandoned PRDs keep their numbers reserved, so include them: files — highest `<NNN>-` prefix across `docs/prds/` AND `docs/prds/_abandoned/` (the un-numbered `ideas/` tier doesn't participate); notion — max `Number` across `Kind = PRD` rows including `Abandoned`. Both stores: take the max against `prd-<NNN>-<slug>` branch names too, local and remote, observed live when a remote exists (`git ls-remote`; offline, use local and remote-tracking refs and say the view may be stale) — a PRD in flight on its branch keeps its number reserved from any checkout. Filter enumerated names per the enumeration rule in [STORE.md](../../_shared/STORE.md)'s branch-link state tests (ticket branches `prd-<NNN>/ticket-…` never count). Use `<N+1>`, three-digit zero-padded. PRD numbers are immutable (never reused).
 
 2. **Pick a slug.** Kebab-case, descriptive, short (3–5 words). Should match the PRD topic — e.g. `add-user-authentication`, not `auth-stuff`. The slug is one component: it feeds the PRD directory name `<NNN>-<slug>` (files store) and the branch name `prd-<NNN>-<slug>` (both stores); notion: store the bare slug in the `Slug` property.
 

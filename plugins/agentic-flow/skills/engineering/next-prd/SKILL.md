@@ -36,7 +36,7 @@ Resolve the store first — see [STORE.md](../../_shared/STORE.md).
 
 ## Empty-state handling
 
-If the store has no PRDs (just-bootstrapped or first PRD), skip the survey and ask the user directly: "What do you want to build first?"
+If the store has no PRDs (just-bootstrapped or first PRD), sweep for unmerged `prd-*` branches before trusting the empty view — a PRD in flight on its branch can be invisible to the store read from another checkout. A branch is unmerged when its tip (local or remote, observed live per STORE.md's remote-observation rule) is not an ancestor of the resolved default branch (the unmerged test — inline copy of [STORE.md](../../_shared/STORE.md)'s branch-link state tests, cited per ADR-0002; enumerate and filter per its enumeration rule). Offline, degrade rather than refuse: sweep local and remote-tracking refs and say the view may be stale. If any turn up, name them — *"PRD 001 appears in flight on `prd-001-…` — you may be on the wrong checkout"* — instead of proceeding on the empty view. Otherwise skip the survey and ask the user directly: "What do you want to build first?"
 
 ## Anti-patterns
 

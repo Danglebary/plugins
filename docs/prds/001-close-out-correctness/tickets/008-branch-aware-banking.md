@@ -1,5 +1,5 @@
 ---
-status: open
+status: in-progress
 depends_on: []
 ---
 
@@ -23,4 +23,6 @@ Banked thoughts and in-flight PRDs survive any checkout: spikes and ideas get a 
 
 ## Deviations
 
-_None yet._
+- The bare commit offer consumes none of CLOSE-OUT.md's machinery (no enumeration, no show-content-on-resume, no decline-wedge) and doesn't cite it — a single-file offer in house voice; citing the gate doc would import exactly the ceremony the criterion excludes.
+- Offline degradation for the new sweeps: the warning consumers (`/next-prd`, `/next-ticket`) and numbering fall back to local + remote-tracking refs with a stale-view caveat instead of refusing — advisory checks shouldn't wedge offline sessions. STORE.md's live remote-observation rule is untouched; `/to-tickets`' serialize gate keeps strict live observation.
+- STORE.md's branch-link state tests gained an **enumeration rule**: the shape gate's pattern applied as a filter (not a refusal), plus the `/`-glob divergence — `for-each-ref` patterns stop at `/`, `git branch --list` and `ls-remote` patterns cross it and pick up ticket branches. PRD numbering is recorded as a consumer of that rule only — branch names, never the predicates — and the consumers inventory adds both skills' unmerged sweeps.
