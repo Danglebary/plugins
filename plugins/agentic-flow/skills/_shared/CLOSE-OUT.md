@@ -32,4 +32,4 @@ Given the flip's location, ownership of the tree state follows:
 
 ## Consumers
 
-`/done` (ticket close: ticket branch → PRD branch, steps 10–11) and `/improve-codebase-architecture` (refactor-pass close-out: same branch pair; its post-merge and general ad-hoc arms have no branch to merge and end at the commit gate). Each consumer states its bindings and cites this document for the mechanics.
+`/done` (ticket close: ticket branch → PRD branch, steps 10–11), `/improve-codebase-architecture` (refactor-pass close-out: same branch pair; its post-merge and general ad-hoc arms have no branch to merge and end at the commit gate), and `/retro` (PRD close: PRD branch → resolved default branch, steps 13–14; its merge offer has no defer arm — it is the merge's only home). Each consumer states its bindings and cites this document for the mechanics.

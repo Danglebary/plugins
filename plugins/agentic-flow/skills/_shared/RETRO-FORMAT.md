@@ -35,6 +35,8 @@ The same labels appear in the synthesized form, applied per PRD section instead 
 
 Written by `/retro` (no args), which **restructures `retro.md` in place**. The running form is preserved in git history; the live file becomes the structured synthesis.
 
+**Committed-running-retro precondition (files store).** Git history is the *only* place the running form survives the rewrite, so `/retro` refuses to synthesize while the running retro has uncommitted content — a modified `retro.md`, or an untracked one (which has no history at all). `/done`'s gated close-out commit is what normally guarantees this; uncommitted running-retro content at PRD close means one of those gates was declined or interrupted — commit it (typically by resuming that close), then re-run `/retro`. The notion path demands no commit: page history is its guarantee.
+
 ### Sections
 
 One section per PRD section (Problem / Goals / Non-goals / Approach / Modules touched), each labeled with an outcome and with commentary.
@@ -96,4 +98,4 @@ Extracted `validateSession` into a deep module (ticket 002) and pulled cookie-si
 
 - **Don't write `## Next steps`, `## Future work`, or `## Roadmap`.** Strictly backward-looking. Forward-looking work goes into a new PRD.
 - **Don't restructure prematurely.** The running form lives until `/retro` is invoked at PRD close. Don't reorganize partway.
-- **Don't drop the running form without git committing it.** The running entries are the raw material for synthesis; git history is the only place they survive after restructure.
+- **Don't drop the running form without git committing it.** The running entries are the raw material for synthesis; git history is the only place they survive after restructure. `/retro` enforces this as a precondition — it refuses to synthesize over an uncommitted running retro (files store).
