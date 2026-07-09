@@ -1,5 +1,5 @@
 ---
-status: in-progress
+status: done
 depends_on: [002, 005]
 ---
 
@@ -27,4 +27,4 @@ depends_on: [002, 005]
 ## Deviations
 
 - Beyond the surfaces the ticket names: CLOSE-OUT.md's Consumers section gained a one-sentence `/next-ticket` clause (a router-only consumer — reachability recovery sends an unfinished dependency close through the gates before cutting). The recovery AC makes this skill a consumer of that doc, and its consumer inventory would otherwise have gone stale.
-- Steer 3 offered two homes for the minted authority; chose STORE.md (new `## Branch-link state tests` section) over DIFF-MATERIALIZATION.md — both tests are backend-differentiated predicates over the branch link, which is STORE.md's domain; the unmerged test cites DIFF-MATERIALIZATION.md's default-branch procedure from there.
+- Steer 3 offered two homes for the minted authority; chose STORE.md (new `## Branch-link state tests` section) over DIFF-MATERIALIZATION.md — both tests are predicates over the branch link, which is STORE.md's domain, and the landed test is backend-differentiated (planning commit vs `Branch`/`Diff base` writes); the unmerged test is store-neutral git ancestry and cites DIFF-MATERIALIZATION.md's default-branch procedure from there.
