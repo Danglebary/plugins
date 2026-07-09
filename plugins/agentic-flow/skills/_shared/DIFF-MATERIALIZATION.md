@@ -53,6 +53,16 @@ Two semantics guarantees worth naming:
 
 On any non-zero exit: relay the script's stderr to the user and stop — except the exit-5 interrupted-close-out case above, which the invoking skill's recovery arm owns. Never fall back to a hand-rolled `git diff` — the fallback is exactly the skipped preflight this convention exists to prevent.
 
+## Re-materializing under legitimate store dirt
+
+A close-out skill resuming its own interrupted close (exit 5, store-artifact dirt) must re-materialize the diff while the tree legitimately carries the crashed run's store edits. One recipe, cited by every resume arm, never restated:
+
+1. Set the dirt aside: `git stash push -m "agentic-flow <skill> resume — <scope>" -- <store-artifact paths>`. The message is load-bearing — a stash is state no tree inspection can see, and an anonymous one is invisible to recovery.
+2. Re-run the script. Never reuse a leftover `diff.patch` (staleness is unverifiable) and never hand-roll the diff.
+3. `git stash pop` immediately — nothing sits between the push and the pop but the script run.
+
+The recipe's own crash window: a session dying between push and pop leaves a *clean* tree, so the next run sees no exit 5 and no dirt to route. Every resume arm therefore begins by checking `git stash list` for a stash whose message names the skill and scope — pop it first, then classify tree state. If the pop conflicts (possible only when the tree changed since the crash), git keeps the stash entry and leaves conflict markers: resolve them by hand against the kept entry, `git stash drop`, re-classify — never run the script over conflict markers.
+
 ## The artifact
 
 `.agentic-flow/diff.patch` is a published contract — the `deviation-fact-checker` agent body names this exact path; do not move or rename it. It is ephemeral scratch, local and uncommitted in both stores (see [STORE.md](./STORE.md)).
