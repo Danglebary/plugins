@@ -35,7 +35,7 @@ The same labels appear in the synthesized form, applied per PRD section instead 
 
 Written by `/retro` (no args), which **restructures `retro.md` in place**. The running form is preserved in git history; the live file becomes the structured synthesis.
 
-**Committed-running-retro precondition (files store).** Git history is the *only* place the running form survives the rewrite, so `/retro` refuses to synthesize while the running retro has uncommitted content — a modified `retro.md`, or an untracked one (which has no history at all). `/done`'s gated close-out commit is what normally guarantees this; uncommitted running-retro content at PRD close means one of those gates was declined or interrupted — commit it (typically by resuming that close), then re-run `/retro`. The notion path demands no commit: page history is its guarantee.
+**Committed-running-retro precondition (files store).** Git history is the *only* place the running form survives the rewrite, so `/retro` refuses to synthesize while the running retro has uncommitted content — a modified `retro.md`, or an untracked one (which has no history at all). `/done`'s gated close-out commit is what normally guarantees this; uncommitted running-retro content at PRD close means one of those gates was declined or interrupted — commit the retro directly on the PRD branch (or, when the ticket's `done` flip is also uncommitted, resume that `/done` close and let its commit gate carry the retro), then re-run `/retro`. The notion path demands no commit: page history is its guarantee.
 
 ### Sections
 
