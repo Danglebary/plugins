@@ -19,7 +19,7 @@ Warns rather than refuses on `Open → Done` (a user who did the work without fl
 
 ## Process
 
-1. **Identify the ticket.** Default to the active PRD's ticket with status `In progress`. If multiple or none, ask.
+1. **Identify the ticket.** Default to the active PRD's ticket with status `In progress`. If none is `In progress` but a ticket reads `done` in the working tree with uncommitted store-artifact dirt, that ticket is an interrupted close-out — identify it and proceed (step 2 classifies the state). Otherwise, if multiple or none, ask.
 
 2. **Materialize the ticket diff via the shared convention.** *(Git — identical in both stores.)* Resolve the refs per [DIFF-MATERIALIZATION.md](../../_shared/DIFF-MATERIALIZATION.md): `<base>` is the PRD branch, `<head>` is the ticket branch (non-standard branching: ask the user for the refs). Run the script:
 
@@ -27,9 +27,11 @@ Warns rather than refuses on `Open → Done` (a user who did the work without fl
    bash "${CLAUDE_PLUGIN_ROOT}/scripts/materialize-diff.sh" <base> <head>
    ```
 
-   On success the diff is at `.agentic-flow/diff.patch` — the fact-checker has no git access; this artifact is its only view of the diff. On any non-zero exit, follow the shared doc's exit-code table: relay stderr and stop — never fall back to a hand-rolled `git diff`. Exit 5 (dirty tree) gets `/done`-specific interpretation before the stop:
-   - **The dirty paths include implementation** — refuse, naming the convention: *implementation is committed on the ticket branch before `/done` runs*. Print the offending paths from the script's stderr; the user commits, then re-runs `/done`.
-   - **The dirty paths are all store-artifact paths *and* the ticket's status in the working tree is already `done`** — this is `/done`'s own half-applied close-out: a previous run crashed (or was interrupted) between the store edits and the close-out commit. Don't refuse, and don't redo the close — resume at the gated close-out commit (step 10).
+   On success the diff is at `.agentic-flow/diff.patch` — the fact-checker has no git access; this artifact is its only view of the diff. On any non-zero exit, follow the shared doc's exit-code table: relay stderr and stop — never fall back to a hand-rolled `git diff`. Exit 5 (dirty tree) is the one exit `/done` interprets before stopping. Classify the dirty paths first — **store-artifact paths are the files-store column of STORE.md's artifact map** (`docs/prds/**`, `docs/adr/**`, `docs/spikes/**`, `docs/reviewers.md`, `CONTEXT.md`); everything else is implementation:
+   - **Any implementation path is dirty** — refuse, naming the convention: *implementation is committed on the ticket branch before `/done` runs*. Print the implementation paths; the user commits *those paths only* — store-artifact dirt, if any, stays in the tree: it is an interrupted close-out's resume signal, and sweeping it into an implementation commit destroys it. Then re-run `/done`.
+   - **Only store-artifact paths are dirty** — `/done`'s own interrupted close-out. Don't refuse. Store edits happen in step order (deviations → retro entry → flip), so the tree records how far the crashed run got:
+     - The `done` flip is already in the tree → every store edit landed (the flip is last) — resume directly at the gated close-out commit (step 10).
+     - The flip is absent → resume the close from step 3, treating each store-writing step as idempotent: apply only what's absent — never append a second retro entry for the ticket (check for its `## Ticket NNN` heading first), never re-apply deviations edits already in the tree. The crashed run's conversational output (ADR decisions, the outcome label) died with its session; re-derive it at those gates. To re-materialize the diff for the resumed fact-check, set the store dirt aside for the script's preflight: `git stash push -- <store-artifact paths>`, re-run the script, `git stash pop` — never reuse a leftover `diff.patch` (staleness is unverifiable) and never hand-roll the diff.
 
 3. **Invoke `agentic-flow:deviation-fact-checker`** with, at minimum:
    - The diff artifact path (`.agentic-flow/diff.patch`)
@@ -78,10 +80,10 @@ Warns rather than refuses on `Open → Done` (a user who did the work without fl
 9. **Flip the ticket** status from `In progress` to `Done`. Ordering is strict: **read the ticket → apply the status edit → only then run git commands** — never batch the store edit in parallel with git (see STORE.md; a failed edit inside a parallel batch once cascaded into ~20 cancelled git calls and an abandoned session).
 
 10. **Commit the close-out edits (gated).** *(Files store only — notion's store edits are property/body updates independent of git, nothing to commit; proceed directly to step 11.)* Enumerate every store edit this invocation made — the ticket file (materialized deviations + the `done` flip), the running retro, any ADR minted at step 6 — and offer one commit on the ticket branch: *"Commit the close-out edits (`<paths>`) on the ticket branch?"* Rules:
-    - The set is *whatever this invocation edited*, never a fixed list. Stage the enumerated paths explicitly (`git add <path> <path> …`) — never `-A`, never `git add .`.
-    - Re-entry: when step 2 detected a half-applied close-out, resume *here* — the close-out edits already sit in the tree, so enumerate from the dirty store-artifact paths and re-offer this commit, then continue to step 11.
+    - **Enumerate from `git status` over the store-artifact paths, including untracked ones.** A minted ADR and a first-ticket `retro.md` are *new* files — the diff script's exit-5 stderr can never name them (its dirty check is tracked-only by design), so never enumerate from a refusal's output. Stage the enumerated paths explicitly (`git add <path> <path> …`) — never `-A`, never `git add .`. The set is *whatever this close edited or created*, never a fixed list.
+    - Re-entry: when step 2 detected an interrupted close-out, resume *here* once every close-out artifact is in place — and because the resumed run didn't author these edits, show their content with the offer (the working-tree changes to the enumerated paths, new files included), not just the path names. The user confirms it matches the close they remember interrupting; anything unexpected stops here.
     - On accept: commit; the tree is clean for whichever arm of step 11 follows.
-    - On decline: stop, and state the wedge plainly — the ticket reads `Done` but the close-out edits are uncommitted; the merge can't proceed, and switching branches would carry the edits along or lose them. Commit or stash these paths before leaving the branch; re-running `/done` resumes at this commit.
+    - On decline: stop, and state the wedge plainly — the ticket reads `Done` but the close-out edits are uncommitted; the merge can't proceed, and switching branches will either carry the edits into the target branch or refuse outright (git never silently drops them) — either way they block work somewhere they don't belong. Commit or stash these paths before leaving the branch; re-running `/done` resumes at this commit.
 
 11. **Fork: merge now, or defer to the refactor pass (gated).** *(Git — identical in both stores.)* Read the merge convention from the config / the repo's CLAUDE.md (don't improvise it), then present exactly two paths and wait:
     - **Merge now — explicitly skipping the per-ticket refactor pass.** Say so in the offer: accepting means no `/improve-codebase-architecture` pass runs for this ticket before the merge. On accept: merge the ticket branch into the PRD branch per the convention (`--no-ff`), run the repo's verification (build + tests), and delete the ticket branch only after green. If verification fails, stop and surface it — don't delete the branch.
@@ -90,8 +92,10 @@ Warns rather than refuses on `Open → Done` (a user who did the work without fl
 
 ## Refusing to run
 
-- If the ticket's status is already `Done` *and that flip is committed* (files) or recorded (notion), refuse. Suggest checking git history if the user wants to know what happened.
-- An uncommitted `done` flip plus store-artifact-path dirt is **not** an already-closed ticket — it's an interrupted close-out (step 2's second exit-5 case). Resume at the gated close-out commit (step 10) instead of refusing.
+- If the ticket's status is already `Done` *and that flip is committed* (files) or recorded (notion), check the merge before refusing — `Done`-but-unmerged is the *normal* resting state of step 11's defer arm, not a closed chapter:
+  - **Ticket branch merged into the PRD branch (or already deleted)** — fully closed. Refuse; suggest checking git history if the user wants to know what happened.
+  - **Ticket branch exists and is unmerged** — name the state ("ticket NNN is closed but its branch is unmerged — the deferred merge never happened") and re-present the step-11 fork: run `/improve-codebase-architecture` (its close-out offer owns the merge), or merge now per the convention. The lifecycle's last gate is re-enterable from every resting state — a declined or forgotten merge must never orphan the branch.
+- An uncommitted `done` flip plus store-artifact-path dirt is **not** an already-closed ticket — it's an interrupted close-out (step 2's store-artifact-only case). Resume at the gated close-out commit (step 10) instead of refusing.
 
 ## Anti-patterns
 

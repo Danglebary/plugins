@@ -17,6 +17,12 @@ depends_on: [001, 002]
 - [ ] A deferral that belongs to no ticket in the active PRD is banked as an Idea, and idea-banked deferrals are included in the next pass's brief inputs so reviewers don't re-propose them.
 - [ ] `/improve` materializes its diff via the shared convention and carries no stacked-mode or self-authored diff prose.
 
+## Implementation notes
+
+### Deferred steers
+
+- From ticket 002's refactor pass: DIFF-MATERIALIZATION.md mandates the planning-artifact hunk label for *every* brief that hands a files-store diff to a reviewer agent — `/improve`'s step-4 reviewer briefs must carry it (ticket 002 added it to `/done`'s fact-checker brief only; the label's path boundary is now pinned in the shared doc).
+
 ## Deviations
 
 _None yet._

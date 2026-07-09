@@ -55,7 +55,7 @@ Threshold: a deviation is captured when implementation diverges from spec at the
 
 Format: free-form prose, one item per deviation, ideally referencing the PRD section it touches. Loose structure because the agent appends as work happens.
 
-**Refactor marker.** Seam-level changes from `/improve-codebase-architecture` (the per-ticket refactor pass recommended by `/done`) are captured in this same section, with a `(refactor)` prefix on the line — e.g. `(refactor) Extracted Session validation into a deep module to consolidate cookie-vs-DB checks.` The marker lets `/retro`'s synthesis distinguish refactor deviations from feature deviations and group them into the retro's optional `## Refactor` section. The same threshold applies: refactor entries capture seam-level moves, not internal cleanups.
+**Refactor marker.** Seam-level changes from `/improve-codebase-architecture` (the per-ticket refactor pass reached via the defer arm of `/done`'s close-out fork) are captured in this same section, with a `(refactor)` prefix on the line — e.g. `(refactor) Extracted Session validation into a deep module to consolidate cookie-vs-DB checks.` The marker lets `/retro`'s synthesis distinguish refactor deviations from feature deviations and group them into the retro's optional `## Refactor` section. The same threshold applies: refactor entries capture seam-level moves, not internal cleanups.
 
 Initial placeholder body (written by `/to-tickets`): `_None yet._`
 

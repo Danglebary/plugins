@@ -18,6 +18,12 @@ depends_on: [001, 002]
 - [ ] Re-run after a crash between the synthesis rewrite and its commit resumes at the gated commit — no refusal, no double synthesis.
 - [ ] `/retro` materializes the PRD diff via the shared convention; the retro format doc documents the committed-running-retro precondition.
 
+## Implementation notes
+
+### Deferred steers
+
+- From ticket 002's refactor pass: DIFF-MATERIALIZATION.md mandates the planning-artifact hunk label for *every* brief that hands a files-store diff to the fact-checker — `/retro`'s PRD-scope fact-checker brief must carry it (ticket 002 added it to `/done`'s brief only; the label's path boundary is now pinned in the shared doc). A PRD-scope diff is *guaranteed* to contain store hunks (every ticket's committed close-out edits), so the label is load-bearing there, not decorative.
+
 ## Deviations
 
 _None yet._
