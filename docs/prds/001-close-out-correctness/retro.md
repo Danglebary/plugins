@@ -41,3 +41,9 @@ Ticket 003's encoding drift recurred at this ticket's own start — the flip wro
 **Outcome**: Exact match
 
 Config that only an LLM reads as prose makes key removal migration-free: with no parser anywhere, a stale key is inert by construction, and "tolerate old repos" reduced to one stated sentence instead of compatibility behavior. The merge-key comment's consumer list had rotted silently — it named `/next-ticket`, which only routes merges and never reads the convention — so comments naming consumers need re-verification at every edit, not appending. The clean-tree preflight surfaced its own side effect: unrelated working-tree dirt (the `research_opener` enable) must ride the ticket branch as a rider commit, with the Deviations section as the honesty valve.
+
+## Ticket 008 — Branch-aware banking and store visibility
+
+**Outcome**: Extended
+
+Prose git recipes written from memory would have shipped a real defect: only live probes against the repo's own branch layout revealed that git globs disagree about `/` (`for-each-ref` stops at it; `git branch --list` and `ls-remote` cross it and pick up ticket branches) — the standing research opener paid for itself on its first prose-only ticket. Consuming an authority under a new consumer class (sweeps that enumerate names rather than test a known link) forced the authority to grow a rule it didn't know it needed, and the uniform "binds every consumer" observation rule split into a two-tier policy once advisory consumers arrived.
