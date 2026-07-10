@@ -13,3 +13,5 @@ Each bucket folder has a `README.md` that lists every skill in the bucket with a
 Reference docs in `skills/_shared/` are referenced from individual skills via `../../_shared/<filename>.md` (two `..` — SKILL.md sits two levels below `skills/`). They are not skills and do not appear in `plugin.json`. Format docs use the `<NAME>-FORMAT.md` naming convention; principle docs (cross-cutting rules applying across multiple skills) use `<NAME>-PRINCIPLE.md`.
 
 Load-bearing design rules live in the "Design notes" section of the top-level `README.md`. Skills should not silently deviate from them.
+
+Corpus-wide authoring rule: a recommendation is never offered without its reasoning and why it beats the alternatives. Skill prose that recommends an arm, a label, or a next step names what favors it and what the losing option would cost — a bare recommendation invites rubber-stamping instead of an informed accept.

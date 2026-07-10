@@ -11,12 +11,9 @@ Skills name artifacts and operations — a spec's Status, the active spec, the G
 ```toml
 [branching]
 # merge = "no-ff"
-
-[ticket_start]
-# research_opener = true
 ```
 
-This file is the workflow's **config** — one discoverable toml (merge convention, ticket-start research opener; future options append here). Skills update it as configuration choices materialize.
+This file is the workflow's **config** — one discoverable toml (merge convention; future options append here). Skills update it as configuration choices materialize.
 
 **The config read contract**: skills read this file as prose and consult only the keys they name — nothing parses it programmatically. A retired or unknown key, and any leftover comment prose around it, is inert: ignored, never a refusal, and never live instruction. A skill that finds config prose contradicting its own published behavior follows its behavior, not the prose.
 
@@ -44,14 +41,14 @@ Skills name lifecycle states in capitalized prose: specs move `Drafting → Open
 | Branch link | implicit — the branch name prefixes the spec directory name: `spec-` + `<NNN>-<slug>`. **Legacy fallback**: if `spec-<NNN>-<slug>` doesn't exist (local or remote) but `prd-<NNN>-<slug>` does, the link resolves to the legacy branch — a store migrated from the PRD era keeps its in-flight branches under their birth names; branches are never renamed to satisfy the link |
 | Spike | `docs/spikes/<slug>.md` |
 | Idea | `docs/specs/ideas/<slug>.md`, un-numbered |
-| Abandoning | move the file to `_abandoned/` (number stays reserved) |
+| Abandoning | move the file to `_abandoned/` (number stays reserved) — the spec-level recipe is [SPEC-FORMAT.md](./SPEC-FORMAT.md)'s "Abandoned specs" section |
 | Scratch (`diff.patch`, handoffs) | `.agentic-flow/`, never committed (see below) — it's a view of the git diff, about the code, so it stays local |
 
 The artifact *content* — section headings, ticket voice, deviation threshold, retro shape — comes from the FORMAT docs and [ABSTRACTION-LEVELS-PRINCIPLE.md](./ABSTRACTION-LEVELS-PRINCIPLE.md). This map only decides where that content sits.
 
 ## Branch-link state tests
 
-Two predicates over the branch link route skill preflights. This is their single home; consumers keep inline copies at their decision points, each citing here (the ADR-0002 placement shape: consulted per-run at a decision point → inline with citation). Two input rules precede the predicates — the shape gate binds every consumer; the remote-observation rule binds by tier:
+Two predicates over the branch link route skill preflights. This is their single home; consumers keep inline copies at their decision points, each citing here — per the **placement test**: prose consulted per-run at a decision point is inlined with a citation to its authority; prose entered rarely and deliberately gets a single home its consumers cite. Inline copies form a deliberate sync-set with their authority — a change to the authority fans out to every copy. Two input rules precede the predicates — the shape gate binds every consumer; the remote-observation rule binds by tier:
 
 - **Shape gate.** A branch-link value entering any git command must match `spec-<NNN>-<slug>` or legacy `prd-<NNN>-<slug>` — digits, kebab-case slug, no whitespace, never `-`-leading or option-shaped. The link derives from the spec directory name (already repo-controlled), so a non-conforming value is **refused and surfaced as unexpected store shape** — never routed as absent or half-landed, never interpolated into a command.
 - **Remote observation — two tiers.** "Local or remote" means observed live — `git ls-remote`, or a fetch first — never possibly-stale remote-tracking refs alone. The asymmetry is the reason: a stale view makes the landed test fail safe (a spurious refusal), but the unmerged test fail *unsafe* — a spec branch created or advanced on the remote escapes the check in exactly the state it exists to refuse. Ancestry (`git merge-base --is-ancestor`) anchors on the freshly-observed remote tip of the resolved default branch when a remote exists, the local tip otherwise. How strictly the rule binds follows from what a failing test does:

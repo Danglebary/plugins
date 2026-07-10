@@ -29,9 +29,16 @@ Per-skill state contracts are documented in each skill's `## State contract` sub
 
 ## Abandoned specs
 
-Abandoned specs are moved to `docs/specs/_abandoned/<NNN>-<slug>/` (preserving the full spec directory). Numbers stay immutable across both the active and `_abandoned/` directories — numbering algorithms (e.g. `/to-spec`'s "highest existing prefix + 1") glob both locations and also scan `spec-<NNN>-<slug>` and legacy `prd-<NNN>-<slug>` branch names, local and remote, so a spec in flight on its branch keeps its number reserved from any checkout (the enumeration rule in [STORE.md](./STORE.md)'s branch-link state tests).
+Abandoning a spec is a manual recipe — no skill performs it, and this section is its one home; skills and docs that mention abandonment cite here:
 
-Preserving abandoned specs is intentional: what didn't pan out is often as informative as what shipped.
+1. Move the full spec directory to `docs/specs/_abandoned/<NNN>-<slug>/` (`spec.md`, `tickets/`, any `retro.md` — everything moves together).
+2. Clear the active pointer if it names this spec (delete `docs/specs/.active`).
+3. If the spec has a branch (`spec-<NNN>-<slug>`, or its legacy `prd-<NNN>-<slug>` twin), commit the relocation on that branch and merge it into the default branch, so the abandoned spec lands in preserved form. **Never a bare branch delete** — the branch carries the spec's planning artifacts, and a deleted unmerged branch leaves them recoverable only from the reflog, which expires.
+4. A spec with no branch yet (abandoned while `Drafting`) has nothing to merge: commit the relocation on the branch that carries the draft.
+
+Numbers stay immutable across both the active and `_abandoned/` directories — numbering algorithms (e.g. `/to-spec`'s "highest existing prefix + 1") glob both locations and also scan `spec-<NNN>-<slug>` and legacy `prd-<NNN>-<slug>` branch names, local and remote, so a spec in flight on its branch keeps its number reserved from any checkout (the enumeration rule in [STORE.md](./STORE.md)'s branch-link state tests).
+
+Preserving abandoned specs is intentional: what didn't pan out is often as informative as what shipped. (Tickets abandoned individually move to `tickets/_abandoned/` — [TICKET-FORMAT.md](./TICKET-FORMAT.md)'s rule; this recipe is spec-level.)
 
 ## Sibling vehicles — ideas and spikes
 

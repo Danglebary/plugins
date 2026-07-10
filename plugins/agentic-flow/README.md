@@ -48,8 +48,8 @@ LOOP per ticket:
   6. /next-ticket                               → recommends next ready ticket
   7. (work the ticket: /tdd)
   8. /done                                      → fact-checks deviations, flips status, appends retro entry,
-                                                  commits close-out edits (gated), forks: merge now or defer
-  9. /improve-codebase-architecture (if deferred) → per-ticket refactor pass with reviewer subagents
+                                                  commits close-out edits (gated), forks: refactor pass or merge
+  9. /improve-codebase-architecture (if chosen)   → per-ticket refactor pass with reviewer subagents
      (accept the gated close-out offer)         → merge ticket branch --no-ff, verify green, delete branch
 
 10. /retro                                      → fact-checks the spec diff, synthesizes the retro, flips spec → Done,
@@ -69,7 +69,7 @@ LOOP per ticket:
 - **[to-tickets](./skills/engineering/to-tickets/SKILL.md)** — Break a spec into dependency-ordered vertical-slice tickets. Flips spec `Drafting → Open` and ends at the gated spec-branch bootstrap — cut from the default branch, planning artifacts committed as its first commit.
 - **[next-ticket](./skills/engineering/next-ticket/SKILL.md)** — Recommend the next ready ticket within the current spec. Computes blocked from dependencies.
 - **[tdd](./skills/engineering/tdd/SKILL.md)** — Test-driven development with a red-green-refactor loop. Builds features or fixes bugs one vertical slice at a time.
-- **[done](./skills/engineering/done/SKILL.md)** — Close the current ticket. Invokes the deviation-fact-checker against the ticket diff, flips status, appends a retro entry, commits the close-out edits at one gated offer, then forks: merge now, or defer to `/improve-codebase-architecture`'s refactor pass.
+- **[done](./skills/engineering/done/SKILL.md)** — Close the current ticket. Invokes the deviation-fact-checker against the ticket diff, flips status, appends a retro entry, commits the close-out edits at one gated offer, then forks: run `/improve-codebase-architecture`'s refactor pass, or merge now — one arm recommended from the diff's nature.
 - **[improve-codebase-architecture](./skills/engineering/improve-codebase-architecture/SKILL.md)** — Per-ticket refactor pass. Dispatches reviewer agents listed in the Reviewers manifest against the just-closed ticket's diff, merges findings through the deepening framework, captures refactor changes in the ticket's `## Deviations` with a `(refactor)` marker. Every pass ends at the gated close-out (merge offered when a ticket branch is live); outside-spec deferrals bank as Ideas.
 - **[retro](./skills/engineering/retro/SKILL.md)** — Synthesize the running retro into the structured spec-close form. Fact-checks the full spec diff, flips spec `Open → Done`, commits the close-out edits at one gated offer, and ends with the gated spec → default-branch merge — re-enterable until it lands.
 
