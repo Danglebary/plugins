@@ -31,7 +31,7 @@ Per-skill state contracts are documented in each skill's `## State contract` sub
 
 ## Abandoned PRDs
 
-Abandoned PRDs are moved to `docs/prds/_abandoned/<NNN>-<slug>/` (preserving the full PRD directory; notion store: flip `Status = Abandoned`). Numbers stay immutable across both the active and `_abandoned/` directories — numbering algorithms (e.g. `/to-prd`'s "highest existing prefix + 1") glob both locations (notion store: the max-`Number` query includes `Abandoned` rows).
+Abandoned PRDs are moved to `docs/prds/_abandoned/<NNN>-<slug>/` (preserving the full PRD directory; notion store: flip `Status = Abandoned`). Numbers stay immutable across both the active and `_abandoned/` directories — numbering algorithms (e.g. `/to-prd`'s "highest existing prefix + 1") glob both locations (notion store: the max-`Number` query includes `Abandoned` rows) and also scan `prd-<NNN>-<slug>` branch names, local and remote, so a PRD in flight on its branch keeps its number reserved from any checkout (the enumeration rule in [STORE.md](./STORE.md)'s branch-link state tests).
 
 Preserving abandoned PRDs is intentional: what didn't pan out is often as informative as what shipped.
 
