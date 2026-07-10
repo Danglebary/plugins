@@ -1,5 +1,5 @@
 ---
-status: in-progress
+status: done
 depends_on: []
 ---
 
@@ -25,4 +25,4 @@ The plugin serves the files store only, per ADR 0003. A reader of any skill or s
 ## Deviations
 
 - **The `[store]` config block is gone entirely, not just de-notioned.** With the resolution ladder deleted, no skill reads `store.backend` — so the setup template no longer ships a `[store]` block, and this repo's live `settings.toml` dropped the whole block rather than only its notion comment lines. The config surface is now workflow-only (`[branching]`, `[ticket_start]`); the deliberately-retained stale `[branching] strategy` block is untouched.
-- **Criterion 6's "README" read as every marketplace-facing headline.** Beyond the plugin README and CONTEXT.md, the repo-root `README.md` and `.claude-plugin/marketplace.json` carried the same two-backend headline (outside the criterion-1 grep path) and were updated to files-only. `agentic-flow-review.md` and the docs/ planning history keep their notion mentions as historical record.
+- **Criterion 6's "README" read as every marketplace-facing headline.** Beyond the plugin README and CONTEXT.md, the repo-root `README.md`, `.claude-plugin/marketplace.json`, and the repo-root `CONTEXT.md` preamble carried the same two-backend headline (outside the criterion-1 grep path) and were updated to files-only — the glossary preamble caught by the close-out fact-check after contradicting that file's own Store backend entry. `agentic-flow-review.md` and the docs/ planning history keep their notion mentions as historical record.

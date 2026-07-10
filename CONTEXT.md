@@ -1,6 +1,6 @@
 # danglebary-plugins
 
-A Claude Code plugin marketplace repo. Its main plugin, `agentic-flow`, ships a PRD → Ticket → Retro workflow with ADRs, a living Glossary, and refactor-time reviewer agents; planning artifacts live behind a store seam with files and Notion backends. This repo dogfoods that workflow on its own development.
+A Claude Code plugin marketplace repo. Its main plugin, `agentic-flow`, ships a PRD → Ticket → Retro workflow with ADRs, a living Glossary, and refactor-time reviewer agents; planning artifacts live in a per-repo store of in-repo markdown files. This repo dogfoods that workflow on its own development.
 
 ## Language
 
