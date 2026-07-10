@@ -13,7 +13,7 @@ If a question can be answered by exploring the codebase, explore the codebase in
 
 > **Protected behaviors — do not weaken in any rewrite of this skill.** Code-grounding (explore instead of asking; cross-reference user claims against code) and the per-question recommendation are this skill's two demonstrably load-bearing mechanics — each has overturned a PRD's central premise before tickets were cut. Any future edit to this file keeps both mandatory. These behaviors are store-independent — code stays in git and grilling is grounded against it.
 
-Resolve the store first — see [STORE.md](../../_shared/STORE.md).
+Store artifact paths: [STORE.md](../../_shared/STORE.md).
 
 ## Recommendation discipline
 
@@ -42,7 +42,7 @@ The skill behaves the same way in both stages — only the depth of questioning 
 
 Look for existing documentation during grilling: the **Glossary** (the living domain vocabulary) and the **ADRs** (cross-PRD durable decisions) — both live in the store.
 
-Create artifacts lazily — only when you have something to write. Files store: if `CONTEXT.md` doesn't exist, create it when the first term is resolved; if `docs/adr/` doesn't exist, create it when the first ADR is needed. (Notion store: the databases already exist from setup; rows are created lazily.)
+Create artifacts lazily — only when you have something to write: if `CONTEXT.md` doesn't exist, create it when the first term is resolved; if `docs/adr/` doesn't exist, create it when the first ADR is needed.
 
 Format references: [CONTEXT-FORMAT.md](../../_shared/CONTEXT-FORMAT.md), [ADR-FORMAT.md](../../_shared/ADR-FORMAT.md).
 

@@ -2,9 +2,9 @@
 
 The retro is a two-pass document paired to each PRD. It accumulates per-ticket entries during the PRD's lifecycle, then is restructured in place at PRD close.
 
-**Storage.** Entry format, outcome labels, and the synthesized structure apply in both stores (see [STORE.md](./STORE.md)). **Files store**: the file below. **Notion store**: the running retro lives as a section in the PRD row's body — see [NOTION-RESOLVER.md](./NOTION-RESOLVER.md).
+**Storage.** The file path below is the encoding; the artifact map is [STORE.md](./STORE.md)'s.
 
-## File path (files store)
+## File path
 
 `docs/prds/<NNN>-<slug>/retro.md`
 
@@ -35,7 +35,7 @@ The same labels appear in the synthesized form, applied per PRD section instead 
 
 Written by `/retro` (no args), which **restructures `retro.md` in place**. The running form is preserved in git history; the live file becomes the structured synthesis.
 
-**Committed-running-retro precondition (files store).** Git history is the *only* place the running form survives the rewrite, so `/retro` refuses to synthesize while the running retro has uncommitted content — a modified `retro.md`, or an untracked one (which has no history at all). `/done`'s gated close-out commit is what normally guarantees this; uncommitted running-retro content at PRD close means one of those gates was declined or interrupted — commit the retro directly on the PRD branch (or, when the ticket's `done` flip is also uncommitted, resume that `/done` close and let its commit gate carry the retro), then re-run `/retro`. The notion path demands no commit: page history is its guarantee.
+**Committed-running-retro precondition.** Git history is the *only* place the running form survives the rewrite, so `/retro` refuses to synthesize while the running retro has uncommitted content — a modified `retro.md`, or an untracked one (which has no history at all). `/done`'s gated close-out commit is what normally guarantees this; uncommitted running-retro content at PRD close means one of those gates was declined or interrupted — commit the retro directly on the PRD branch (or, when the ticket's `done` flip is also uncommitted, resume that `/done` close and let its commit gate carry the retro), then re-run `/retro`.
 
 ### Sections
 
@@ -98,4 +98,4 @@ Extracted `validateSession` into a deep module (ticket 002) and pulled cookie-si
 
 - **Don't write `## Next steps`, `## Future work`, or `## Roadmap`.** Strictly backward-looking. Forward-looking work goes into a new PRD.
 - **Don't restructure prematurely.** The running form lives until `/retro` is invoked at PRD close. Don't reorganize partway.
-- **Don't drop the running form without git committing it.** The running entries are the raw material for synthesis; git history is the only place they survive after restructure. `/retro` enforces this as a precondition — it refuses to synthesize over an uncommitted running retro (files store).
+- **Don't drop the running form without git committing it.** The running entries are the raw material for synthesis; git history is the only place they survive after restructure. `/retro` enforces this as a precondition — it refuses to synthesize over an uncommitted running retro.

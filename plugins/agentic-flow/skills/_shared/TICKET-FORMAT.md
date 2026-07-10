@@ -6,15 +6,15 @@ Tickets are vertical slices: end-to-end behavior across whatever layers they tou
 
 Tickets are written in **behavioral voice**: Goal and Acceptance criteria describe what changes for a user or caller, not how the code is shaped. Implementation prescription belongs only when load-bearing — see [ABSTRACTION-LEVELS-PRINCIPLE.md](./ABSTRACTION-LEVELS-PRINCIPLE.md).
 
-**Storage.** The body sections, voice, and deviation threshold here apply in both stores (see [STORE.md](./STORE.md)). The file path and frontmatter below are the **files store** encoding; in the **notion store** a ticket is a row in the Tickets database — `PRD` relation for the parent, `Depends on` relation for dependencies, `Status` select for state — whose body holds the same sections. See [NOTION-RESOLVER.md](./NOTION-RESOLVER.md).
+**Storage.** The file path and frontmatter below are the encoding; the artifact map is [STORE.md](./STORE.md)'s.
 
-## File path (files store)
+## File path
 
 `docs/prds/<NNN>-<slug>/tickets/<NNN>-<slug>.md`
 
 `<NNN>` is PRD-scoped, three-digit zero-padded (each PRD restarts at `001`). `<slug>` is kebab-case.
 
-## Frontmatter (files store)
+## Frontmatter
 
 ```yaml
 ---
@@ -31,7 +31,7 @@ The dependency graph must be acyclic. `/to-tickets` validates acyclicity at writ
 
 ID and title are encoded in the filename — never duplicated in frontmatter.
 
-Abandoned tickets are moved to `tickets/_abandoned/` (notion store: flip `Status = Abandoned`). Numbers stay immutable across both the active and `_abandoned/` directories (notion store: numbering queries include `Abandoned` rows).
+Abandoned tickets are moved to `tickets/_abandoned/`. Numbers stay immutable across both the active and `_abandoned/` directories.
 
 ## Body sections
 
@@ -98,6 +98,6 @@ Session lookups must go through the existing `db.session` module (do not introdu
 - **Don't make horizontal-slice tickets.** ("Set up routing", "Add types", "Wire up middleware") — these don't deliver behavior. Reframe as vertical slices that include the layers needed. A ticket should make the answer to "what new behavior does this give us?" obvious in one sentence.
 - **Don't write tickets in implementation voice.** ("Change this function call to use map instead of forEach", "add an `if` check here", "rename `parseFoo` to `parseInput`") — these are code-shape directives, not behavioral specs. Reframe as the behavior the change should produce, or drop the line entirely. See [ABSTRACTION-LEVELS-PRINCIPLE.md](./ABSTRACTION-LEVELS-PRINCIPLE.md).
 - **Don't capture implementation noise in `## Deviations`.** ("Renamed a private helper", "ran the formatter", "extracted an internal function for clarity") — below threshold. If the seam didn't move and observable behavior didn't change, it isn't a deviation.
-- **Don't add status values not in the spec.** No `blocked`, `review`, etc. — keep the state machine minimal. (`Abandoned` is structural in the files store — the `_abandoned/` move — and a `Status` value only in the notion store.)
+- **Don't add status values not in the spec.** No `blocked`, `review`, etc. — keep the state machine minimal. (`Abandoned` is structural — the `_abandoned/` move — never a frontmatter value.)
 - **Don't put deviation rationales in the implementation notes.** Notes are written before impl. Deviations are appended after.
 - **Don't reference tickets in other PRDs.** Tickets are PRD-scoped. Cross-PRD work means a new PRD, not a ticket linkage.

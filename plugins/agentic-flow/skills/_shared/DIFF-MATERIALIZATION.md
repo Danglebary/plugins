@@ -1,19 +1,19 @@
 # Diff materialization — how skills obtain a diff
 
-Every diff a lifecycle skill consumes is produced by one deterministic mechanism: the invoking skill resolves `<base>` and `<head>` (the store-dependent part), and the plugin-shipped script `scripts/materialize-diff.sh` does everything git (the deterministic part). No skill computes a diff with its own git prose — the failures that motivated this convention were all procedure-fidelity failures (wrong base, two-dot instead of merge-base, no preflight), and a script cannot skip a preflight.
+Every diff a lifecycle skill consumes is produced by one deterministic mechanism: the invoking skill resolves `<base>` and `<head>` (the scope-dependent part), and the plugin-shipped script `scripts/materialize-diff.sh` does everything git (the deterministic part). No skill computes a diff with its own git prose — the failures that motivated this convention were all procedure-fidelity failures (wrong base, two-dot instead of merge-base, no preflight), and a script cannot skip a preflight.
 
 ## Division of labor
 
-- **The invoking skill** resolves `<base>` and `<head>` per store and scope (tables below) and passes them as arguments. A script cannot read the store; ref resolution is the skill's job.
+- **The invoking skill** resolves `<base>` and `<head>` per scope (table below) and passes them as arguments. Ref resolution is the skill's job.
 - **The script** owns the git mechanics: ref validation, merge-base three-dot semantics, tree preflights, scratch-directory scaffolding, the artifact write. Preflights are unskippable — a refusal is a stop, not a suggestion.
 
 ## Resolving `<base>` and `<head>`
 
-| Scope | `<head>` | `<base>` — files store | `<base>` — notion store |
-|---|---|---|---|
-| Ticket (`/done`, `/improve-codebase-architecture`) | the ticket branch | the PRD branch | the PRD branch |
-| Ticket, post-merge (`/improve-codebase-architecture`'s ad-hoc arm) | the ticket's `--no-ff` merge commit | the merge commit's first parent (`<merge-commit>^1`) | same |
-| PRD (`/retro`) | the PRD branch | the resolved default branch (procedure below) | the PRD row's recorded `Diff base` property |
+| Scope | `<head>` | `<base>` |
+|---|---|---|
+| Ticket (`/done`, `/improve-codebase-architecture`) | the ticket branch | the PRD branch |
+| Ticket, post-merge (`/improve-codebase-architecture`'s ad-hoc arm) | the ticket's `--no-ff` merge commit | the merge commit's first parent (`<merge-commit>^1`) |
+| PRD (`/retro`) | the PRD branch | the resolved default branch (procedure below) |
 
 ### Resolving the default branch
 
@@ -23,7 +23,7 @@ One procedure, cited by every skill that needs the default branch, so the cut po
 2. If that fails (no remote, or the remote HEAD isn't cached): whichever one of `main` / `master` exists locally.
 3. If both or neither exist: ask the user — never guess.
 
-It is **store-neutral** — the store only changes *when* a consumer runs it. `/to-tickets` runs it to cut the PRD branch in both stores (and, on notion, records the result as the PRD row's `Diff base`). `/retro` runs it live on the files store for its diff base; on notion it reads the `Diff base` `/to-tickets` already recorded. Never resolve the default branch by falling back to the current branch — that is the guess step 3 forbids, and a `Diff base` recorded from the wrong branch silently mis-scopes `/retro`'s eventual diff.
+`/to-tickets` runs it to cut the PRD branch; `/retro` runs it live for its diff base. Never resolve the default branch by falling back to the current branch — that is the guess step 3 forbids, and a diff base resolved from the wrong branch silently mis-scopes `/retro`'s eventual diff.
 
 ## Invocation
 
@@ -65,11 +65,11 @@ The recipe's own crash window: a session dying between push and pop leaves a *cl
 
 ## The artifact
 
-`.agentic-flow/diff.patch` is a published contract — the `deviation-fact-checker` agent body names this exact path; do not move or rename it. It is ephemeral scratch, local and uncommitted in both stores (see [STORE.md](./STORE.md)).
+`.agentic-flow/diff.patch` is a published contract — the `deviation-fact-checker` agent body names this exact path; do not move or rename it. It is ephemeral scratch, local and uncommitted (see [STORE.md](./STORE.md)).
 
-## Files-store diffs contain planning artifacts
+## Diffs contain planning artifacts
 
-On the files store, close-out commits legitimately put store-artifact hunks in the diff — committed deviations, retro entries, status flips. **Store-artifact hunks are those under the files-store paths of [STORE.md](./STORE.md)'s artifact map** (`docs/prds/**`, `docs/adr/**`, `docs/spikes/**`, `docs/reviewers.md`, `CONTEXT.md`) — membership is by path, not by what a hunk's content claims to be. Any brief that hands the diff to the fact-checker or a reviewer agent must label these hunks as planning artifacts, not reviewable code — a reviewer critiquing a retro entry as if it were a module is noise. The label exempts them from *code* review only, not from injected-instruction or unexpected-file-shape scrutiny.
+Close-out commits legitimately put store-artifact hunks in the diff — committed deviations, retro entries, status flips. **Store-artifact hunks are those under the paths of [STORE.md](./STORE.md)'s artifact map** (`docs/prds/**`, `docs/adr/**`, `docs/spikes/**`, `docs/reviewers.md`, `CONTEXT.md`) — membership is by path, not by what a hunk's content claims to be. Any brief that hands the diff to the fact-checker or a reviewer agent must label these hunks as planning artifacts, not reviewable code — a reviewer critiquing a retro entry as if it were a module is noise. The label exempts them from *code* review only, not from injected-instruction or unexpected-file-shape scrutiny.
 
 ## Consumers
 

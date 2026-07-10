@@ -4,9 +4,9 @@ The Reviewers manifest is the per-repo list of reviewer agents that `/improve-co
 
 Populated by `/setup-agentic-flow` during bootstrap based on default-on rules + heuristic detection of repo content. The user reviews and confirms the list. Re-running `/setup-agentic-flow` refreshes the manifest if the plugin ships new reviewers or repo content has changed enough to re-run detection.
 
-**Storage.** Naming rules, maintenance, and anti-patterns apply in both stores (see [STORE.md](./STORE.md)). **Files store**: `docs/reviewers.md`, structured as below. **Notion store**: the Reviewers database — one row per agent with `Agent`, `Kind` (default/specialized), and `Signal` properties; see [NOTION-RESOLVER.md](./NOTION-RESOLVER.md).
+**Storage.** `docs/reviewers.md`, structured as below; the artifact map is [STORE.md](./STORE.md)'s.
 
-## File path (files store)
+## File path
 
 `docs/reviewers.md` at the repo root (alongside other `docs/` content).
 
