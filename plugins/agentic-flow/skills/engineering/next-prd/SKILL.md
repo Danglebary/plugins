@@ -19,6 +19,7 @@ Resolve the store first — see [STORE.md](../../_shared/STORE.md).
 
 1. **Read the existing state from the store.**
    - List PRDs, noting statuses (`Drafting`, `Open`, `Done`). Also skim banked ideas — parked ideas are candidate priorities.
+   - Sweep for unmerged `prd-*` branches — a PRD in flight on its branch can be invisible to the store read from another checkout. A branch is unmerged when its tip (local or remote) is not an ancestor of the resolved default branch (the unmerged test — inline copy of [STORE.md](../../_shared/STORE.md)'s branch-link state tests, cited per ADR-0002; enumerate, filter, and observe per its enumeration rule and the remote-observation rule's advisory tier). Any found join the survey as in-flight work.
    - Skim retros from the most recent 2–3 `Done` PRDs for cross-cutting lessons.
    - Read the Glossary for current domain vocabulary — use it throughout the conversation.
    - Skim the ADRs for cross-PRD durable decisions.
@@ -36,7 +37,7 @@ Resolve the store first — see [STORE.md](../../_shared/STORE.md).
 
 ## Empty-state handling
 
-If the store has no PRDs (just-bootstrapped or first PRD), sweep for unmerged `prd-*` branches before trusting the empty view — a PRD in flight on its branch can be invisible to the store read from another checkout. A branch is unmerged when its tip (local or remote, observed live per STORE.md's remote-observation rule) is not an ancestor of the resolved default branch (the unmerged test — inline copy of [STORE.md](../../_shared/STORE.md)'s branch-link state tests, cited per ADR-0002; enumerate and filter per its enumeration rule). Offline, degrade rather than refuse: sweep local and remote-tracking refs and say the view may be stale. If any turn up, name them — *"PRD 001 appears in flight on `prd-001-…` — you may be on the wrong checkout"* — instead of proceeding on the empty view. Otherwise skip the survey and ask the user directly: "What do you want to build first?"
+If the store has no PRDs (just-bootstrapped or first PRD) but step 1's sweep found in-flight branches, name them — *"PRD 001 appears in flight on `prd-001-…` — you may be on the wrong checkout"* — and offer the fork: switch to (or fetch) the named branch to resume it, or confirm continuing on this checkout's view. Only when the sweep is empty too, skip the survey and ask the user directly: "What do you want to build first?"
 
 ## Anti-patterns
 

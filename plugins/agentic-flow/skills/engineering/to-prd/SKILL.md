@@ -13,7 +13,7 @@ Resolve the store first — see [STORE.md](../../_shared/STORE.md). Format refer
 
 - **PRD state required**: n/a (creates new)
 - **Ticket state required**: n/a
-- **Transition**: writes a new PRD with Status `Drafting`. Does **not** touch the active pointer — active represents what's actively being *implemented*, not what's being designed.
+- **Transition**: writes a new PRD with Status `Drafting`; the spike/idea path instead writes the banked file and (files store) ends with a gated offer to commit it on the current branch. Does **not** touch the active pointer — active represents what's actively being *implemented*, not what's being designed.
 
 ## Fit check — PRD-weight, spike-weight, or idea?
 
@@ -29,7 +29,7 @@ After writing a spike or idea (files store), offer to commit it: *"Commit the ba
 
 ## Process
 
-1. **Determine the next PRD number.** Abandoned PRDs keep their numbers reserved, so include them: files — highest `<NNN>-` prefix across `docs/prds/` AND `docs/prds/_abandoned/` (the un-numbered `ideas/` tier doesn't participate); notion — max `Number` across `Kind = PRD` rows including `Abandoned`. Both stores: take the max against `prd-<NNN>-<slug>` branch names too, local and remote, observed live when a remote exists (`git ls-remote`; offline, use local and remote-tracking refs and say the view may be stale) — a PRD in flight on its branch keeps its number reserved from any checkout. Filter enumerated names per the enumeration rule in [STORE.md](../../_shared/STORE.md)'s branch-link state tests (ticket branches `prd-<NNN>/ticket-…` never count). Use `<N+1>`, three-digit zero-padded. PRD numbers are immutable (never reused).
+1. **Determine the next PRD number.** Abandoned PRDs keep their numbers reserved, so include them: files — highest `<NNN>-` prefix across `docs/prds/` AND `docs/prds/_abandoned/` (the un-numbered `ideas/` tier doesn't participate); notion — max `Number` across `Kind = PRD` rows including `Abandoned`. Both stores: take the max against `prd-<NNN>-<slug>` branch names too, local and remote — a PRD in flight on its branch keeps its number reserved from any checkout. Enumerate, filter, and observe per [STORE.md](../../_shared/STORE.md)'s branch-link state tests (the enumeration rule; the remote-observation rule's advisory tier — a degraded view's staleness is said aloud, and the number is re-verified at `/to-tickets` before the PRD locks). Use `<N+1>`, three-digit zero-padded. PRD numbers are immutable (never reused).
 
 2. **Pick a slug.** Kebab-case, descriptive, short (3–5 words). Should match the PRD topic — e.g. `add-user-authentication`, not `auth-stuff`. The slug is one component: it feeds the PRD directory name `<NNN>-<slug>` (files store) and the branch name `prd-<NNN>-<slug>` (both stores); notion: store the bare slug in the `Slug` property.
 
