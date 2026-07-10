@@ -20,8 +20,8 @@ _Avoid_: "shared skills" without qualification (ambiguous with `skills/_shared/`
 The workflow-specific skills that move PRDs and tickets through their states and integrate code: `/to-tickets`, `/next-ticket`, `/done`, `/improve-codebase-architecture`, `/retro`. Each plugin ships its own.
 
 **Store backend**:
-Where planning artifacts (PRDs, tickets, retros, Glossary, ADRs) live — `files` (in-repo markdown) or `notion` (databases under a root page). A storage choice only; carries no workflow semantics.
-_Avoid_: "backend" for anything other than artifact storage.
+Where planning artifacts (PRDs, tickets, retros, Glossary, ADRs) live. Settled 2026-07-09 (PRD 002): `files` (in-repo markdown) is the only backend — the notion backend is removed from agentic-flow, preserved at a pinned pre-removal commit referenced in the work-workflow idea, not as a live file. A storage choice only; carries no workflow semantics.
+_Avoid_: "backend" for anything other than artifact storage; "store backend" for the Work workflow's per-artifact sourcing (Jira tickets, Notion specs) — a split the seam never expressed (ADR 0001).
 
 ## Relationships
 
@@ -32,3 +32,4 @@ _Avoid_: "backend" for anything other than artifact storage.
 ## Flagged ambiguities
 
 - "day-job vs. personal project" was initially conflated with the notion-vs-files store choice, then briefly modeled as a `settings.toml` workflow-mode axis, and settled as separate plugins (ADR 0001) once grilling showed the divergence spans the whole lifecycle layer — Jira ticket source, no-PRD track, PR-based close-out (2026-07-08).
+- "keep the notion resolver for the Work plugin" was weighed as park-the-file vs. delete-with-pinned-history and settled as delete: git history is the archive, and the Work plugin's storage gets a first-principles design rather than inheriting the resolver's shape (2026-07-09, PRD 002).
