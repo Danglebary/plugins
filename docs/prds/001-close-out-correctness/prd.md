@@ -1,5 +1,5 @@
 ---
-status: open
+status: done
 ---
 
 # Close-out correctness for the Personal workflow
