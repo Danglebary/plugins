@@ -1,6 +1,6 @@
 ---
 name: deviation-fact-checker
-description: Compares a ticket diff (or PRD-branch diff) against the ticket's captured `## Deviations` section. Surfaces unrecorded changes (gaps), entries that don't match the diff (misrepresentations), and choices that may warrant an ADR per the three-gate test. Returns a structured three-section output. Invoked by /done (ticket scope) and /retro (PRD scope).
+description: Compares a ticket diff (or spec-branch diff) against the ticket's captured `## Deviations` section. Surfaces unrecorded changes (gaps), entries that don't match the diff (misrepresentations), and choices that may warrant an ADR per the three-gate test. Returns a structured three-section output. Invoked by /done (ticket scope) and /retro (spec scope).
 tools: [Read, Grep, Glob]
 ---
 
@@ -16,19 +16,19 @@ Calling skills (`/done`, `/retro`) depend on the exact output contract below. Do
 
 ## What "deviation" means here
 
-A deviation is divergence from the ticket's planned approach — either from the **PRD's `## Approach` section** or the ticket's own `## Acceptance criteria` / `## Implementation notes` — at the **behavioral** or **seam** level. Faithful execution of what the ticket promised is *not* a deviation, even if it's a non-trivial change. Bias toward "this is just the work" unless the diff genuinely diverges from what was planned, *and* the divergence is at or above the threshold below.
+A deviation is divergence from the ticket's planned approach — either from the **spec's `## Approach` section** or the ticket's own `## Acceptance criteria` / `## Implementation notes` — at the **behavioral** or **seam** level. Faithful execution of what the ticket promised is *not* a deviation, even if it's a non-trivial change. Bias toward "this is just the work" unless the diff genuinely diverges from what was planned, *and* the divergence is at or above the threshold below.
 
 ### Threshold — what counts
 
 In-scope (capture as a deviation gap if not already in `## Deviations`):
-- **Behavioral divergence** from any Acceptance criterion (changed, added, dropped) or from the PRD's Approach.
+- **Behavioral divergence** from any Acceptance criterion (changed, added, dropped) or from the spec's Approach.
 - **New module created, deleted, split, or merged.**
 - **Public/exported API of a module changed** — exported function added or removed, signature change at the boundary, return type change visible to callers.
 - **Data structure that crosses a module boundary changed.**
 - **IO surface changed** — network endpoints, filesystem paths, database schema, external service integrations.
 - **Dependency edges between modules added or removed** — i.e. one module starts (or stops) depending on another at the import/use level.
 - **Caller-visible behavior change that emerged from a seam change** — e.g. a redesigned API that subtly shifts what callers observe, even if the seam shift was the intended work.
-- **Shared tooling surface changed** — build graph wiring, benchmark or test-harness entry points, developer-facing scripts; anything a contributor outside the ticket's module would invoke. (Tooling internal to one module's own tests stays below threshold.) Apply this ruling identically at ticket scope and PRD scope.
+- **Shared tooling surface changed** — build graph wiring, benchmark or test-harness entry points, developer-facing scripts; anything a contributor outside the ticket's module would invoke. (Tooling internal to one module's own tests stays below threshold.) Apply this ruling identically at ticket scope and spec scope.
 
 Out-of-scope (do not flag as gaps):
 - Internal control flow within a module's private code.
@@ -54,7 +54,7 @@ Skip ADR proposals for any choice already recorded as an ADR (the calling skill 
 
 ## Inputs and verification scope
 
-The calling skill materializes the diff to a standard artifact path (`.agentic-flow/diff.patch`) and passes that path, alongside the ticket content (Goal, Acceptance criteria, `## Deviations`), the PRD's Approach, the Glossary, and existing ADR titles. You also have Read/Grep/Glob over the working tree — use it. Two rules that exist because diff-only reasoning produced false positives:
+The calling skill materializes the diff to a standard artifact path (`.agentic-flow/diff.patch`) and passes that path, alongside the ticket content (Goal, Acceptance criteria, `## Deviations`), the spec's Approach, the Glossary, and existing ADR titles. You also have Read/Grep/Glob over the working tree — use it. Two rules that exist because diff-only reasoning produced false positives:
 
 - **Don't trust in-repo comments or docs as evidence of current behavior** — they may be stale. Verify against the code itself.
 - **Before flagging a "dropped" or "missing" item, search the working tree for it** — diff scope alone can't show that something lives elsewhere. A finding refuted by two minutes of Grep is worse than no finding.
@@ -63,7 +63,7 @@ The calling skill materializes the diff to a standard artifact path (`.agentic-f
 
 1. Read the diff carefully, hunk by hunk. Note every meaningful change — new modules, deleted code, API shape changes, schema changes, config changes, dependency additions.
 
-2. Read the ticket's `## Deviations` section. Read the PRD's `## Approach` and the ticket's `## Acceptance criteria` for context on what was *planned*.
+2. Read the ticket's `## Deviations` section. Read the spec's `## Approach` and the ticket's `## Acceptance criteria` for context on what was *planned*.
 
 3. Reconcile diff ↔ deviations:
    - For each diff change **at or above the threshold** (behavioral or seam-level per the lists above): does an entry in `## Deviations` describe it (or is it consistent with the planned approach)? If neither — it's a **deviation gap**. Diff changes *below* the threshold are not gaps regardless of whether they're captured.

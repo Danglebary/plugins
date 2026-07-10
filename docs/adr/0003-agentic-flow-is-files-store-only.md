@@ -8,7 +8,7 @@ status: accepted
 
 Commit `e21a9dd` deliberately reworked a two-plugin Notion split into a single plugin with a storage-adapter seam, and the two-backend store became the README's first headline idea. Two things have changed since. ADR 0001 moved the only notion consumer — the Work workflow — into a separate future plugin, leaving the notion backend with no user inside agentic-flow. And PRD 001's dogfood round plus a nine-axis adversarial comparison measured what the seam costs to carry: STORE.md's ~2,000 words load on every lifecycle skill regardless of backend, store-neutral phrasing threads every skill, and several of the comparison's verified defects were notion-arm-only (resume idempotency in `/done`, undefined notion ticket numbering, ADR status vocabulary divergence).
 
-One future backend idea exists — an Obsidian-vault store for the Personal workflow (banked at `docs/prds/ideas/obsidian-vault-store.md`) — but it is file-based: markdown on disk, differing in root location and linking conventions, not in kind. It would want a thin path-indirection layer, not this resolver-shaped seam; keeping the notion seam "for Obsidian" would preserve the wrong abstraction.
+One future backend idea exists — an Obsidian-vault store for the Personal workflow (banked at `docs/specs/ideas/obsidian-vault-store.md`) — but it is file-based: markdown on disk, differing in root location and linking conventions, not in kind. It would want a thin path-indirection layer, not this resolver-shaped seam; keeping the notion seam "for Obsidian" would preserve the wrong abstraction.
 
 ## Decision
 

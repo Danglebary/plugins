@@ -4,7 +4,7 @@ Each artifact in agentic-flow operates at a specific abstraction level. Content 
 
 ## The three levels
 
-**Behavioral.** What the system does for a user or caller — the level a product person or external integrator would describe the system at. Lives in PRDs (Problem, Goals, Approach), tickets (Goal, Acceptance criteria), and retros. Documentation at this level tracks *how the system works* over time.
+**Behavioral.** What the system does for a user or caller — the level a product person or external integrator would describe the system at. Lives in specs (Problem, Goals, Approach), tickets (Goal, Acceptance criteria), and retros. Documentation at this level tracks *how the system works* over time.
 
 **Seam-level.** Where module boundaries are drawn, what their public APIs look like, how logical domains compose. This is where software engineers actually design — boundaries between modules and logical domains are the load-bearing surface for codebase evolution; without careful design here, codebases stop scaling and end up needing rewrites. Lives in ticket Deviations (when seams shift during implementation) and ADRs (when seam choices are consequential enough to record as decisions).
 
@@ -34,7 +34,7 @@ In-scope (capture as a deviation):
 - a seam change that produces a caller-visible behavior change
 - shared tooling surface changed (build graph wiring, benchmark or test-harness entry points, developer-facing scripts) — anything a contributor working outside the ticket's module would invoke or depend on
 
-Tooling-surface changes internal to one module's own tests or scaffolding stay below threshold. This ruling is scope-independent: the same change gets the same verdict at ticket scope (`/done`) and PRD scope (`/retro`) — if it passed one, it must not flag at the other.
+Tooling-surface changes internal to one module's own tests or scaffolding stay below threshold. This ruling is scope-independent: the same change gets the same verdict at ticket scope (`/done`) and spec scope (`/retro`) — if it passed one, it must not flag at the other.
 
 Out-of-scope (don't capture):
 - internal control flow within a module's private code
@@ -47,14 +47,14 @@ For tickets entirely inside one module that touch no seams (e.g. *"add validatio
 
 ### Rationale placement — comments for code-shape, docs for behavior over time
 
-Code-shape rationale goes in inline comments, co-located with the code it justifies. *Why this module is overloaded this way, why this pattern is used here, why this private function returns what it returns, why we use approach X over Y in this spot* — comments. Not tickets, not PRDs, not retros. Code-shape rationale in docs is orphaned from the thing it justifies, and the future maintainer reading the function won't have the doc in scope when they need it.
+Code-shape rationale goes in inline comments, co-located with the code it justifies. *Why this module is overloaded this way, why this pattern is used here, why this private function returns what it returns, why we use approach X over Y in this spot* — comments. Not tickets, not specs, not retros. Code-shape rationale in docs is orphaned from the thing it justifies, and the future maintainer reading the function won't have the doc in scope when they need it.
 
-Behavioral evolution goes in docs. *What the system used to do, what it does now, why we changed it* — that's PRD, ticket, and retro material. Comments are not the place to write project history; they should explain the shape of the code in front of the reader, not narrate how the project got there.
+Behavioral evolution goes in docs. *What the system used to do, what it does now, why we changed it* — that's spec, ticket, and retro material. Comments are not the place to write project history; they should explain the shape of the code in front of the reader, not narrate how the project got there.
 
 ## Anti-patterns
 
 - **Implementation prescription in ticket Goals or Acceptance criteria.** *"Change this function call to use map instead of forEach"*, *"add an `if` check here"* — these are code-shape directives, not behavioral specs. Reframe as the behavior the change should produce, or drop the line entirely if no behavior changes.
-- **Code-shape rationale in tickets, PRDs, or retros.** Belongs in comments. Docs are not the place for *"we picked this pattern because…"* — that rationale rots away from the code that needs it.
+- **Code-shape rationale in tickets, specs, or retros.** Belongs in comments. Docs are not the place for *"we picked this pattern because…"* — that rationale rots away from the code that needs it.
 - **Implementation noise in `## Deviations`.** *"Renamed `parseFoo` to `parseInput`"*, *"ran the formatter"*, *"extracted a private helper for clarity"* are below threshold. If the seam didn't move and observable behavior didn't change, it isn't a deviation.
-- **Behavioral history buried in code comments.** *"We used to validate on the client; moved to the server in PRD 003"* is doc material, not comment material. Comments are about the code's shape, not the project's timeline.
+- **Behavioral history buried in code comments.** *"We used to validate on the client; moved to the server in spec 003"* is doc material, not comment material. Comments are about the code's shape, not the project's timeline.
 - **Treating the deviation threshold as a do/don't gate.** The threshold decides what gets a `## Deviations` entry, not what's worth changing. Declining a worthwhile below-threshold cleanup *because* it wouldn't be a documented deviation inverts the rule — the cleanup's worth and its documentation are separate calls. Do the change; skip the entry.

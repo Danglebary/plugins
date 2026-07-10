@@ -1,6 +1,6 @@
 # Ticket format
 
-A ticket is a single unit of work nested under a PRD.
+A ticket is a single unit of work nested under a spec.
 
 Tickets are vertical slices: end-to-end behavior across whatever layers they touch, not horizontal layers across many features.
 
@@ -10,9 +10,9 @@ Tickets are written in **behavioral voice**: Goal and Acceptance criteria descri
 
 ## File path
 
-`docs/prds/<NNN>-<slug>/tickets/<NNN>-<slug>.md`
+`docs/specs/<NNN>-<slug>/tickets/<NNN>-<slug>.md`
 
-`<NNN>` is PRD-scoped, three-digit zero-padded (each PRD restarts at `001`). `<slug>` is kebab-case.
+`<NNN>` is spec-scoped, three-digit zero-padded (each spec restarts at `001`). `<slug>` is kebab-case.
 
 ## Frontmatter
 
@@ -37,7 +37,7 @@ Abandoned tickets are moved to `tickets/_abandoned/`. Numbers stay immutable acr
 
 ### 1. Goal
 
-One paragraph: what this ticket achieves and why. In/out scope folded in here when relevant. Keep tight — anything more belongs in implementation notes or in the parent PRD.
+One paragraph: what this ticket achieves and why. In/out scope folded in here when relevant. Keep tight — anything more belongs in implementation notes or in the parent spec.
 
 ### 2. Acceptance criteria
 
@@ -51,11 +51,11 @@ A checklist of observable, testable conditions for "done". Each item should be s
 
 ### 4. Deviations
 
-Appended during implementation. Captures **behavioral or seam-level** divergence from the ticket's planned approach. The bridge between ticket-level execution and PRD-level retro.
+Appended during implementation. Captures **behavioral or seam-level** divergence from the ticket's planned approach. The bridge between ticket-level execution and spec-level retro.
 
 Threshold: a deviation is captured when implementation diverges from spec at the *behavioral* or *seam* level. Below-threshold changes (internal control flow, private renames, formatting, idiomatic refactors inside a module) are noise. For tickets entirely inside one module that touch no seams, the criterion collapses to behavioral divergence; if neither behavior nor seams diverged from spec, leave the section at `_None._`. See [ABSTRACTION-LEVELS-PRINCIPLE.md](./ABSTRACTION-LEVELS-PRINCIPLE.md) for the full in/out lists.
 
-Format: free-form prose, one item per deviation, ideally referencing the PRD section it touches. Loose structure because the agent appends as work happens.
+Format: free-form prose, one item per deviation, ideally referencing the spec section it touches. Loose structure because the agent appends as work happens.
 
 **Refactor marker.** Seam-level changes from `/improve-codebase-architecture` (the per-ticket refactor pass reached via the defer arm of `/done`'s close-out fork) are captured in this same section, with a `(refactor)` prefix on the line — e.g. `(refactor) Extracted Session validation into a deep module to consolidate cookie-vs-DB checks.` The marker lets `/retro`'s synthesis distinguish refactor deviations from feature deviations and group them into the retro's optional `## Refactor` section. The same threshold applies: refactor entries capture seam-level moves, not internal cleanups.
 
@@ -88,7 +88,7 @@ Session lookups must go through the existing `db.session` module (do not introdu
 
 ## Deviations
 
-- Approach (PRD §4): Used signed cookies instead of plain session IDs. IO surface change: cookie format gained an HMAC. Rationale: prevents trivial cookie tampering even if the DB lookup catches invalid IDs. No PRD change needed; safer default.
+- Approach (spec §4): Used signed cookies instead of plain session IDs. IO surface change: cookie format gained an HMAC. Rationale: prevents trivial cookie tampering even if the DB lookup catches invalid IDs. No spec change needed; safer default.
 - Acceptance: Concurrent requests sharing a session previously raced on the validation path; fixed and covered with a new test case. (Behavior added beyond the original four acceptance criteria.)
 - (refactor) Extracted `validateSession` from middleware into its own deep module — middleware now just calls one entry point, validation logic is testable in isolation.
 ```
@@ -98,6 +98,6 @@ Session lookups must go through the existing `db.session` module (do not introdu
 - **Don't make horizontal-slice tickets.** ("Set up routing", "Add types", "Wire up middleware") — these don't deliver behavior. Reframe as vertical slices that include the layers needed. A ticket should make the answer to "what new behavior does this give us?" obvious in one sentence.
 - **Don't write tickets in implementation voice.** ("Change this function call to use map instead of forEach", "add an `if` check here", "rename `parseFoo` to `parseInput`") — these are code-shape directives, not behavioral specs. Reframe as the behavior the change should produce, or drop the line entirely. See [ABSTRACTION-LEVELS-PRINCIPLE.md](./ABSTRACTION-LEVELS-PRINCIPLE.md).
 - **Don't capture implementation noise in `## Deviations`.** ("Renamed a private helper", "ran the formatter", "extracted an internal function for clarity") — below threshold. If the seam didn't move and observable behavior didn't change, it isn't a deviation.
-- **Don't add status values not in the spec.** No `blocked`, `review`, etc. — keep the state machine minimal. (`Abandoned` is structural — the `_abandoned/` move — never a frontmatter value.)
+- **Don't add status values not in this format.** No `blocked`, `review`, etc. — keep the state machine minimal. (`Abandoned` is structural — the `_abandoned/` move — never a frontmatter value.)
 - **Don't put deviation rationales in the implementation notes.** Notes are written before impl. Deviations are appended after.
-- **Don't reference tickets in other PRDs.** Tickets are PRD-scoped. Cross-PRD work means a new PRD, not a ticket linkage.
+- **Don't reference tickets in other specs.** Tickets are spec-scoped. Cross-spec work means a new spec, not a ticket linkage.

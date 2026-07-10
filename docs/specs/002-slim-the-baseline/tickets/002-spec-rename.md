@@ -1,5 +1,5 @@
 ---
-status: open
+status: in-progress
 depends_on: [001]
 ---
 
@@ -25,4 +25,7 @@ The frozen scope artifact is called a spec everywhere the plugin speaks: skill n
 
 ## Deviations
 
-_None yet._
+- Goal (store paths): extended the store migration to the artifact filename — `prd.md` → `spec.md` in both spec directories, and the migration note's step 1 tells consuming repos to do the same. AC #6 named only the directories, `ideas/`, and the pointer, but STORE.md's artifact map now encodes `docs/specs/<NNN>-<slug>/spec.md`, so leaving `prd.md` would break resolution at the new paths.
+- Goal (branch convention): codified the ticket-branch prefix rule in `/next-ticket` — `spec-<NNN>/ticket-…` follows the parent spec branch's name, so tickets under a legacy `prd-<NNN>-<slug>` branch cut `prd-<NNN>/ticket-…`. Extends the Goal's "birth name" rule from the spec branch to its ticket branches, keeping this spec's remaining tickets on one prefix.
+- Touched one accepted ADR: ADR-0003's citation of the banked Obsidian idea now reads `docs/specs/ideas/` — pure reference-rot repair after the store move; the decision text is untouched. ADR-0002's `docs/prds/**` narrative was left as-is (accurate history of what ticket 004 flagged).
+- Added a legacy-store routing sentence to `/setup-agentic-flow`'s re-run detection and STORE.md's not-set-up check: a repo with `docs/prds/` and no `docs/specs/` predates the rename and routes to the migration note instead of being scaffolded a parallel store — new behavior no AC named, required so the rename doesn't turn legacy repos into false "first runs".

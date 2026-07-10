@@ -1,6 +1,6 @@
 # ADR format
 
-An ADR (Architectural Decision Record) captures a cross-PRD durable decision.
+An ADR (Architectural Decision Record) captures a cross-spec durable decision.
 
 ADRs are rare by design. Created inline by `/grill-me` (and by `/improve-codebase-architecture`'s grilling loop, when a load-bearing reason emerges for rejecting a refactor candidate) only when **all three gates** of the three-gate test pass.
 
@@ -14,7 +14,7 @@ A decision warrants an ADR if and only if all three are true:
 2. **Surprising without context** — a future reader will wonder "why did they do it this way?"
 3. **The result of a real trade-off** — there were genuine alternatives and you picked one for specific reasons.
 
-If any of the three is missing, the decision belongs in the PRD's Approach section (PRD-local), or nowhere at all.
+If any of the three is missing, the decision belongs in the spec's Approach section (spec-local), or nowhere at all.
 
 ## File path
 
