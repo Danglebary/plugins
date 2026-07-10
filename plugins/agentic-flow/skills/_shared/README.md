@@ -2,7 +2,7 @@
 
 Reference documents shared across multiple skills. Not skills themselves — these files do not appear in `plugin.json` and are not invoked directly.
 
-Skills reference these via `../../_shared/<filename>.md` (two `..` — SKILL.md sits two levels below `skills/`). Three kinds of reference doc: **store docs** define where planning artifacts live; **format docs** (`<NAME>-FORMAT.md`) define the canonical shape of a document type; **principle docs** (`<NAME>-PRINCIPLE.md`) capture cross-cutting rules applying across multiple skills.
+Skills reference these via `../../_shared/<filename>.md` (two `..` — SKILL.md sits two levels below `skills/`). Four kinds of reference doc: **store docs** define where planning artifacts live; **format docs** (`<NAME>-FORMAT.md`) define the canonical shape of a document type; **principle docs** (`<NAME>-PRINCIPLE.md`) capture cross-cutting rules applying across multiple skills; **convention docs** define a shared procedure consumed by multiple skills — some with a plugin-shipped mechanism at their core, some pure procedure.
 
 ## Store docs
 
@@ -24,3 +24,8 @@ Format docs define each artifact's *content shape* (sections, voice, thresholds)
 ## Principle docs
 
 - [ABSTRACTION-LEVELS-PRINCIPLE.md](./ABSTRACTION-LEVELS-PRINCIPLE.md) — three levels (behavioral, seam-level, code-shape) and the rules that fall out: ticket voice, deviation threshold, rationale placement
+
+## Convention docs
+
+- [DIFF-MATERIALIZATION.md](./DIFF-MATERIALIZATION.md) — the diff-materialization contract: the invoking skill resolves `<base>`/`<head>` per store and scope; the plugin-shipped script (`scripts/materialize-diff.sh`) owns the git mechanics, preflights, and the `.agentic-flow/diff.patch` artifact
+- [CLOSE-OUT.md](./CLOSE-OUT.md) — the close-out contract: the gated store-edits commit (enumerated paths, show-content-on-resume), the gated merge (convention read, verify green before branch delete), and the resting-state/interrupted-close discriminator every closing skill routes on

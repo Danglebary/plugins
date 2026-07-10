@@ -47,6 +47,8 @@ A checklist of observable, testable conditions for "done". Each item should be s
 
 **Optional.** An escape hatch for *load-bearing* implementation constraints surfaced during grilling — typically seam-level constraints surfacing as hints (e.g. *"use the existing SessionStore, don't introduce a new one"*, *"must integrate with the existing feature flag system"*, *"no new dependencies"*). Not a place for code-shape directives, design preferences, or general gotchas — those either belong in inline comments next to the code (when implementation lands) or shouldn't be in the ticket at all. Omit the section entirely when there's no load-bearing constraint to capture.
 
+**`### Deferred steers`** — an optional subsection appended *after* ticket creation: other tickets' close-outs and `/improve-codebase-architecture` passes park deferrals here that target this ticket, each entry naming its provenance (*"From ticket NNN's refactor pass: …"*). Steers are still pre-impl constraint material for *this* ticket — the same load-bearing bar applies — they just arrive later and from outside. `/improve`'s reviewer briefs feed them back as already-deferred candidates so reviewers don't re-propose them.
+
 ### 4. Deviations
 
 Appended during implementation. Captures **behavioral or seam-level** divergence from the ticket's planned approach. The bridge between ticket-level execution and PRD-level retro.
@@ -55,7 +57,7 @@ Threshold: a deviation is captured when implementation diverges from spec at the
 
 Format: free-form prose, one item per deviation, ideally referencing the PRD section it touches. Loose structure because the agent appends as work happens.
 
-**Refactor marker.** Seam-level changes from `/improve-codebase-architecture` (the per-ticket refactor pass recommended by `/done`) are captured in this same section, with a `(refactor)` prefix on the line — e.g. `(refactor) Extracted Session validation into a deep module to consolidate cookie-vs-DB checks.` The marker lets `/retro`'s synthesis distinguish refactor deviations from feature deviations and group them into the retro's optional `## Refactor` section. The same threshold applies: refactor entries capture seam-level moves, not internal cleanups.
+**Refactor marker.** Seam-level changes from `/improve-codebase-architecture` (the per-ticket refactor pass reached via the defer arm of `/done`'s close-out fork) are captured in this same section, with a `(refactor)` prefix on the line — e.g. `(refactor) Extracted Session validation into a deep module to consolidate cookie-vs-DB checks.` The marker lets `/retro`'s synthesis distinguish refactor deviations from feature deviations and group them into the retro's optional `## Refactor` section. The same threshold applies: refactor entries capture seam-level moves, not internal cleanups.
 
 Initial placeholder body (written by `/to-tickets`): `_None yet._`
 

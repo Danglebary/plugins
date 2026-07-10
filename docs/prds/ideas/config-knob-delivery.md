@@ -1,0 +1,5 @@
+# Config-knob delivery to existing repos
+
+From ticket 007's refactor pass (software-architect): the settings template calls itself the discoverability mechanism for what knobs exist, but setup's refresh never rewrites an existing `settings.toml` — so a repo set up before a knob shipped can never discover it. The cut `strategy` key had a lazy-materialization path (`/next-ticket`'s ask-once prompt, now gone); `research_opener` has none by design ("the config is the standing consent — no per-ticket prompt"). STORE.md's "future options append here" promises an append no skill performs for prompt-less keys.
+
+Direction: give refresh mode a knob-level diff-and-surface arm mirroring the reviewer-detection shape one step below it — diff the template's knobs against the existing file, surface missing knobs as proposals, apply only confirmed adds, never silently rewrite. Same prose comparison the refresh already does for `docs/reviewers.md`; not a parser, so STORE.md's config read contract holds.

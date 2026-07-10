@@ -1,0 +1,5 @@
+# /grill-me per-stage forward hand-offs
+
+From ticket 005's refactor pass (dx-expert): the codified planning chain (`/next-prd` → `/grill-me` → `/to-prd` → `/grill-me` → `/to-tickets`) now states its forward hand-off at every link except `/grill-me` itself — the chain's most-visited skill, hit twice per planning run, ends at its self-check with no "what's next." The fix is one line per stage in the existing "Two stages" section: high-level ends recommending `/to-prd`; detail ends recommending `/to-tickets`.
+
+The tension to resolve before doing it: `/grill-me` is Knowledge layer, and ADR 0001 makes those skills a cross-plugin API that must not assume the Personal workflow's lifecycle — recommending `/to-tickets` names a Personal-lifecycle skill from a shared one. `/next-prd` already names the full chain (sanctioned by ticket 005's AC), so the pattern has precedent; but extending it deliberately is a design call about how far chain discoverability may leak into the shared layer — perhaps stage hand-offs phrased store/workflow-neutrally ("the next step in your workflow's chain") or supplied by the invoking workflow.

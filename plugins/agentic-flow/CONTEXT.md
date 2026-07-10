@@ -49,13 +49,16 @@ The criteria used to decide whether a decision warrants an **ADR**. All three mu
 A subdirectory of `skills/` grouping related skills. Currently `engineering/`, `productivity/`, and `_shared/`. The `_shared/` folder holds **Reference doc**s, not skills.
 
 **Reference doc**:
-A markdown document under `skills/_shared/` referenced by one or more skills. Two kinds: **Format doc**s (the canonical shape of a document type) and **Principle doc**s (cross-cutting rules applying across multiple skills). Distinguished by filename suffix.
+A markdown document under `skills/_shared/` referenced by one or more skills. Four kinds: **Store doc**s (where planning artifacts live — `STORE.md`, `NOTION-RESOLVER.md`), **Format doc**s (the canonical shape of a document type), **Principle doc**s (cross-cutting rules applying across multiple skills), and **Convention doc**s (a shared procedure consumed by multiple skills). Format and principle docs are distinguished by filename suffix (`-FORMAT.md` / `-PRINCIPLE.md`); store and convention docs carry no suffix.
 
 **Format doc**:
 A **Reference doc** at `skills/_shared/<NAME>-FORMAT.md` that defines the canonical shape of an artifact type (PRD, Ticket, Retro, ADR, Glossary, reviewers) — content shape for both stores plus the files-store encoding. Referenced by skills that produce or read those artifacts.
 
 **Principle doc**:
 A **Reference doc** at `skills/_shared/<NAME>-PRINCIPLE.md` that captures cross-cutting rules applying across multiple skills. Referenced from the SKILL.md files (and other reference docs) that need to enforce or align with the principle.
+
+**Convention doc**:
+A **Reference doc** under `skills/_shared/` that defines a shared procedure consumed by multiple skills — some with a plugin-shipped mechanism at their core (`DIFF-MATERIALIZATION.md`, paired with `scripts/materialize-diff.sh`: the invoking skill resolves the store-dependent inputs, the mechanism owns the deterministic part), some pure procedure (`CLOSE-OUT.md`: consumers bind the variables and cite the mechanics).
 
 **Vertical slice**:
 A **Ticket** scope shape: end-to-end behavior across whatever layers it touches (UI → backend → DB), rather than one layer for many features (a horizontal slice). The default for `/to-tickets`.
@@ -67,10 +70,10 @@ The transition from `Drafting → Open` on a **PRD**, triggered by `/to-tickets`
 A divergence between a **Ticket**'s planned approach and what was actually implemented. Captured in the ticket's `## Deviations` section during impl, surfaced in the **Retro** synthesis pass. A `(refactor)` prefix marks deviations from `/improve-codebase-architecture`'s per-ticket pass; the prefix lets `/retro` group refactor work into the synthesized retro's optional `## Refactor` section.
 
 **Active PRD pointer**:
-The **Store**'s marker for the **PRD** currently being implemented — files store: a one-line text file at `docs/prds/.active` holding the PRD slug (e.g. `001-add-auth`); notion store: the `Active` checkbox on the PRD row (skills enforce single-active by clearing others first). Set by `/to-tickets` at PRD lock, cleared by `/retro` at PRD close *if it still points to the closing PRD* (otherwise left alone, since the user may have manually pointed it elsewhere), manually editable by the user when context-switching between concurrently-`open` PRDs. Not a substitute for PRD `status` — `.active` is "what am I building right now," `status` is "where in its lifecycle is this PRD."
+The **Store**'s marker for the **PRD** currently being implemented — files store: a one-line text file at `docs/prds/.active` holding the PRD directory name, `<NNN>-<slug>` (e.g. `001-add-auth`); notion store: the `Active` checkbox on the PRD row (skills enforce single-active by clearing others first). Set by `/to-tickets` at PRD lock, cleared by `/retro` at PRD close *if it still points to the closing PRD* (otherwise left alone, since the user may have manually pointed it elsewhere), manually editable by the user when context-switching between concurrently-`open` PRDs. Not a substitute for PRD `status` — `.active` is "what am I building right now," `status` is "where in its lifecycle is this PRD."
 
 **Config**:
-The per-repo configuration for `agentic-flow`: `.agentic-flow/settings.toml`, identical in both stores. Its `[store]` block is the declarative backend selector (`backend = "files" | "notion"`, plus the cached notion `root_page_id`); the rest holds workflow config (branching strategy, merge convention, ticket-start research opener). Created by `/setup-agentic-flow` with all options present (defaults stated, alternatives noted); future options append here. Skills update it as configuration choices materialize.
+The per-repo configuration for `agentic-flow`: `.agentic-flow/settings.toml`, identical in both stores. Its `[store]` block is the declarative backend selector (`backend = "files" | "notion"`, plus the cached notion `root_page_id`); the rest holds workflow config (merge convention, ticket-start research opener). Read as prose — skills consult only the keys they name; stale keys and comments are inert (STORE.md's config read contract). Created by `/setup-agentic-flow` with every knob present (store selector set, workflow knobs commented until chosen); future options append here. Skills update it as configuration choices materialize.
 
 ## Relationships
 

@@ -22,16 +22,16 @@ status: drafting | open | done
 
 State transitions:
 
-- `drafting → open` — set by `/to-tickets` when it runs (one-shot; refuses on already-`open` PRDs).
+- `drafting → open` — set by `/to-tickets` when it runs (ticket creation is one-shot; an already-`open` PRD refuses — unless its branch bootstrap hasn't landed, which re-offers only the bootstrap; the landed test's home is [STORE.md](./STORE.md)'s branch-link state tests, and the refuse-vs-re-offer routing is `/to-tickets`' State contract's).
 - `open → done` — set by `/retro` when it synthesizes.
 
-`/grill-me` and `/to-prd` may edit a `drafting` PRD freely. `/grill-me` refuses on `open` (frozen scope) and `done` (closed chapter). `/to-tickets` is one-shot per PRD and refuses on `open` (already locked) and `done`. Re-opening a PRD is not supported by skills.
+`/grill-me` and `/to-prd` may edit a `drafting` PRD freely. `/grill-me` refuses on `open` (frozen scope) and `done` (closed chapter). `/to-tickets`' ticket creation is one-shot per PRD — it refuses on `open` with a landed bootstrap (already locked) and on `done`; an `open` PRD whose bootstrap hasn't landed re-offers only the bootstrap. Re-opening a PRD is not supported by skills.
 
 Per-skill state contracts are documented in each skill's `## State contract` subsection.
 
 ## Abandoned PRDs
 
-Abandoned PRDs are moved to `docs/prds/_abandoned/<NNN>-<slug>/` (preserving the full PRD directory; notion store: flip `Status = Abandoned`). Numbers stay immutable across both the active and `_abandoned/` directories — numbering algorithms (e.g. `/to-prd`'s "highest existing prefix + 1") glob both locations (notion store: the max-`Number` query includes `Abandoned` rows).
+Abandoned PRDs are moved to `docs/prds/_abandoned/<NNN>-<slug>/` (preserving the full PRD directory; notion store: flip `Status = Abandoned`). Numbers stay immutable across both the active and `_abandoned/` directories — numbering algorithms (e.g. `/to-prd`'s "highest existing prefix + 1") glob both locations (notion store: the max-`Number` query includes `Abandoned` rows) and also scan `prd-<NNN>-<slug>` branch names, local and remote, so a PRD in flight on its branch keeps its number reserved from any checkout (the enumeration rule in [STORE.md](./STORE.md)'s branch-link state tests).
 
 Preserving abandoned PRDs is intentional: what didn't pan out is often as informative as what shipped.
 

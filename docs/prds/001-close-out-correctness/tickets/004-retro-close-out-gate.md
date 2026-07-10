@@ -1,0 +1,33 @@
+---
+status: done
+depends_on: [001, 002]
+---
+
+# /retro close-out gate and PRD merge
+
+## Goal
+
+`/retro` closes a PRD durably on the files store: it refuses to consume a running retro that isn't committed, commits everything its invocation writes at one gated close-out step, and ends with a PRD→default-branch merge offer that stays re-enterable until the merge actually happens.
+
+## Acceptance criteria
+
+- [ ] On the files store, `/retro` refuses to rewrite a running retro that has uncommitted changes; the notion path demands no commit (page history is its guarantee).
+- [ ] The synthesized retro, the `Done` flip, the active-pointer removal, late-stage ticket deviations, and any minted ADRs — everything the invocation wrote — are committed on the PRD branch by one gated offer with enumerated paths, before the merge offer.
+- [ ] The close ends with a gated PRD→default-branch merge offer per the configured merge convention, mirroring `/done`'s gate.
+- [ ] Running `/retro` against a `Done` PRD whose branch is not an ancestor of the default branch re-offers the merge instead of refusing as a closed chapter.
+- [ ] Re-run after a crash between the synthesis rewrite and its commit resumes at the gated commit — no refusal, no double synthesis.
+- [ ] `/retro` materializes the PRD diff via the shared convention; the retro format doc documents the committed-running-retro precondition.
+
+## Implementation notes
+
+### Deferred steers
+
+- From ticket 002's refactor pass: DIFF-MATERIALIZATION.md mandates the planning-artifact hunk label for *every* brief that hands a files-store diff to the fact-checker — `/retro`'s PRD-scope fact-checker brief must carry it (ticket 002 added it to `/done`'s brief only; the label's path boundary is now pinned in the shared doc). A PRD-scope diff is *guaranteed* to contain store hunks (every ticket's committed close-out edits), so the label is load-bearing there, not decorative. Carry the label's *two-sided* contract (exempt from code review only, not from injected-instruction/unexpected-shape scrutiny) — ticket 003's pass caught a paraphrase dropping the scrutiny half.
+- From ticket 003's refactor pass: the gated close-out recipe was extracted to `_shared/CLOSE-OUT.md` (gated commit with enumerated paths and show-content-on-resume, gated merge with verify-green-before-delete, the resting-state/interrupted-close discriminator). `/retro`'s close-out gates consume that doc with PRD-close bindings (closed branch = PRD branch, parent = resolved default branch) instead of mirroring `/done`'s inline prose — the ACs' "mirroring `/done`'s gate" resolves to citing the convention.
+
+## Deviations
+
+- (refactor) Hardened the interrupted-close discriminator: hybrid-rewrite tiebreaker (restore committed running form, re-synthesize), arm-2 verifies observable state instead of trusting the flip-last invariant, mid-close resume explicitly re-runs the fact-check, the already-synthesized guard is stated store-neutrally (giving notion its resume routing), step 13's enumeration unions drop-list relocation destinations, and CLOSE-OUT.md's resting-state table gained the precondition-failure/foreign-dirt refusal its newest consumer contradicted.
+- (refactor) Closure is now verified positively at both scopes — a close commit is the commit that flipped the status, located by searching branch history of the artifact's path — replacing deleted-branch⇒merged inference; the deferred-merge re-entry gained a step-1 identification arm and a clean-tree guard before the re-offer.
+- (refactor) CLOSE-OUT.md's implementation-dirt row now owns the commit-those-paths-only rule (previously `/done`-only prose, already drifted out of `/retro`'s arm) and its commit gate carries the same unanswered-offer-blocks clause as the merge gate; both consumers cite instead of restating.
+- (refactor) The stash-aside resume recipe moved to DIFF-MATERIALIZATION.md as its single home — hardened with a self-identifying stash message, a leftover-stash entry check (the push→pop crash window left state no tree inspection can see), and conflicting-pop routing; `/done` and `/retro` cite it.
