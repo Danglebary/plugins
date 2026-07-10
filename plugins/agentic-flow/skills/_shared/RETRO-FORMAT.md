@@ -1,12 +1,12 @@
 # Retro format
 
-The retro is a two-pass document paired to each PRD. It accumulates per-ticket entries during the PRD's lifecycle, then is restructured in place at PRD close.
+The retro is a two-pass document paired to each spec. It accumulates per-ticket entries during the spec's lifecycle, then is restructured in place at spec close.
 
 **Storage.** The file path below is the encoding; the artifact map is [STORE.md](./STORE.md)'s.
 
 ## File path
 
-`docs/prds/<NNN>-<slug>/retro.md`
+`docs/specs/<NNN>-<slug>/retro.md`
 
 ## Running form (per-ticket entries)
 
@@ -24,27 +24,27 @@ Appended by `/done` when a ticket closes.
 
 ### Outcome labels
 
-- **Exact match** — implemented as the ticket and PRD specified.
+- **Exact match** — implemented as the ticket and spec specified.
 - **Extended** — landed what was specified, plus extra scope that proved necessary or valuable.
 - **Divergence** — implemented something different (different approach, different acceptance) than specified, with rationale.
 - **Omitted** — ticket was abandoned or merged into another. Note where the work went (or didn't).
 
-The same labels appear in the synthesized form, applied per PRD section instead of per ticket.
+The same labels appear in the synthesized form, applied per spec section instead of per ticket.
 
-## Synthesized form (at PRD close)
+## Synthesized form (at spec close)
 
 Written by `/retro` (no args), which **restructures `retro.md` in place**. The running form is preserved in git history; the live file becomes the structured synthesis.
 
-**Committed-running-retro precondition.** Git history is the *only* place the running form survives the rewrite, so `/retro` refuses to synthesize while the running retro has uncommitted content — a modified `retro.md`, or an untracked one (which has no history at all). `/done`'s gated close-out commit is what normally guarantees this; uncommitted running-retro content at PRD close means one of those gates was declined or interrupted — commit the retro directly on the PRD branch (or, when the ticket's `done` flip is also uncommitted, resume that `/done` close and let its commit gate carry the retro), then re-run `/retro`.
+**Committed-running-retro precondition.** Git history is the *only* place the running form survives the rewrite, so `/retro` refuses to synthesize while the running retro has uncommitted content — a modified `retro.md`, or an untracked one (which has no history at all). `/done`'s gated close-out commit is what normally guarantees this; uncommitted running-retro content at spec close means one of those gates was declined or interrupted — commit the retro directly on the spec branch (or, when the ticket's `done` flip is also uncommitted, resume that `/done` close and let its commit gate carry the retro), then re-run `/retro`.
 
 ### Sections
 
-One section per PRD section (Problem / Goals / Non-goals / Approach / Modules touched), each labeled with an outcome and with commentary.
+One section per spec section (Problem / Goals / Non-goals / Approach / Modules touched), each labeled with an outcome and with commentary.
 
 Plus two optional appendices:
 
-- **`## Refactor`** — appears when one or more tickets had `(refactor)`-marked entries in their `## Deviations` section (i.e., `/improve-codebase-architecture` ran and produced changes during the PRD's lifecycle). Captures *cumulative* refactor work across all tickets, with the same outcome-label vocabulary. Omitted when no `(refactor)` deviations exist.
-- **`## Cross-cutting`** — for lessons that don't fit any single PRD section (e.g. terminology issues spanning multiple sections, Glossary updates that landed mid-PRD). Omitted when empty.
+- **`## Refactor`** — appears when one or more tickets had `(refactor)`-marked entries in their `## Deviations` section (i.e., `/improve-codebase-architecture` ran and produced changes during the spec's lifecycle). Captures *cumulative* refactor work across all tickets, with the same outcome-label vocabulary. Omitted when no `(refactor)` deviations exist.
+- **`## Cross-cutting`** — for lessons that don't fit any single spec section (e.g. terminology issues spanning multiple sections, Glossary updates that landed mid-spec). Omitted when empty.
 
 ### Section format
 
@@ -71,7 +71,7 @@ The framing held up. Returning users do want session persistence; nothing in imp
 
 ## Goals — Extended
 
-All three goals shipped. Added a fourth goal during execution: signed cookies (see Approach). Worth noting because it shifted the security posture without a PRD edit.
+All three goals shipped. Added a fourth goal during execution: signed cookies (see Approach). Worth noting because it shifted the security posture without a spec edit.
 
 ## Non-goals — Exact match
 
@@ -91,11 +91,11 @@ Extracted `validateSession` into a deep module (ticket 002) and pulled cookie-si
 
 ## Cross-cutting
 
-- "Session" appeared in code as both `Session` (the DB model) and `session` (the cookie value). Added to the Glossary mid-PRD to disambiguate.
+- "Session" appeared in code as both `Session` (the DB model) and `session` (the cookie value). Added to the Glossary mid-spec to disambiguate.
 ```
 
 ## Anti-patterns
 
-- **Don't write `## Next steps`, `## Future work`, or `## Roadmap`.** Strictly backward-looking. Forward-looking work goes into a new PRD.
-- **Don't restructure prematurely.** The running form lives until `/retro` is invoked at PRD close. Don't reorganize partway.
+- **Don't write `## Next steps`, `## Future work`, or `## Roadmap`.** Strictly backward-looking. Forward-looking work goes into a new spec.
+- **Don't restructure prematurely.** The running form lives until `/retro` is invoked at spec close. Don't reorganize partway.
 - **Don't drop the running form without git committing it.** The running entries are the raw material for synthesis; git history is the only place they survive after restructure. `/retro` enforces this as a precondition — it refuses to synthesize over an uncommitted running retro.

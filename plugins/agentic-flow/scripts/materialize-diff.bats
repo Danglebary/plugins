@@ -126,8 +126,8 @@ merge_now() {
   # precisely because this stderr can never name them — pin the negative.
   commit_on ticket work.txt
   echo changed > base.txt
-  mkdir -p docs/prds/ideas
-  echo banked > docs/prds/ideas/stray.md
+  mkdir -p docs/specs/ideas
+  echo banked > docs/specs/ideas/stray.md
   run bash "$SCRIPT" main ticket
   [ "$status" -eq 5 ]
   [[ "$output" == *base.txt* ]]

@@ -10,7 +10,7 @@ My end-to-end workflow across the **Planning → Implementation → Improve** ph
 flowchart TD
     subgraph P["PHASE 1 — Planning (single agent session*)"]
         A["/next-spec"] --> B["/grill-me<br/>(high-level)"]
-        B --> C["/to-spec<br/>(currently named /to-prd)"]
+        B --> C["/to-spec"]
         C --> D["/grill-me<br/>(low-level / details)"]
         D --> E["/to-tickets"]
     end
@@ -48,7 +48,7 @@ flowchart TD
 ## Session Hygiene Rules
 
 - **Hard rule: never let an agent exceed ~30% session context usage.**
-- When planning would blow the budget, I split it into **two sessions**: run `/new` after `/to-spec` completes, with a steering prompt like *"the next agent should run `/grill-me` on the draft PRD we just wrote."*
+- When planning would blow the budget, I split it into **two sessions**: run `/new` after `/to-spec` completes, with a steering prompt like *"the next agent should run `/grill-me` on the draft spec we just wrote."*
 - Session handoff happens one of two ways, and honestly I'm not sure there's a rhyme or reason to which I pick:
   1. `/new` + a steering prompt for the next agent, **or**
   2. `ctrl+c` to kill the Claude Code TUI entirely, drop back to my terminal emulator, start a fresh `claude` process, and invoke the skill manually in chat.
@@ -67,5 +67,4 @@ flowchart TD
 ### Open questions
 
 - **How does `improve-codebase-architecture` relate to Matt's `code-review` skill?** I'm curious whether `code-review` could augment the improve pass, or whether it's actually more closely related to `/done`. Maybe bits of both?
-- **Naming:** `/to-spec` is currently named `/to-prd` — the diagram uses the intended name.
 - **Session handoff style:** worth paying attention to when I reach for `/new` + prompt vs. a full process restart, to see if there's an actual pattern behind it.

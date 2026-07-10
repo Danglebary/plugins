@@ -11,7 +11,7 @@ Store artifact paths: [STORE.md](../../_shared/STORE.md). Format references: [TI
 
 ## State contract
 
-- **PRD state required**: `Open` (the active PRD per the store's active pointer — files: `docs/prds/.active`, one line, the PRD directory name `<NNN>-<slug>`)
+- **Spec state required**: `Open` (the active spec per the store's active pointer — files: `docs/specs/.active`, one line, the spec directory name `<NNN>-<slug>`)
 - **Ticket state required**: `In progress` (typical) or `Open` (warned)
 - **Transition**: ticket `In progress → Done`
 
@@ -19,15 +19,15 @@ Warns rather than refuses on `Open → Done` (a user who did the work without fl
 
 ## Process
 
-1. **Identify the ticket.** Default to the active PRD's ticket with status `In progress`. If none is `In progress` but a ticket reads `done` in the working tree with uncommitted store-artifact dirt, that ticket is an interrupted close-out — identify it and proceed (step 2 classifies the state). Otherwise, if multiple or none, ask.
+1. **Identify the ticket.** Default to the active spec's ticket with status `In progress`. If none is `In progress` but a ticket reads `done` in the working tree with uncommitted store-artifact dirt, that ticket is an interrupted close-out — identify it and proceed (step 2 classifies the state). Otherwise, if multiple or none, ask.
 
-2. **Materialize the ticket diff via the shared convention.** Resolve the refs per [DIFF-MATERIALIZATION.md](../../_shared/DIFF-MATERIALIZATION.md): `<base>` is the PRD branch, `<head>` is the ticket branch (non-standard branching: ask the user for the refs). Run the script:
+2. **Materialize the ticket diff via the shared convention.** Resolve the refs per [DIFF-MATERIALIZATION.md](../../_shared/DIFF-MATERIALIZATION.md): `<base>` is the spec branch, `<head>` is the ticket branch (non-standard branching: ask the user for the refs). Run the script:
 
    ```
    bash "${CLAUDE_PLUGIN_ROOT}/scripts/materialize-diff.sh" <base> <head>
    ```
 
-   On success the diff is at `.agentic-flow/diff.patch` — the fact-checker has no git access; this artifact is its only view of the diff. On any non-zero exit, follow the shared doc's exit-code table: relay stderr and stop — never fall back to a hand-rolled `git diff`. Exit 5 (dirty tree) is the one exit `/done` interprets before stopping. Classify the dirty paths first — **store-artifact paths per STORE.md's artifact map** (`docs/prds/**`, `docs/adr/**`, `docs/spikes/**`, `docs/reviewers.md`, `CONTEXT.md`); everything else is implementation:
+   On success the diff is at `.agentic-flow/diff.patch` — the fact-checker has no git access; this artifact is its only view of the diff. On any non-zero exit, follow the shared doc's exit-code table: relay stderr and stop — never fall back to a hand-rolled `git diff`. Exit 5 (dirty tree) is the one exit `/done` interprets before stopping. Classify the dirty paths first — **store-artifact paths per STORE.md's artifact map** (`docs/specs/**`, `docs/adr/**`, `docs/spikes/**`, `docs/reviewers.md`, `CONTEXT.md`); everything else is implementation:
    - **Any implementation path is dirty** — refuse, naming the convention: *implementation is committed on the ticket branch before `/done` runs*. Print the implementation paths; the user commits *those paths only* — co-present store-artifact dirt stays in the tree (a resume signal; the rule is [CLOSE-OUT.md](../../_shared/CLOSE-OUT.md)'s implementation-dirt row). Then re-run `/done`.
    - **Only store-artifact paths are dirty** — `/done`'s own interrupted close-out. Don't refuse. Store edits happen in step order (deviations → retro entry → flip; flip-last is the published invariant of [CLOSE-OUT.md](../../_shared/CLOSE-OUT.md) that recovery routing reads — `/done` owns keeping its ordering conformant), so the tree records how far the crashed run got:
      - The `done` flip is already in the tree → every store edit landed (the flip is last) — resume directly at the gated close-out commit (step 10).
@@ -36,7 +36,7 @@ Warns rather than refuses on `Open → Done` (a user who did the work without fl
 3. **Invoke `agentic-flow:deviation-fact-checker`** with, at minimum:
    - The diff artifact path (`.agentic-flow/diff.patch`)
    - The ticket's Goal + Acceptance criteria + existing `## Deviations`
-   - The PRD's Approach section (for context on the intended approach)
+   - The spec's Approach section (for context on the intended approach)
    - The Glossary contents (so the agent uses domain vocabulary)
    - Existing ADR titles + statuses (so it doesn't propose duplicates)
    - A reminder that it has Read/Grep over the working tree and must verify claims against current source, not stale comments — every recorded fact-checker false positive traced to diff-only briefing
@@ -51,21 +51,21 @@ Warns rather than refuses on `Open → Done` (a user who did the work without fl
 
 4. **Adversarially review the findings.** The fact-checker's drafts are *drafts* — review each finding against cited diff hunks, drop noise (below-threshold gaps the fact-checker shouldn't have flagged), surface high-signal items.
 
-5. **Apply confirmed updates** to the ticket's `## Deviations` section (append gaps, fix misrepresentations). The section is always materialized at close: if nothing was captured and the fact-check found nothing, write `_None._` (replacing `_None yet._`). An absent section reads as "nobody checked"; an explicit `_None._` reads as "checked, clean" — and the PRD-scope fact-check at `/retro` relies on the distinction.
+5. **Apply confirmed updates** to the ticket's `## Deviations` section (append gaps, fix misrepresentations). The section is always materialized at close: if nothing was captured and the fact-check found nothing, write `_None._` (replacing `_None yet._`). An absent section reads as "nobody checked"; an explicit `_None._` reads as "checked, clean" — and the spec-scope fact-check at `/retro` relies on the distinction.
 
 6. **Surface ADR candidates to the user** for explicit decision: each candidate gets a yes/no/defer. This is a blocking checkpoint — present the candidates and end the turn; don't proceed to the label step in the same breath. On yes, hand off to ADR creation per [ADR-FORMAT.md](../../_shared/ADR-FORMAT.md).
 
    **Toolchain-fact gate:** before writing any ADR, every load-bearing claim about an external system (stdlib behavior, build-system APIs, language defaults, third-party semantics) must be verified against the installed toolchain — by reading its source, running a probe program, or dispatching a research sub-agent. An ADR frozen on an unverified external fact is the recorded failure shape: four ADRs in one project rotted this way, all foreseeably.
 
 7. **Determine the outcome label.**
-   - **Exact match** — implemented exactly as the ticket and PRD specified.
+   - **Exact match** — implemented exactly as the ticket and spec specified.
    - **Extended** — implemented as specified, plus extra scope that proved necessary or valuable.
    - **Divergence** — implemented something different (different approach, different acceptance) than specified.
    - **Omitted** — ticket abandoned or merged into another. (If selecting this, prefer abandoning the ticket per the store — the `_abandoned/` move — rather than running `/done`.)
 
    Propose the label with reasoning, anchored in the captured deviations — and **name the strongest alternative label with why it loses**. This is a blocking confirm: present the proposal and wait for the user's confirm or override. (The runs that named the alternative got fast, informed sign-off; the runs that declared unilaterally got audited later. Skipping the alternative makes skipped elicitation self-evident.)
 
-8. **Append the retro entry** to the PRD's running retro (`docs/prds/<NNN>-<slug>/retro.md`, creating the file if it doesn't exist):
+8. **Append the retro entry** to the spec's running retro (`docs/specs/<NNN>-<slug>/retro.md`, creating the file if it doesn't exist):
 
    ```markdown
    ## Ticket NNN — <ticket title>
@@ -85,20 +85,20 @@ Warns rather than refuses on `Open → Done` (a user who did the work without fl
     - On accept: commit; the tree is clean for whichever arm of step 11 follows. On decline: the convention's wedge statement, naming this skill — re-running `/done` resumes at this commit.
 
 11. **Fork: merge now, or defer to the refactor pass (gated).** Present exactly two paths and wait:
-    - **Merge now — explicitly skipping the per-ticket refactor pass.** Say so in the offer: accepting means no `/improve-codebase-architecture` pass runs for this ticket before the merge — though the pass stays recoverable afterward via that skill's post-merge ad-hoc arm, which reviews the merged range. On accept: run the gated merge per [CLOSE-OUT.md](../../_shared/CLOSE-OUT.md) — convention read from config / the repo's CLAUDE.md, ticket branch → PRD branch `--no-ff`, verify green, delete the ticket branch only after green.
+    - **Merge now — explicitly skipping the per-ticket refactor pass.** Say so in the offer: accepting means no `/improve-codebase-architecture` pass runs for this ticket before the merge — though the pass stays recoverable afterward via that skill's post-merge ad-hoc arm, which reviews the merged range. On accept: run the gated merge per [CLOSE-OUT.md](../../_shared/CLOSE-OUT.md) — convention read from config / the repo's CLAUDE.md, ticket branch → spec branch `--no-ff`, verify green, delete the ticket branch only after green.
     - **Defer to `/improve-codebase-architecture`.** Recommend it: *"Run `/improve-codebase-architecture` next for a refactor pass on this ticket — optional but catches architectural rot while context is fresh."* Nothing merges now; its refactor commits land on the ticket branch, and the merge belongs to that pass's own close-out offer.
     - **Offer, never auto-merge.** The merge is the user's control point; an unanswered offer blocks — it is not consent (the convention pins this too).
 
 ## Refusing to run
 
 - If the ticket's status is already `Done` *and that flip is committed*, check the merge before refusing — `Done`-but-unmerged is the *normal* resting state of step 11's defer arm, not a closed chapter:
-  - **Ticket branch merged into the PRD branch (or already deleted)** — fully closed. Refuse; suggest checking git history if the user wants to know what happened.
+  - **Ticket branch merged into the spec branch (or already deleted)** — fully closed. Refuse; suggest checking git history if the user wants to know what happened.
   - **Ticket branch exists and is unmerged** — name the state ("ticket NNN is closed but its branch is unmerged — the deferred merge never happened") and re-present the step-11 fork: run `/improve-codebase-architecture` (its close-out offer owns the merge), or merge now per the convention. The lifecycle's last gate is re-enterable from every resting state — a declined or forgotten merge must never orphan the branch.
 - An uncommitted `done` flip plus store-artifact-path dirt is **not** an already-closed ticket — it's an interrupted close-out (step 2's store-artifact-only case). Resume at the gated close-out commit (step 10) instead of refusing.
 
 ## Anti-patterns
 
-- **Don't restructure the running retro.** This skill appends only. Restructuring is `/retro`'s job at PRD close.
+- **Don't restructure the running retro.** This skill appends only. Restructuring is `/retro`'s job at spec close.
 - **Don't write what was done in the retro entry.** That's redundant with the ticket. Capture *insight*, not *log*.
 - **Don't trust the fact-checker's drafts blindly.** Review each finding against the cited diff. Drop noise — particularly any "gap" that's actually below threshold (private rename, formatting, internal refactor inside a module).
 - **Don't pad `## Deviations` to look thorough.** If nothing seam-level moved and behavior matched spec, the section reads `_None._` at close (step 5) — never invent entries to fill it. A clean ticket is a clean ticket; manufactured deviations turn retros into commentary on noise.

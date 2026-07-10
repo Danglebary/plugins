@@ -12,10 +12,10 @@ Skills reference these via `../../_shared/<filename>.md` (two `..` — SKILL.md 
 
 Format docs define each artifact's *content shape* (sections, voice, thresholds) plus its encoding (paths, frontmatter).
 
-- [PRD-FORMAT.md](./PRD-FORMAT.md) — frozen multi-ticket scope document
-- [TICKET-FORMAT.md](./TICKET-FORMAT.md) — single unit of work nested under a PRD
+- [SPEC-FORMAT.md](./SPEC-FORMAT.md) — frozen multi-ticket scope document
+- [TICKET-FORMAT.md](./TICKET-FORMAT.md) — single unit of work nested under a spec
 - [RETRO-FORMAT.md](./RETRO-FORMAT.md) — running and synthesized retrospective formats
-- [ADR-FORMAT.md](./ADR-FORMAT.md) — cross-PRD architectural decision record
+- [ADR-FORMAT.md](./ADR-FORMAT.md) — cross-spec architectural decision record
 - [CONTEXT-FORMAT.md](./CONTEXT-FORMAT.md) — living domain glossary
 - [REVIEWERS-FORMAT.md](./REVIEWERS-FORMAT.md) — list of reviewer agents applicable to a repo
 - [AGENT-FORMAT.md](./AGENT-FORMAT.md) — plugin-shipped and repo-specific subagent definitions
