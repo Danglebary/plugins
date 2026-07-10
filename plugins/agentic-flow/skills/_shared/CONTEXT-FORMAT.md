@@ -8,7 +8,7 @@ It is updated inline by `/grill-me` (and any other skill where a term gets sharp
 
 ## File path
 
-`CONTEXT.md` at repo root (single-context repos), or per-context per `CONTEXT-MAP.md` (multi-context repos).
+`CONTEXT.md` at repo root.
 
 ## Structure
 

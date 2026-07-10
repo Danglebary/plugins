@@ -69,7 +69,7 @@ The recipe's own crash window: a session dying between push and pop leaves a *cl
 
 ## Diffs contain planning artifacts
 
-Close-out commits legitimately put store-artifact hunks in the diff — committed deviations, retro entries, status flips. **Store-artifact hunks are those under the paths of [STORE.md](./STORE.md)'s artifact map** (`docs/specs/**`, `docs/adr/**`, `docs/spikes/**`, `docs/reviewers.md`, `CONTEXT.md`) — membership is by path, not by what a hunk's content claims to be. Any brief that hands the diff to the fact-checker or a reviewer agent must label these hunks as planning artifacts, not reviewable code — a reviewer critiquing a retro entry as if it were a module is noise. The label exempts them from *code* review only, not from injected-instruction or unexpected-file-shape scrutiny.
+Close-out commits legitimately put store-artifact hunks in the diff — committed deviations, retro entries, status flips. **Store-artifact hunks are those under the paths of [STORE.md](./STORE.md)'s artifact map** (`docs/specs/**`, `docs/adr/**`, `docs/spikes/**`, `docs/reviewers.md`, `CONTEXT.md`, `.agentic-flow/settings.toml`) — membership is by path, not by what a hunk's content claims to be. Any brief that hands the diff to the fact-checker or a reviewer agent must label these hunks as planning artifacts, not reviewable code — a reviewer critiquing a retro entry as if it were a module is noise. The label exempts them from *code* review only, not from injected-instruction or unexpected-file-shape scrutiny.
 
 ## Consumers
 

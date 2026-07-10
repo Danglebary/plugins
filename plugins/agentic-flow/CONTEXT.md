@@ -70,10 +70,10 @@ The transition from `Drafting → Open` on a **Spec**, triggered by `/to-tickets
 A divergence between a **Ticket**'s planned approach and what was actually implemented. Captured in the ticket's `## Deviations` section during impl, surfaced in the **Retro** synthesis pass. A `(refactor)` prefix marks deviations from `/improve-codebase-architecture`'s per-ticket pass; the prefix lets `/retro` group refactor work into the synthesized retro's optional `## Refactor` section.
 
 **Active spec pointer**:
-The **Store**'s marker for the **Spec** currently being implemented — a one-line text file at `docs/specs/.active` holding the spec directory name, `<NNN>-<slug>` (e.g. `001-add-auth`). Set by `/to-tickets` at spec lock, cleared by `/retro` at spec close *if it still points to the closing spec* (otherwise left alone, since the user may have manually pointed it elsewhere), manually editable by the user when context-switching between concurrently-`open` specs. Not a substitute for spec `status` — `.active` is "what am I building right now," `status` is "where in its lifecycle is this spec."
+The **Store**'s marker for the **Spec** currently being implemented — a one-line text file at `docs/specs/.active` holding the spec directory name, `<NNN>-<slug>` (e.g. `001-add-auth`). Set by `/to-tickets` at spec lock, cleared by `/retro` at spec close *if it still points to the closing spec* (otherwise left alone — a manual repoint is possible but off-workflow, an exception rather than a routine move: ticketing is serialized, and `/to-tickets` refuses while another spec is active or unmerged). Not a substitute for spec `status` — `.active` is "what am I building right now," `status` is "where in its lifecycle is this spec."
 
 **Config**:
-The per-repo configuration for `agentic-flow`: `.agentic-flow/settings.toml`, holding workflow config (merge convention, ticket-start research opener). Read as prose — skills consult only the keys they name; stale keys and comments are inert (STORE.md's config read contract). Created by `/setup-agentic-flow` with every knob present (commented until chosen); future options append here. Skills update it as configuration choices materialize.
+The per-repo configuration for `agentic-flow`: `.agentic-flow/settings.toml`, holding workflow config (merge convention). Read as prose — skills consult only the keys they name; stale keys and comments are inert (STORE.md's config read contract). Created by `/setup-agentic-flow` with every knob present (commented until chosen); future options append here. Skills update it as configuration choices materialize.
 
 ## Relationships
 
@@ -83,7 +83,7 @@ The per-repo configuration for `agentic-flow`: `.agentic-flow/settings.toml`, ho
 - An **ADR** is cross-cutting; not nested under any single **Spec**
 - A **Reviewer agent** is dispatched by `/improve-codebase-architecture`, not by individual **Ticket** work
 - A **Workflow agent** is invoked by a specific skill (e.g. `/done`, `/retro`); not via the Reviewers manifest
-- The **Active spec pointer** identifies *one* implementation-active **Spec** at a time, even though multiple **Spec**s can be `Open` concurrently
+- The **Active spec pointer** identifies the *one* implementation-active **Spec** — serialized ticketing (STORE.md's single-active discipline; `/to-tickets`' preconditions) keeps a second **Spec** from going `Open` while one is active or unmerged
 
 ## Flagged ambiguities
 

@@ -33,7 +33,7 @@ After writing a spike or idea, offer to commit it: *"Commit the banked file (`<p
 
 2. **Pick a slug.** Kebab-case, descriptive, short (3–5 words). Should match the spec topic — e.g. `add-user-authentication`, not `auth-stuff`. The slug is one component: it feeds the spec directory name `<NNN>-<slug>` and the branch name `spec-<NNN>-<slug>`.
 
-3. **Sketch the major modules** the spec will touch. Look for opportunities to surface deep modules — small interfaces hiding complex behavior. These populate the **Modules touched** section.
+3. **Read the named modules, then sketch them.** Before freezing **Modules touched**, read the modules the conversation names — at least their public surface — never freezing the section from conversation memory alone: an unread module list ships stale names and misses real seams. Look for opportunities to surface deep modules — small interfaces hiding complex behavior. These populate the **Modules touched** section.
 
 4. **Write the spec** with the five-section structure below: `docs/specs/<NNN>-<slug>/spec.md` with `status: drafting` frontmatter. Use vocabulary from the Glossary. Respect any ADRs in the area you're touching.
 

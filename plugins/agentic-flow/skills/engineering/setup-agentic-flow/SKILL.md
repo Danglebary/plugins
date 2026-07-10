@@ -110,13 +110,6 @@ If no signal files exist (truly empty / fresh project), skip heuristic detection
 # skill runs CLOSE-OUT.md's gated merge; that doc's Consumers section owns the
 # reader list. Never guessed.
 # merge = "no-ff"
-
-[ticket_start]
-# When true, /next-ticket dispatches a research sub-agent as a standing
-# ticket-start step: map relevant code/docs, verify external-toolchain
-# assumptions, assess whether /tdd fits. The config is the standing consent —
-# no per-ticket prompt.
-# research_opener = true
 ```
 
 Every knob ships in the template — present but commented, each comment naming its effect and readers. Presence in the file is the discoverability mechanism for what knobs exist.

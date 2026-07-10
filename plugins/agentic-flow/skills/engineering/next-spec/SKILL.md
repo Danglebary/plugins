@@ -19,7 +19,7 @@ Store artifact paths: [STORE.md](../../_shared/STORE.md).
 
 1. **Read the existing state from the store.**
    - List specs, noting statuses (`Drafting`, `Open`, `Done`). Also skim banked ideas — parked ideas are candidate priorities.
-   - Sweep for unmerged spec branches (`spec-*` and legacy `prd-*`) — a spec in flight on its branch can be invisible to the store read from another checkout. A branch is unmerged when its tip (local or remote) is not an ancestor of the resolved default branch (the unmerged test — inline copy of [STORE.md](../../_shared/STORE.md)'s branch-link state tests, cited per ADR-0002; enumerate, filter, and observe per its enumeration rule and the remote-observation rule's advisory tier). Any found join the survey as in-flight work.
+   - Sweep for unmerged spec branches (`spec-*` and legacy `prd-*`) — a spec in flight on its branch can be invisible to the store read from another checkout. A branch is unmerged when its tip (local or remote) is not an ancestor of the resolved default branch (the unmerged test — inline copy of [STORE.md](../../_shared/STORE.md)'s branch-link state tests, kept inline per its placement test; enumerate, filter, and observe per its enumeration rule and the remote-observation rule's advisory tier). Any found join the survey as in-flight work.
    - Skim retros from the most recent 2–3 `Done` specs for cross-cutting lessons.
    - Read the Glossary for current domain vocabulary — use it throughout the conversation.
    - Skim the ADRs for cross-spec durable decisions.
@@ -27,7 +27,7 @@ Store artifact paths: [STORE.md](../../_shared/STORE.md).
 
 2. **Surface 2–4 candidate next priorities.** Ground each one in what you read. Examples:
    - "Spec 003's retro flagged auth-flow terminology drift. Worth a small spec to consolidate?"
-   - "ADR-0002 said we'd revisit caching once write load justified it. Worth checking now?"
+   - "ADR-0042 said we'd revisit caching once write load justified it. Worth checking now?"
    - "There's an idea *sweep billing TODOs* parked three weeks ago — promote it?"
    - "If you're starting fresh, what's the next user-facing capability you want?"
 
