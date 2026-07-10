@@ -6,12 +6,11 @@ Skills reference these via `../../_shared/<filename>.md` (two `..` — SKILL.md 
 
 ## Store docs
 
-- [STORE.md](./STORE.md) — the store contract: the two backends (files / notion), resolution order, the artifact map, single-active discipline. **Skills are store-neutral; this is where their vocabulary resolves to concrete storage.**
-- [NOTION-RESOLVER.md](./NOTION-RESOLVER.md) — the notion backend: id-based resolution (search as cold-start bootstrap only), the five database schemas, tool names
+- [STORE.md](./STORE.md) — the store contract: the artifact map, config read contract, branch-link state tests, single-active discipline. **This is where skill vocabulary resolves to concrete paths and encodings.**
 
 ## Format docs
 
-Format docs define each artifact's *content shape* (sections, voice, thresholds), which applies in both stores, plus its files-store encoding (paths, frontmatter). The notion-store encodings live in [NOTION-RESOLVER.md](./NOTION-RESOLVER.md).
+Format docs define each artifact's *content shape* (sections, voice, thresholds) plus its encoding (paths, frontmatter).
 
 - [PRD-FORMAT.md](./PRD-FORMAT.md) — frozen multi-ticket scope document
 - [TICKET-FORMAT.md](./TICKET-FORMAT.md) — single unit of work nested under a PRD
@@ -27,5 +26,5 @@ Format docs define each artifact's *content shape* (sections, voice, thresholds)
 
 ## Convention docs
 
-- [DIFF-MATERIALIZATION.md](./DIFF-MATERIALIZATION.md) — the diff-materialization contract: the invoking skill resolves `<base>`/`<head>` per store and scope; the plugin-shipped script (`scripts/materialize-diff.sh`) owns the git mechanics, preflights, and the `.agentic-flow/diff.patch` artifact
+- [DIFF-MATERIALIZATION.md](./DIFF-MATERIALIZATION.md) — the diff-materialization contract: the invoking skill resolves `<base>`/`<head>` per scope; the plugin-shipped script (`scripts/materialize-diff.sh`) owns the git mechanics, preflights, and the `.agentic-flow/diff.patch` artifact
 - [CLOSE-OUT.md](./CLOSE-OUT.md) — the close-out contract: the gated store-edits commit (enumerated paths, show-content-on-resume), the gated merge (convention read, verify green before branch delete), and the resting-state/interrupted-close discriminator every closing skill routes on

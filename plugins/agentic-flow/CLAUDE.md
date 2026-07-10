@@ -2,7 +2,7 @@ Skills are organized into bucket folders under `skills/`:
 
 - `engineering/` — daily code work
 - `productivity/` — daily non-code workflow tools
-- `_shared/` — reference docs shared across skills (not skills themselves): store docs (`STORE.md`, `NOTION-RESOLVER.md`), format docs (`<NAME>-FORMAT.md`), principle docs (`<NAME>-PRINCIPLE.md`), and convention docs (shared procedures consumed by multiple skills — some with a plugin-shipped mechanism at their core, e.g. `DIFF-MATERIALIZATION.md` + `scripts/materialize-diff.sh`; some pure procedure, e.g. `CLOSE-OUT.md`)
+- `_shared/` — reference docs shared across skills (not skills themselves): store docs (`STORE.md`), format docs (`<NAME>-FORMAT.md`), principle docs (`<NAME>-PRINCIPLE.md`), and convention docs (shared procedures consumed by multiple skills — some with a plugin-shipped mechanism at their core, e.g. `DIFF-MATERIALIZATION.md` + `scripts/materialize-diff.sh`; some pure procedure, e.g. `CLOSE-OUT.md`)
 
 Every skill in `engineering/` or `productivity/` must have a reference in the top-level `README.md`.
 

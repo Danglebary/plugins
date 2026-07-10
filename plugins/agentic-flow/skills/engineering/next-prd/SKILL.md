@@ -7,7 +7,7 @@ description: Exploration of what the project should work on next. Reads existing
 
 Exploration skill at the front of the agentic-flow workflow. Output is a *conversation*, not a document. The next skill in the chain is a **high-level `/grill-me`** that stress-tests the chosen direction; only after that does `/to-prd` capture it as a draft PRD. The full planning chain: `/next-prd` → `/grill-me` (high-level) → `/to-prd` → `/grill-me` (detail) → `/to-tickets`.
 
-Resolve the store first — see [STORE.md](../../_shared/STORE.md).
+Store artifact paths: [STORE.md](../../_shared/STORE.md).
 
 ## State contract
 
@@ -46,4 +46,3 @@ If the store has no PRDs (just-bootstrapped or first PRD) but step 1's sweep fou
 - **Don't drill into design or implementation.** That's the detail-stage `/grill-me`'s job after `/to-prd` writes the draft.
 - **Don't enumerate more than 3–4 candidates.** Survey, don't list everything.
 - **Don't read every retro and every ADR.** Sample the recent ones; the goal is signal, not coverage.
-- **Don't re-resolve the store mid-skill.** Resolve once at the start (see STORE.md).
