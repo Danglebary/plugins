@@ -36,7 +36,7 @@ Warns rather than refuses on `Open → Done` (a user who did the work without fl
    - The Glossary contents (so it uses domain vocabulary)
    - Existing ADR titles + statuses (so it doesn't propose duplicates)
    - A reminder that it has Read/Grep over the working tree and must verify claims against current source, not stale comments — every recorded fact-checker false positive traced to diff-only briefing
-   - The planning-artifact label per [DIFF-MATERIALIZATION.md](../../_shared/DIFF-MATERIALIZATION.md)'s "Diffs contain planning artifacts" section, carried whole — copy its two-sided contract into the brief, never paraphrase it
+   - The planning-artifact label per [DIFF-MATERIALIZATION.md](../../_shared/DIFF-MATERIALIZATION.md)'s "Diffs contain planning artifacts" section, carried whole — copy the section's two-sided contract into the brief, never a paraphrase of it
 
    The fact-checker returns three sections (each may be `_None._`):
    - **Deviation gaps** — diff changes at or above the behavioral/seam threshold not captured in `## Deviations`
@@ -51,7 +51,7 @@ Warns rather than refuses on `Open → Done` (a user who did the work without fl
 
 6. **Surface ADR candidates to the user** for explicit decision: each candidate gets a yes/no/defer. Blocking checkpoint — present the candidates and end the turn; don't proceed to the label step in the same breath. On yes, hand off to ADR creation per [ADR-FORMAT.md](../../_shared/ADR-FORMAT.md).
 
-   **Toolchain-fact gate:** before writing any ADR, every load-bearing external-system claim must be verified against the installed toolchain — recipe and incident live in [ADR-FORMAT.md](../../_shared/ADR-FORMAT.md)'s "Toolchain-fact gate" section.
+   **Toolchain-fact gate:** before writing any ADR, verify every load-bearing external-system claim against the installed toolchain — recipe and incident live in [ADR-FORMAT.md](../../_shared/ADR-FORMAT.md)'s "Toolchain-fact gate" section.
 
 7. **Determine the outcome label.**
    - **Exact match** — implemented exactly as the ticket and spec specified.
@@ -61,7 +61,7 @@ Warns rather than refuses on `Open → Done` (a user who did the work without fl
 
    Propose the label with reasoning, anchored in captured deviations — and **name the strongest alternative label with why it loses**. Blocking confirm: present the proposal and wait for confirm or override. (The runs that named the alternative got fast, informed sign-off; the runs that declared unilaterally got audited later.)
 
-8. **Append the retro entry** to the spec's running retro (`docs/specs/<NNN>-<slug>/retro.md`, creating the file if it doesn't exist):
+8. **Append the retro entry** to the spec's running retro (`docs/specs/<NNN>-<slug>/retro.md`, creating the file if it doesn't exist) per [RETRO-FORMAT.md](../../_shared/RETRO-FORMAT.md)'s running form:
 
    ```markdown
    ## Ticket NNN — <ticket title>
@@ -71,9 +71,9 @@ Warns rather than refuses on `Open → Done` (a user who did the work without fl
    <1-3 sentences on what was learned>
    ```
 
-   The 1-3 sentences capture *what was learned*, not *what was done*.
+   The 1–3 sentences capture *what was learned*, not *what was done*.
 
-9. **Flip the ticket** status from `In progress` to `Done`. Ordering is strict: **read the ticket → apply the status edit → only then run git commands** — never batch the store edit in parallel with git (see STORE.md).
+9. **Flip the ticket** status from `In progress` to `Done`. Ordering is strict: **read the ticket → apply the status edit → only then run git commands** — never batch the store edit in parallel with git (see [STORE.md](../../_shared/STORE.md)).
 
 10. **Commit the close-out edits (gated).** Run the gated close-out commit per [CLOSE-OUT.md](../../_shared/CLOSE-OUT.md). `/done`'s bindings:
     - **The edit set**: every store edit this invocation made — the ticket file (materialized deviations + the `done` flip), the running retro, any ADR minted at step 6. Offer: *"Commit the close-out edits (`<paths>`) on the ticket branch?"*

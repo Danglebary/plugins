@@ -65,6 +65,10 @@ The framing held up. Nothing in implementation challenged the problem statement.
 
 All three goals shipped, plus a fourth during execution: signed cookies (see Approach).
 
+## Non-goals — Exact match
+
+OAuth and password reset stayed out of scope as planned.
+
 ## Approach — Divergence
 
 Signed cookies replaced plain session IDs (ticket 002). Defense-in-depth; no ADR needed, localized change.
