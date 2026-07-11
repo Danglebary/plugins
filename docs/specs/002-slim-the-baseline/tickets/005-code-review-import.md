@@ -27,3 +27,5 @@ Ticket close-out judges implementation correctness against the spec, and refacto
 ## Deviations
 
 - Extended CONTEXT.md's Knowledge-layer enumeration with the spec-conformance agent (as "the close-out pair" alongside the deviation fact-checker) — the layer is the cross-plugin API surface (ADR 0001), and the Work plugin must invoke the new close-out analyzer rather than fork it; the ticket named only the agent and its /done wiring, not the layer membership.
+- (refactor) Grounded the spec-conformance agent's `file:line` citations: `/done`'s brief now passes the ticket and `spec.md` paths, and the agent reads them to source line numbers rather than citing the inline copy — closing an instruction-capability gap where the required citation had no findable target.
+- (refactor) Deduped the always-on reviewer default set toward its authority: `REVIEWERS-FORMAT.md`'s example stops mirroring the live list (now points at `/setup-agentic-flow` as the source of truth), leaving the setup skill as authority and `docs/reviewers.md` as a generated per-repo instance.

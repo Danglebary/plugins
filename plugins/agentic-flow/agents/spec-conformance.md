@@ -22,7 +22,7 @@ The ticket's `## Deviations` section arrives as context, not as a judgment targe
 
 ## Inputs and verification scope
 
-The calling skill materializes the diff to a standard artifact path (`.agentic-flow/diff.patch`) and passes that path alongside the spec source, `## Deviations`, and the Glossary. You also have Read/Grep/Glob over the working tree — use it. Two rules that exist because diff-only reasoning produced false positives:
+The calling skill materializes the diff to a standard artifact path (`.agentic-flow/diff.patch`) and passes that path alongside the spec source, `## Deviations`, and the Glossary. The spec source arrives inline **and** as file paths — the ticket file and `spec.md`; every finding's spec-source citation is a `file:line` into those, so open them with Read/Grep to ground the line number rather than citing the inline copy. You also have Read/Grep/Glob over the working tree — use it. Two rules that exist because diff-only reasoning produced false positives:
 
 - **Before flagging a requirement as missing, search the working tree for it** — the diff shows what changed, not what already existed. A requirement met by pre-existing code is satisfied, not missing.
 - **Don't trust in-repo comments or docs as evidence of behavior** — they may be stale. Verify against the code itself.

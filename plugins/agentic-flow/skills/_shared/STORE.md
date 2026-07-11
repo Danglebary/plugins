@@ -80,4 +80,4 @@ Store artifacts are edited with Read/Edit/Write. A mid-lifecycle status flip (`O
 
 ## What never moves
 
-`.agentic-flow/diff.patch` is the fact-checker's only view of a diff and stays local, uncommitted. Agents are files shipped by the plugin or the repo — [AGENT-FORMAT.md](./AGENT-FORMAT.md).
+`.agentic-flow/diff.patch` is the close-out pair's only view of a diff and stays local, uncommitted. Agents are files shipped by the plugin or the repo — [AGENT-FORMAT.md](./AGENT-FORMAT.md).

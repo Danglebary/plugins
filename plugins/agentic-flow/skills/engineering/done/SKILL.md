@@ -31,8 +31,8 @@ Warns rather than refuses on `Open → Done` (a user who did the work without fl
 
 3. **Dispatch the close-out pair — `agentic-flow:deviation-fact-checker` and `agentic-flow:spec-conformance` — in one parallel batch**, both against the same materialized diff. The axes are deliberately split: the fact-checker audits bookkeeping and never editorializes; correctness judgment lives in the conformance agent. The shared brief carries, at minimum:
    - The diff artifact path (`.agentic-flow/diff.patch`)
-   - The ticket's Goal + Acceptance criteria + existing `## Deviations`
-   - The spec's Approach section — briefing context for the fact-checker; part of the conformance agent's spec source
+   - The ticket's Goal + Acceptance criteria + existing `## Deviations`, **with the ticket file's path** (`docs/specs/<NNN>-<slug>/tickets/<NNN>-<slug>.md`) so the conformance agent can ground its spec-source citations at `file:line`
+   - The spec's Approach section **and the spec file's path** (`docs/specs/<NNN>-<slug>/spec.md`) — briefing context for the fact-checker; part of the conformance agent's spec source, and the citation target for any Approach-derived finding
    - The Glossary contents (so both use domain vocabulary)
    - A reminder that they have Read/Grep over the working tree and must verify claims against current source, not stale comments — every recorded fact-checker false positive traced to diff-only briefing
    - The planning-artifact label per [DIFF-MATERIALIZATION.md](../../_shared/DIFF-MATERIALIZATION.md)'s "Diffs contain planning artifacts" section, carried whole — copy the section's two-sided contract into the brief, never a paraphrase of it
