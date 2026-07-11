@@ -7,6 +7,7 @@ Reviewer agents dispatched by `/improve-codebase-architecture` for refactor cand
 - `agentic-flow:qa-engineer` — test coverage, edge cases, missing tests
 - `agentic-flow:software-architect` — module boundaries, deepening opportunities, leaky seams
 - `agentic-flow:security-engineer` — input validation, auth, common vuln patterns
+- `agentic-flow:standards-reviewer` — Fowler-smell baseline plus documented repo standards, findings labeled judgment calls
 
 ## Plugin-shipped (specialized)
 

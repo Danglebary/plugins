@@ -70,11 +70,12 @@ Surface each of these as a proposal, never a silent change:
 
 ### Default (always-on) reviewers
 
-Always included regardless of repo content. v1 set:
+Always included regardless of repo content:
 
 - `agentic-flow:qa-engineer` — test coverage, edge cases, missing tests
 - `agentic-flow:software-architect` — module boundaries, deepening opportunities, leaky seams
 - `agentic-flow:security-engineer` — input validation, auth, common vuln patterns
+- `agentic-flow:standards-reviewer` — Fowler-smell baseline plus documented repo standards, findings labeled judgment calls
 
 ### Specialized reviewers (heuristic-detected)
 

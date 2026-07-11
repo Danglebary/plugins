@@ -1,11 +1,11 @@
 ---
 name: done
-description: "Close a ticket: fact-check `## Deviations`, surface ADR candidates, append the retro, flip to Done, fork to refactor pass or merge. Use when finishing a ticket."
+description: "Close a ticket: fact-check `## Deviations`, judge spec conformance, surface ADR candidates, append the retro, flip to Done, fork to refactor pass or merge. Use when finishing a ticket."
 ---
 
 # Done
 
-Close a ticket using **store-as-primary-signal**: fact-check captured `## Deviations` against the git diff via a sub-agent, then write the retro entry. Works identically from a fresh session or one with full impl context. Code and its diff stay in git; ticket state and retro live in the store.
+Close a ticket using **store-as-primary-signal**: fact-check captured `## Deviations` and judge spec conformance against the git diff via paired sub-agents, then write the retro entry. Works identically from a fresh session or one with full impl context. Code and its diff stay in git; ticket state and retro live in the store.
 
 ## State contract
 
@@ -25,27 +25,31 @@ Warns rather than refuses on `Open → Done` (a user who did the work without fl
    bash "${CLAUDE_PLUGIN_ROOT}/scripts/materialize-diff.sh" <base> <head>
    ```
 
-   On success the diff is at `.agentic-flow/diff.patch` — the fact-checker has no git access; this artifact is its only view of the diff. On any non-zero exit, follow the shared doc's exit-code table: relay stderr and stop — never fall back to a hand-rolled `git diff`. Exit 5 (dirty tree) is the one exit `/done` interprets before stopping. Classify the dirty paths first — **store-artifact paths per STORE.md's artifact map** (`docs/specs/**`, `docs/adr/**`, `docs/spikes/**`, `docs/reviewers.md`, `CONTEXT.md`, `.agentic-flow/settings.toml`); everything else is implementation:
+   On success the diff is at `.agentic-flow/diff.patch` — the close-out agents have no git access; this artifact is their only view of the diff. On any non-zero exit, follow the shared doc's exit-code table: relay stderr and stop — never fall back to a hand-rolled `git diff`. Exit 5 (dirty tree) is the one exit `/done` interprets before stopping. Classify the dirty paths first — **store-artifact paths per STORE.md's artifact map** (`docs/specs/**`, `docs/adr/**`, `docs/spikes/**`, `docs/reviewers.md`, `CONTEXT.md`, `.agentic-flow/settings.toml`); everything else is implementation:
    - **Any implementation path is dirty** — refuse, naming the convention: *implementation is committed on the ticket branch before `/done` runs*. Print the implementation paths; the user commits *those paths only* — co-present store-artifact dirt stays in the tree (a resume signal — [RECOVERY.md](../../_shared/RECOVERY.md#resting-states), implementation-dirt row). Then re-run `/done`.
    - **Only store-artifact paths are dirty** — `/done`'s own interrupted close-out. Don't refuse: open [RECOVERY.md](../../_shared/RECOVERY.md#done-interrupted-close-out) and resume per its walkthrough.
 
-3. **Invoke `agentic-flow:deviation-fact-checker`** with, at minimum:
+3. **Dispatch the close-out pair — `agentic-flow:deviation-fact-checker` and `agentic-flow:spec-conformance` — in one parallel batch**, both against the same materialized diff. The axes are deliberately split: the fact-checker audits bookkeeping and never editorializes; correctness judgment lives in the conformance agent. The shared brief carries, at minimum:
    - The diff artifact path (`.agentic-flow/diff.patch`)
    - The ticket's Goal + Acceptance criteria + existing `## Deviations`
-   - The spec's Approach section (for context)
-   - The Glossary contents (so it uses domain vocabulary)
-   - Existing ADR titles + statuses (so it doesn't propose duplicates)
-   - A reminder that it has Read/Grep over the working tree and must verify claims against current source, not stale comments — every recorded fact-checker false positive traced to diff-only briefing
+   - The spec's Approach section — briefing context for the fact-checker; part of the conformance agent's spec source
+   - The Glossary contents (so both use domain vocabulary)
+   - A reminder that they have Read/Grep over the working tree and must verify claims against current source, not stale comments — every recorded fact-checker false positive traced to diff-only briefing
    - The planning-artifact label per [DIFF-MATERIALIZATION.md](../../_shared/DIFF-MATERIALIZATION.md)'s "Diffs contain planning artifacts" section, carried whole — copy the section's two-sided contract into the brief, never a paraphrase of it
 
-   The fact-checker returns three sections (each may be `_None._`):
+   The fact-checker additionally receives existing ADR titles + statuses (so it doesn't propose duplicates) and returns three sections (each may be `_None._`):
    - **Deviation gaps** — diff changes at or above the behavioral/seam threshold not captured in `## Deviations`
    - **Misrepresented deviations** — entries in `## Deviations` that don't match the diff
    - **ADR candidates** — choices in the diff that may warrant an ADR per the three-gate test
 
+   The conformance agent judges the diff against its spec source — the ticket's Goal and Acceptance criteria plus the spec's Approach — and returns three sections (each may be `_None._`):
+   - **Missing or partial requirements** — spec-source requirements the diff doesn't satisfy, or satisfies only partially
+   - **Scope creep** — diff changes serving no spec-source requirement
+   - **Implemented but looks wrong** — requirements whose implementation contradicts the spec source, each finding citing the spec line and the diff hunk
+
    The fact-checker is briefed against the threshold in [ABSTRACTION-LEVELS-PRINCIPLE.md](../../_shared/ABSTRACTION-LEVELS-PRINCIPLE.md). Below-threshold diff content (private renames, formatting, internal refactors) is **not** flagged as gaps — noise, not deviations. `_None._` across all three sections is a valid, common outcome on small in-module tickets.
 
-4. **Adversarially review the findings.** Review each finding against cited diff hunks, drop noise (below-threshold gaps), surface high-signal items.
+4. **Adversarially review both reports, then present them separately.** Check each finding against its cited diff hunks — and, for conformance findings, the cited spec lines — and drop what the citations don't support (below-threshold gaps, findings the working tree refutes). Render the two reports under separate headings, the fact-check then the conformance report, never merged into one list, never reranked against each other: the axes answer different questions (is the bookkeeping accurate; does the implementation satisfy the spec source), and a merged ranking would bury one answer under the other.
 
 5. **Apply confirmed updates** to the ticket's `## Deviations` section (append gaps, fix misrepresentations). The section is always materialized at close: if nothing was captured and the fact-check is clean, write `_None._` (replacing `_None yet._`). An absent section reads "nobody checked", an explicit `_None._` reads "checked, clean" — `/retro`'s spec-scope fact-check relies on the distinction.
 
@@ -59,7 +63,7 @@ Warns rather than refuses on `Open → Done` (a user who did the work without fl
    - **Divergence** — implemented something different (approach or acceptance) than specified.
    - **Omitted** — ticket abandoned or merged into another. (If so, prefer abandoning the ticket per the store — the `tickets/_abandoned/` move, [TICKET-FORMAT.md](../../_shared/TICKET-FORMAT.md)'s rule — not running `/done`.)
 
-   Propose the label with reasoning, anchored in captured deviations — and **name the strongest alternative label with why it loses**. Blocking confirm: present the proposal and wait for confirm or override. (The runs that named the alternative got fast, informed sign-off; the runs that declared unilaterally got audited later.)
+   Propose the label with reasoning, anchored in both step-4 reports — the fact-checked deviations and the conformance findings — and **name the strongest alternative label with why it loses**. Blocking confirm: present the proposal and wait for confirm or override. (The runs that named the alternative got fast, informed sign-off; the runs that declared unilaterally got audited later.)
 
 8. **Append the retro entry** to the spec's running retro (`docs/specs/<NNN>-<slug>/retro.md`, creating the file if it doesn't exist) per [RETRO-FORMAT.md](../../_shared/RETRO-FORMAT.md)'s running form:
 
@@ -94,10 +98,10 @@ Warns rather than refuses on `Open → Done` (a user who did the work without fl
 
 - **Don't restructure the running retro.** This skill appends only; restructuring is `/retro`'s job at spec close.
 - **Don't write what was done in the retro entry.** Capture *insight*, not *log*.
-- **Don't trust the fact-checker's drafts blindly.** Review each finding against the cited diff; drop below-threshold "gaps".
+- **Don't trust either agent's drafts blindly.** Review each finding against its citations; drop below-threshold "gaps" and conformance findings the working tree refutes.
 - **Don't pad `## Deviations` to look thorough.** If nothing seam-level moved and behavior matched spec, it reads `_None._` at close (step 5) — never invent entries to fill it.
 - **Don't auto-invoke `/improve-codebase-architecture`.** The fork recommends an arm with reasoning; the user chooses — accepting the refactor-pass arm is never automatic.
-- **Don't skip the fact-check step even when impl just happened this session.** Store-as-primary: the fact-checker runs every time, regardless of conversation context.
+- **Don't skip the close-out pair even when impl just happened this session.** Store-as-primary: the fact-checker and the conformance agent run every time, regardless of conversation context.
 - **Don't merge without an explicit yes.** The close-out fork is a gate, not a notification — silence or an unanswered question means stop.
 - **Don't stage the close-out commit with `-A` or `git add .`.** Enumerate the paths this invocation edited; blanket staging sweeps unrelated tree state into the commit.
 - **Don't treat a passing fact-check as truth-checked findings.** It audits diff↔deviation mapping and cited justifications; a clean run doesn't validate domain claims in spike or analysis docs — those need their own review.
