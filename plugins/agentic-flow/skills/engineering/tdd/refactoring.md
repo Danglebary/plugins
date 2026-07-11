@@ -15,7 +15,8 @@ After the TDD cycle, take a critical second pass at the code you just wrote. The
 
 ## What gets captured where
 
-- **Seam-level moves** (module split/merge, public API change, dependency edge change, IO surface change) → ticket's `## Deviations` section, with a `(refactor)` prefix.
+- **Seam-level moves the plan didn't name** — a module split/merge, a public-API boundary-signature change, or an IO-surface change → these are the contract's hard always-stop list: **stop and surface before making the move**, not record-and-continue. With auto-commit on green, an always-stop move must be ratified before it lands. See [IMPLEMENTATION-LOOP.md](../../_shared/IMPLEMENTATION-LOOP.md)'s "Stop or record" section.
+- **Other seam-level moves** — a dependency edge change, or a seam move the approved plan already covered → ticket's `## Deviations` section, with a `(refactor)` prefix (record-and-continue).
 - **Internal cleanups** (private renames, dedup inside a module, control-flow tidy-up, idiomatic refactors) → not captured. Below threshold.
 - **Why a specific code shape was chosen** (when the WHY is non-obvious) → inline comment next to the code. Not in deviations, not in the ticket.
 
