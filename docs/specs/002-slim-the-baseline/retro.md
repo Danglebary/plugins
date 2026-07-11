@@ -23,3 +23,9 @@ Vocabulary reframes fan wider than any planned site list: the fork rename touche
 **Outcome**: Exact match
 
 What made a 27–35% cut safe wasn't writer quality but verification diversity: the Sonnet weak-executor probe caught a deleted mechanism (STORE's branch-sweep command) that every stronger seat read past, and the tier-decorrelated layers confirmed 13 defects total — three semantic. Hard word budgets collide with clause conservation on contract-dense authorities (STORE's ledger floor sat ~240 words above its budget); the writer surfacing that conflict instead of silently dropping is what let both runtime-visible drops be reversed, arguing for budget-vs-floor checks at cartography time, before writers are in flight. Verification ran ~40% over its token estimate — size future fleets' verify stages off measured seat costs, not writer-stage symmetry.
+
+## Ticket 005 — Code-review import
+
+**Outcome**: Extended
+
+Final corpus audit: 43,826 words against the ~40,000 target — a structural miss, not an execution one: ticket 004's meaning-preserving floor was already 41,815, and the import necessarily adds ~2,000 words of agents and wiring, so the target had silently assumed cuts the spec's own safety rule forbade — corpus targets set before additive tickets should budget the additions. Reconstructing another lineage's design from prose descriptions alone (no local copy of mattpocock/skills existed) worked because the repo's own agent corpus was pattern-dense enough to fill the gaps — the format docs and existing agents functioned as the missing upstream. Dogfooding surfaced a deployment seam: an agent file created mid-session isn't a registered dispatch type until reload, so the first live `/done` pair-dispatch ran the new agent's definition inlined into a generic agent — new-agent tickets should expect one degraded-dispatch close before the plugin reloads.

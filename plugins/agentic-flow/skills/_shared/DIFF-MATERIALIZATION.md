@@ -59,7 +59,7 @@ Only for a close-out skill resuming an interrupted close; recipe in [RECOVERY.md
 
 ## The artifact
 
-The `deviation-fact-checker` agent body names `.agentic-flow/diff.patch` verbatim: a published contract; never move or rename it; ephemeral scratch per [STORE.md](./STORE.md).
+The `deviation-fact-checker` and `spec-conformance` agent bodies name `.agentic-flow/diff.patch` verbatim: a published contract; never move or rename it; ephemeral scratch per [STORE.md](./STORE.md).
 
 ## Diffs contain planning artifacts
 
