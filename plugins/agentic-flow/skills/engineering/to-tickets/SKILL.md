@@ -69,10 +69,7 @@ Verify these when the spec is identified — failing fast beats a proposal conve
 
 ## Bootstrap re-entry
 
-An `Open` spec with tickets whose bootstrap hasn't fully landed (see State contract) is, by construction, an interrupted or declined bootstrap. Re-invoking `/to-tickets` on it re-offers **only the missing pieces** — no re-ticketing, no re-proposal; ticket creation stays one-shot. Two states route here:
-
-- **No linked branch, local or remote** (neither `spec-<NNN>-<slug>` nor a legacy `prd-<NNN>-<slug>` twin) — declined, or crashed before the cut. Verify the serialize-ticketing preconditions, idempotently repair the pre-bootstrap edits if the interruption swallowed one (the `Open` flip is present by construction — it is the discriminator; rewrite the active pointer if it's missing), then run step 11's offer in full.
-- **Branch exists, planning commit absent from it** — crashed between cut and commit. Preconditions 1 and 3 apply; precondition 2 exempts this spec's own branch. Switch to the linked branch (the untracked planning artifacts ride the switch), then run step 11's commit half only — and because this session didn't author the edits, CLOSE-OUT.md's show-content rule applies: show the enumerated paths' content with the offer, not just their names.
+An `Open` spec with tickets whose bootstrap hasn't fully landed (see State contract) routes here from step 1. The two-state walkthrough — no linked branch; branch without its planning commit — lives in [RECOVERY.md](../../_shared/RECOVERY.md#to-tickets-bootstrap-re-entry).
 
 ## Spec too big
 

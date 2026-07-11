@@ -1,5 +1,5 @@
 ---
-status: open
+status: in-progress
 depends_on: [003]
 ---
 
