@@ -1,35 +1,26 @@
-## Ticket 001 — Loop contract doc
+# Retro: Codify the implementation loop
 
-**Outcome**: Exact match
+## Problem — Exact match
 
-The spec's choice to delegate the verification-source resolution to this doc ("owns the resolution") surfaced the one genuinely open design decision — the precedence order — for explicit ratification, instead of letting it hide as an assumption baked into the prose. Validating a contract doc that has no consumers yet is a cross-doc coherence problem, not a test problem: a technical-editor coherence pass — not TDD — is what caught an overloaded term and confirmed the always-stop list stayed a faithful subset of the deviation threshold.
+The two-gap framing — an uncodified non-TDD path, and two answered-yes ceremony gates (the ticket-branch commit and the "run `/done`?" prompt) — held through implementation without challenge; nothing in execution pushed back on the problem statement.
 
-## Ticket 002 — TDD loop adoption
+## Goals — Exact match
 
-**Outcome**: Extended
+All five goals shipped as written: `/implement` exists as a `/tdd` peer (ticket 003), mode selection rides the existing plan-approval gate with no new gate (004), the clean-green exit tasks auto-commit and auto-invoke `/done` (001–003), the doctrine prose states the Consent-vs-Ceremony test everywhere it read as blanket (005), and the happy path shed two prompts with no Consent gate lost. No goal was added, dropped, or reinterpreted.
 
-Adopting a shared contract into a skill isn't finished when the AC-named section is fixed — the Goal's skill-wide "no contradictory in-flight instruction" claim was the real bar, and it exposed a second contradicting site (`refactoring.md`'s seam-move routing) that satisfying the AC alone would have shipped. That contradiction only had teeth because auto-commit removes the human diff-review that had been silently masking it: automating a ceremony gate can surface latent contradictions the manual review was quietly absorbing.
+## Non-goals — Exact match
 
-## Ticket 003 — Implement skill
+Every fence held: session-handoff stayed untouched, no Consent gate changed, ticket 004 confirmed no new config knob or mode gate was introduced, and `/tdd`'s red-green-refactor cycle was left intact (002/006) — the shared stop-and-surface trigger and exit tasks landed *around* the cycle, not in it, exactly as scoped.
 
-**Outcome**: Exact match
+## Approach — Extended
 
-Building the plan-then-execute skill *in* plan-then-execute mode fit precisely because a Markdown skill has no runtime unit to drive red-green — and closing it exercised the contract's own graceful-degradation path: with no repo verification configured, "green" had no positive signal, so the honest close was to surface for a manual commit rather than auto-exit. The `/tdd` peer's ticket-section carried most of the design; the cite-not-restate boundary — not fresh prose — is what kept `/implement` from silently re-deriving the shared contract and drifting from it.
+The design was front-loaded and largely correct — plan-then-execute, the recording-vs-stopping split, the exit tasks, mode-recommendation, and the doctrine refinement all landed as specified — but execution extended two edges the plan left open or under-scoped. Ticket 001 filled the verification-source resolution *order* the spec had explicitly delegated to `IMPLEMENTATION-LOOP.md`, inverting to project-verify-skill-first as the least-ambiguous source. Ticket 002 found the stop/record split had to reach a second site — `tdd/refactoring.md`'s "what gets captured where" still routed always-stop moves to record-and-continue — because the Goal's "no contradictory in-flight instruction" was a higher bar than the AC's single-section scope, and auto-commit would have shipped that latent contradiction.
 
-## Ticket 004 — Mode recommendation
+## Modules touched — Extended
 
-**Outcome**: Exact match
+Every enumerated module landed; three files the spec didn't enumerate came along as forced consequences of the corpus's own conventions — the `skills/_shared/README.md` convention-doc index (001), `tdd/refactoring.md` (002), and the bucket README's duplicate `/tdd` one-liner (006). None was scope creep: each is a sync-set or index copy the enumerated edit could not correctly land without.
 
-Codifying a "no new gate/knob" requirement lands better as a positive clause naming the gate the recommendation rides than as silence — an absent statement reads as oversight, an explicit "ratified at the existing plan-approval gate" reads as a decision, echoing the store's own materialized-`_None._`-vs-absent distinction. The close caught a self-inflicted near-miss: a cwd-drifted shell check briefly "refuted" a correct research finding, and only re-verifying against source — the close-out pair's own standing discipline — kept a true fact from being discarded.
+## Cross-cutting
 
-## Ticket 005 — Doctrine prose
-
-**Outcome**: Exact match
-
-Retiring a blanket doctrine phrase across the corpus is a classification task, not search-and-replace: the canonical source (ADR 0004) must *keep* the retired "offered, never automatic" wording to name what it corrects, and a homonym site (`done/SKILL.md`'s refactor-fork "never automatic", itself a consent gate) legitimately shares the words — so verifying the refinement means telling sync-set site from quotation-by-source from homonym, which a grep-for-zero would have failed three ways. Because ADR 0004's §Consequences had already enumerated the sync-set, this close mostly verified agreement rather than making decisions — the design was front-loaded into the ADR, leaving wording fidelity (state the test, cite rather than re-derive) as the only live risk.
-
-## Ticket 006 — README workflow surfaces
-
-**Outcome**: Extended
-
-Reflecting landed behavior in a flow diagram is a fidelity task, not a paraphrase: the diagram had to preserve the contract's exact distinctions — un-gated ceremony vs. the still-gated close-out, graceful degradation when verification isn't green, and auto-`/done` being explicitly *not* auto-merge — because a looser rendering misleads a reader more than the stale pre-change flow did, and sequencing this ticket last is what let the prose describe the real loop instead of the plan. A corpus that keeps duplicate skill one-liners (plugin README + `engineering/` bucket README) turns a "single surface" ticket into a two-file edit — scoping strictly to the ticket's named surface would have shipped a stale sync-copy, so the honest close records the second file as the Extended scope rather than hiding it.
+- The Consent-vs-Ceremony vocabulary the work settled during grilling became durable cross-section infrastructure — two Glossary terms in `CONTEXT.md` plus ADR 0004 — rather than living as spec prose; the whole spec sits downstream of that distinction, and every doctrine-prose edit (005) is a projection of it.
+- This corpus's duplication conventions turn "single-surface" tickets into multi-file edits: both the convention-doc index (001) and the must-stay-in-sync skill one-liners (006) forced a second edit the ticket's named surface never mentioned — a standing property worth pricing into future single-surface scoping.

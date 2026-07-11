@@ -1,5 +1,5 @@
 ---
-status: open
+status: done
 ---
 
 # Codify the implementation loop
