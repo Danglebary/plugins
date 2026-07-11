@@ -45,9 +45,12 @@ Mid-transition safety nets: the branch link resolves a legacy `prd-<NNN>-<slug>`
                                                   planning artifacts as its first commit
 
 LOOP per ticket:
-  6. /next-ticket                               → recommends next ready ticket
-  7. (work the ticket: /tdd)
-  8. /done                                      → fact-checks deviations + judges spec conformance, flips status,
+  6. /next-ticket                               → recommends the next ready ticket and its mode (/tdd or /implement)
+  7. /tdd  or  /implement                       → work the ticket in the recommended mode; on clean completion
+                                                  (all planned work done + verification green) auto-commits on the
+                                                  ticket branch and auto-invokes /done — un-gated exit-tasks;
+                                                  otherwise stops and surfaces to you
+  8. /done  (auto-invoked on clean completion)  → fact-checks deviations + judges spec conformance, flips status,
                                                   appends retro entry, commits close-out edits (gated), forks:
                                                   refactor pass or merge
   9. /improve-codebase-architecture (if chosen)   → per-ticket refactor pass with reviewer subagents
@@ -69,7 +72,7 @@ LOOP per ticket:
 - **[to-spec](./skills/engineering/to-spec/SKILL.md)** — Synthesize the current conversation into a frozen spec (Status: Drafting). Does not interview.
 - **[to-tickets](./skills/engineering/to-tickets/SKILL.md)** — Break a spec into dependency-ordered vertical-slice tickets. Flips spec `Drafting → Open` and ends at the gated spec-branch bootstrap — cut from the default branch, planning artifacts committed as its first commit.
 - **[next-ticket](./skills/engineering/next-ticket/SKILL.md)** — Recommend the next ready ticket within the current spec. Computes blocked from dependencies.
-- **[tdd](./skills/engineering/tdd/SKILL.md)** — Test-driven development with a red-green-refactor loop. Builds features or fixes bugs one vertical slice at a time.
+- **[tdd](./skills/engineering/tdd/SKILL.md)** — Test-driven development with a red-green-refactor loop. Inside a ticket, stops and surfaces the decisions the loop can't safely make, then auto-commits and invokes `/done` on clean-green completion.
 - **[implement](./skills/engineering/implement/SKILL.md)** — Plan-then-execute implementation. Builds features or fixes bugs from an approved plan when TDD doesn't fit.
 - **[done](./skills/engineering/done/SKILL.md)** — Close the current ticket. Dispatches the deviation-fact-checker and spec-conformance agents against the ticket diff — two reports, separate headings, never merged — flips status, appends a retro entry, commits the close-out edits at one gated offer, then forks: run `/improve-codebase-architecture`'s refactor pass, or merge now — one arm recommended from the diff's nature.
 - **[improve-codebase-architecture](./skills/engineering/improve-codebase-architecture/SKILL.md)** — Per-ticket refactor pass. Dispatches reviewer agents listed in the Reviewers manifest against the just-closed ticket's diff, merges findings through the deepening framework, captures refactor changes in the ticket's `## Deviations` with a `(refactor)` marker. Every pass ends at the gated close-out (merge offered when a ticket branch is live); outside-spec deferrals bank as Ideas.

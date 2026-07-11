@@ -1,5 +1,5 @@
 ---
-status: open
+status: done
 depends_on: [002, 003, 004]
 ---
 
@@ -21,4 +21,4 @@ Sequenced last: depends on 002/003/004 landing so the diagram and one-liners des
 
 ## Deviations
 
-_None yet._
+- AC2 names "the `/tdd` one-line description" and the ticket's surfaces are "the plugin README" (`plugins/agentic-flow/README.md`). Also updated the duplicate `/tdd` one-liner in the bucket README (`plugins/agentic-flow/skills/engineering/README.md:11`) with the same replacement text — the two one-liners are a must-stay-in-sync copy (the plugin CLAUDE.md mandates a bucket-README entry per skill). Editing only the plugin copy would leave the bucket copy stale and invite a later technical-editor drift finding; the diff touching that file without a note would read as an unrecorded change to the close-out fact-checker.
