@@ -26,4 +26,4 @@ Ticket close-out judges implementation correctness against the spec, and refacto
 
 ## Deviations
 
-_None yet._
+- Extended CONTEXT.md's Knowledge-layer enumeration with the spec-conformance agent (as "the close-out pair" alongside the deviation fact-checker) — the layer is the cross-plugin API surface (ADR 0001), and the Work plugin must invoke the new close-out analyzer rather than fork it; the ticket named only the agent and its /done wiring, not the layer membership.

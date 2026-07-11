@@ -13,7 +13,7 @@ The planned separate plugin for collaborative, PR-based repos: tickets sourced f
 _Avoid_: "team mode" (rejected config-axis framing); "day-job mode".
 
 **Knowledge layer**:
-The lifecycle-agnostic subset of agentic-flow that both workflows share: `/next-spec`, `/grill-me`, `/to-spec`, `/tdd`, the Glossary, ADRs, reviewer agents, and the deviation fact-checker. A cross-plugin API surface — these skills must not *perform* either workflow's close-out mechanics (no merges, no lifecycle gates). Advisory git reads are compatible: the unmerged spec-branch sweep (`spec-*` and legacy `prd-*`) and numbering's branch scan follow the branch-link conventions where present and are inert where they're absent — they warn or reserve, never gate.
+The lifecycle-agnostic subset of agentic-flow that both workflows share: `/next-spec`, `/grill-me`, `/to-spec`, `/tdd`, the Glossary, ADRs, reviewer agents, and the close-out pair (the deviation fact-checker and spec-conformance agents) — analytical judges that perform no close-out mechanics themselves. A cross-plugin API surface — these skills must not *perform* either workflow's close-out mechanics (no merges, no lifecycle gates). Advisory git reads are compatible: the unmerged spec-branch sweep (`spec-*` and legacy `prd-*`) and numbering's branch scan follow the branch-link conventions where present and are inert where they're absent — they warn or reserve, never gate.
 _Avoid_: "shared skills" without qualification (ambiguous with `skills/_shared/`, which holds reference docs, not skills).
 
 **Lifecycle layer**:
