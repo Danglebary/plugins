@@ -21,7 +21,7 @@ The 2026-07-07 whole-plugin review confirmed that the files store's git story br
 
 ## Non-goals
 
-- The Work workflow plugin (Jira ticket source, no-PRD track, PR-based close-out, feature-branch epics with stacked ticket PRs) — banked as an idea per ADR 0001; its design depends on a range-dev vetting spike that has not run.
+- The Work workflow plugin (Jira ticket source, no-PRD track, PR-based close-out, feature-branch epics with stacked ticket PRs) — banked as an idea per ADR 0001.
 - Notion backend hardening (Tickets schema number/slug, the retro section heading and edit protocol, root-page sharing, the live tool-contract smoke test) — a separate PRD candidate.
 - The review's remaining contract repairs outside the close-out cluster (abandonment ownership, idea-promotion mechanics, `/tdd` integration, `/grill-me` PRD-edit discipline).
 

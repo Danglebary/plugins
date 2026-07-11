@@ -20,7 +20,7 @@ The personal and work workflows are separate plugins. agentic-flow remains the p
 - agentic-flow's knowledge-layer skills become a cross-plugin API: they must stay lifecycle-agnostic (no assuming the solo close-out), and changes to them can silently break the work plugin — a new sync-set spanning two repos.
 - Two installed plugins will have similar lifecycle skill names/triggers (`done`, `next-ticket`); auto-invocation collisions need explicit naming/trigger discipline in the work plugin.
 - Divergent formats (Jira ticket encoding vs `TICKET-FORMAT.md`) are new content, not duplication — the fork cost is smaller than it appears.
-- The work plugin is unbuilt; its design (Jira integration, the no-PRD track, absorbing vetted fragments of range-dev) is banked as future work and depends on a range-dev vetting spike.
+- The work plugin is unbuilt; its design (Jira integration, the no-PRD track, PR-based close-out) is banked as future work.
 
 ## Alternatives considered
 
