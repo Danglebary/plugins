@@ -1,6 +1,6 @@
 # Close-out — the gated commit, merge, and recovery convention
 
-Every lifecycle close ends in the same shape: a **gated commit** of the close's store edits, then a **gated merge** of the closed branch into its parent. The commit gate serves any invocation; the merge gate and resting-state table apply only to closes. Consumers bind the variables — which branch, which edit set, which arm has no merge to offer — and cite the mechanics from here, never restating them. (The recipe's inline copies drifted twice in one ticket before this extraction: a dropped show-content rule, a halved brief label — and the bootstrap's first inline copy dropped the show-content and name-the-paths rules on day one.)
+Every lifecycle close ends in the same shape: a **gated commit** of the close's store edits, then a **gated merge** of the closed branch into its parent. The commit gate serves any invocation; the merge gate and resting-state table apply only to closes. Consumers bind the variables — which branch, which edit set, which arm has no merge to offer — and cite the mechanics from here, never restating them. Both gates here are **Consent** gates under the [ADR 0004](../../../../docs/adr/0004-confirm-gate-doctrine-scope.md) test — deliberately kept offers, never automated. (The recipe's inline copies drifted twice in one ticket before this extraction: a dropped show-content rule, a halved brief label — and the bootstrap's first inline copy dropped the show-content and name-the-paths rules on day one.)
 
 ## The gated store commit
 

@@ -1,5 +1,5 @@
 ---
-status: open
+status: done
 depends_on: []
 ---
 
@@ -21,4 +21,4 @@ This is the doctrine sync-set — keep the README note in agreement with ADR 000
 
 ## Deviations
 
-_None yet._
+_None._

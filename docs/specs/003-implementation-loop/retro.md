@@ -21,3 +21,9 @@ Building the plan-then-execute skill *in* plan-then-execute mode fit precisely b
 **Outcome**: Exact match
 
 Codifying a "no new gate/knob" requirement lands better as a positive clause naming the gate the recommendation rides than as silence — an absent statement reads as oversight, an explicit "ratified at the existing plan-approval gate" reads as a decision, echoing the store's own materialized-`_None._`-vs-absent distinction. The close caught a self-inflicted near-miss: a cwd-drifted shell check briefly "refuted" a correct research finding, and only re-verifying against source — the close-out pair's own standing discipline — kept a true fact from being discarded.
+
+## Ticket 005 — Doctrine prose
+
+**Outcome**: Exact match
+
+Retiring a blanket doctrine phrase across the corpus is a classification task, not search-and-replace: the canonical source (ADR 0004) must *keep* the retired "offered, never automatic" wording to name what it corrects, and a homonym site (`done/SKILL.md`'s refactor-fork "never automatic", itself a consent gate) legitimately shares the words — so verifying the refinement means telling sync-set site from quotation-by-source from homonym, which a grep-for-zero would have failed three ways. Because ADR 0004's §Consequences had already enumerated the sync-set, this close mostly verified agreement rather than making decisions — the design was front-loaded into the ADR, leaving wording fidelity (state the test, cite rather than re-derive) as the only live risk.
