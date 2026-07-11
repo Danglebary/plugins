@@ -9,3 +9,9 @@ The spec's choice to delegate the verification-source resolution to this doc ("o
 **Outcome**: Extended
 
 Adopting a shared contract into a skill isn't finished when the AC-named section is fixed — the Goal's skill-wide "no contradictory in-flight instruction" claim was the real bar, and it exposed a second contradicting site (`refactoring.md`'s seam-move routing) that satisfying the AC alone would have shipped. That contradiction only had teeth because auto-commit removes the human diff-review that had been silently masking it: automating a ceremony gate can surface latent contradictions the manual review was quietly absorbing.
+
+## Ticket 003 — Implement skill
+
+**Outcome**: Exact match
+
+Building the plan-then-execute skill *in* plan-then-execute mode fit precisely because a Markdown skill has no runtime unit to drive red-green — and closing it exercised the contract's own graceful-degradation path: with no repo verification configured, "green" had no positive signal, so the honest close was to surface for a manual commit rather than auto-exit. The `/tdd` peer's ticket-section carried most of the design; the cite-not-restate boundary — not fresh prose — is what kept `/implement` from silently re-deriving the shared contract and drifting from it.

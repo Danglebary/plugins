@@ -1,5 +1,5 @@
 ---
-status: in-progress
+status: done
 depends_on: [001]
 ---
 
@@ -23,4 +23,4 @@ Follow the skill authoring rules in the plugin `CLAUDE.md` (top-level README ref
 
 ## Deviations
 
-_None yet._
+_None._
