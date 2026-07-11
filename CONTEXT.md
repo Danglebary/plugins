@@ -23,6 +23,14 @@ The workflow-specific skills that move specs and tickets through their states an
 Where planning artifacts (specs, tickets, retros, Glossary, ADRs) live. Settled 2026-07-09 (PRD 002): `files` (in-repo markdown) is the only backend — the notion backend is removed from agentic-flow, preserved at a pinned pre-removal commit referenced in the work-workflow idea, not as a live file. A storage choice only; carries no workflow semantics.
 _Avoid_: "backend" for anything other than artifact storage; "store backend" for the Work workflow's per-artifact sourcing (Jira tickets, Notion specs) — a split the seam never expressed (ADR 0001).
 
+**Consent gate**:
+A confirm gate whose action is hard to reverse, outward-facing, or information-destroying — where the user's "no" is load-bearing and must block. The merge, the ADR decision, the `/done` outcome label, and the refactor-or-merge fork are consent gates (ADR 0004). Never automated.
+_Avoid_: "confirm gate" as a synonym — that names the mechanism; consent gate names the load-bearing subset.
+
+**Ceremony gate**:
+A confirm gate whose action is local, reversible, and whose "no" branch never fires and would change nothing if it did — a prompt that reads as consent but only adds friction. Committing completed work on a ticket branch and invoking `/done` are ceremony gates (ADR 0004); they may be automated, fired on a positive clean-completion signal (all planned work done and verification green). The reversible / outward-facing / information-destroying test sorts a gate into consent vs. ceremony.
+_Avoid_: assuming any always-answered-yes gate is ceremony — the test decides, not the answer history alone (a gate can be load-bearing and still usually get a yes).
+
 ## Relationships
 
 - The **Personal workflow** and the **Work workflow** are separate plugins; each ships its own **Lifecycle layer**.
