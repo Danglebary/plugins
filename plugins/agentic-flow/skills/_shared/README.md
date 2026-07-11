@@ -28,3 +28,4 @@ Format docs define each artifact's *content shape* (sections, voice, thresholds)
 
 - [DIFF-MATERIALIZATION.md](./DIFF-MATERIALIZATION.md) — the diff-materialization contract: the invoking skill resolves `<base>`/`<head>` per scope; the plugin-shipped script (`scripts/materialize-diff.sh`) owns the git mechanics, preflights, and the `.agentic-flow/diff.patch` artifact
 - [CLOSE-OUT.md](./CLOSE-OUT.md) — the close-out contract: the gated store-edits commit (enumerated paths, show-content-on-resume), the gated merge (convention read, verify green before branch delete), and the resting-state/interrupted-close discriminator every closing skill routes on
+- [IMPLEMENTATION-LOOP.md](./IMPLEMENTATION-LOOP.md) — the implementation-loop contract shared by `/tdd` and `/implement`: the stop-and-surface / record-and-continue split, the auto-commit + auto-`/done` exit tasks and their staging contract, and how "the repo's verification" resolves

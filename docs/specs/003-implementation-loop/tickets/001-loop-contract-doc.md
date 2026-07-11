@@ -1,5 +1,5 @@
 ---
-status: open
+status: done
 depends_on: []
 ---
 
@@ -24,4 +24,5 @@ Lives in `skills/_shared/` under the no-suffix Convention-doc naming. Reuse `CLO
 
 ## Deviations
 
-_None yet._
+- Approach — Exit tasks (spec lines 43/47): the spec enumerated the verification sources config-first (`settings.toml` / `CLAUDE.md` / project verify skill); the doc instead resolves them by first-match in the inverted order — project verify skill → `settings.toml` → `CLAUDE.md` — because an executable, purpose-built verify skill is the least-ambiguous statement of how to verify a repo. The spec delegated the resolution to this doc ("owns the resolution") without fixing the order; user-ratified.
+- `skills/_shared/README.md` gained a one-line index entry for the new Convention doc under "Convention docs" — the corpus index lists every convention doc, so registering it is part of landing the doc in the shared location, not a separate module (below the seam/behavioral threshold; recorded only because the file falls outside the spec's enumerated Modules touched).
