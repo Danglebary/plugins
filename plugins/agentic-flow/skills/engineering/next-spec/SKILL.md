@@ -1,6 +1,6 @@
 ---
 name: next-spec
-description: Exploration of what the project should work on next. Reads existing specs, retros, the Glossary, and ADRs from the store, then has a conversation about gaps and priorities. Output is conversation, not a document; ends by recommending a high-level /grill-me, never /to-spec directly. Use when starting a new body of work and unsure what to build, or when the user asks "what's next".
+description: Explore what to work on next; output is conversation, ending by recommending /grill-me. Use when starting new work, or the user asks "what's next".
 ---
 
 # Next spec

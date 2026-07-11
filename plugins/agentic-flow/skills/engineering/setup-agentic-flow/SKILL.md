@@ -1,6 +1,7 @@
 ---
 name: setup-agentic-flow
-description: Idempotent bootstrap and refresh for agentic-flow. Asks whether .agentic-flow/ is committed or git-ignored, writes .agentic-flow/settings.toml, provisions the store — docs/specs/, docs/adr/, reviewers manifest, glossary — and populates reviewers from defaults + heuristic detection. Use when initializing a repo or refreshing the reviewer manifest after plugin updates.
+description: Idempotent bootstrap for agentic-flow: writes settings.toml, provisions the store, populates the Reviewers manifest. Use when initializing a repo or refreshing the manifest after plugin updates.
+disable-model-invocation: true
 ---
 
 # Setup agentic-flow

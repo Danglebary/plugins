@@ -1,6 +1,6 @@
 ---
 name: to-spec
-description: Synthesize the current conversation into a frozen spec in the store (a docs/specs/ file) with status Drafting. Does not interview — just captures what's already been discussed. Also handles spikes and banked ideas. Use when the user wants to write up the current conversation as a spec.
+description: Synthesize the current conversation into a frozen Drafting spec without interviewing; also handles spikes and banked ideas. Use when writing up the conversation as a spec.
 ---
 
 # To spec
