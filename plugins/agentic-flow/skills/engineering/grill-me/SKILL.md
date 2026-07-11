@@ -1,6 +1,6 @@
 ---
 name: grill-me
-description: Interview the user relentlessly about a plan or design until shared understanding is reached, resolving each branch of the decision tree. Updates the Glossary inline as terms sharpen and offers ADRs when decisions are durable. Use when user wants to stress-test a plan, refine a draft PRD, or says "grill me".
+description: Interview the user relentlessly down the decision tree. Use when the user wants to stress-test a plan, refine a draft spec, or says "grill me".
 ---
 
 # Grill me
@@ -11,9 +11,9 @@ Ask **one question at a time**. Wait for the user's response before continuing.
 
 If a question can be answered by exploring the codebase, explore the codebase instead of asking.
 
-> **Protected behaviors — do not weaken in any rewrite of this skill.** Code-grounding (explore instead of asking; cross-reference user claims against code) and the per-question recommendation are this skill's two demonstrably load-bearing mechanics — each has overturned a PRD's central premise before tickets were cut. Any future edit to this file keeps both mandatory. These behaviors are store-independent — code stays in git and grilling is grounded against it.
+> **Protected behaviors — do not weaken in any rewrite of this skill.** Code-grounding (explore instead of asking; cross-reference user claims against code) and the per-question recommendation are this skill's two demonstrably load-bearing mechanics — each has overturned a spec's central premise before tickets were cut. Any future edit to this file keeps both mandatory. These behaviors are store-independent — code stays in git and grilling is grounded against it.
 
-Resolve the store first — see [STORE.md](../../_shared/STORE.md).
+Store artifact paths: [STORE.md](../../_shared/STORE.md).
 
 ## Recommendation discipline
 
@@ -25,24 +25,24 @@ Every recommendation you present carries three marks:
 
 ## State contract
 
-- **PRD state required**: `Drafting` (when operating on a PRD); refuses on `Open` and `Done` PRDs
+- **Spec state required**: `Drafting` (when operating on a spec); refuses on `Open` and `Done` specs
 - **Ticket state required**: n/a
 - **Transition**: none
 
-When invoked outside any PRD context (e.g. generic design conversation with no PRD involved), state-gating doesn't apply.
+When invoked outside any spec context (e.g. generic design conversation with no spec involved), state-gating doesn't apply.
 
 ## Two stages in the agentic-flow workflow
 
-- **High-level**: after `/next-prd`, before `/to-prd`. Sharpen *what we're trying to do* and the broad approach.
-- **Detail**: after `/to-prd` writes a draft PRD. Sharpen the specifics — non-goals, approach trade-offs, modules.
+- **High-level**: after `/next-spec`, before `/to-spec`. Sharpen *what we're trying to do* and the broad approach.
+- **Detail**: after `/to-spec` writes a draft spec. Sharpen the specifics — non-goals, approach trade-offs, modules.
 
 The skill behaves the same way in both stages — only the depth of questioning changes.
 
 ## Domain awareness
 
-Look for existing documentation during grilling: the **Glossary** (the living domain vocabulary) and the **ADRs** (cross-PRD durable decisions) — both live in the store.
+Look for existing documentation during grilling: the **Glossary** (the living domain vocabulary) and the **ADRs** (cross-spec durable decisions) — both live in the store.
 
-Create artifacts lazily — only when you have something to write. Files store: if `CONTEXT.md` doesn't exist, create it when the first term is resolved; if `docs/adr/` doesn't exist, create it when the first ADR is needed. (Notion store: the databases already exist from setup; rows are created lazily.)
+Create artifacts lazily — only when you have something to write: if `CONTEXT.md` doesn't exist, create it when the first term is resolved; if `docs/adr/` doesn't exist, create it when the first ADR is needed.
 
 Format references: [CONTEXT-FORMAT.md](../../_shared/CONTEXT-FORMAT.md), [ADR-FORMAT.md](../../_shared/ADR-FORMAT.md).
 
@@ -72,9 +72,9 @@ Don't couple the Glossary to implementation details. Only include terms that are
 
 ### Offer ADRs sparingly — three-gate test
 
-Only offer an ADR when all three gates pass (hard to reverse, surprising without context, real trade-off) — see [ADR-FORMAT.md](../../_shared/ADR-FORMAT.md). If any gate is missing, the decision lives in the PRD's Approach section instead.
+Only offer an ADR when all three gates pass (hard to reverse, surprising without context, real trade-off) — see [ADR-FORMAT.md](../../_shared/ADR-FORMAT.md). If any gate is missing, the decision lives in the spec's Approach section instead.
 
-**Toolchain-fact gate:** before freezing an ADR, verify every load-bearing claim about an external system (stdlib behavior, build-system APIs, language defaults, third-party semantics) against the installed toolchain — read its source, run a probe program, or dispatch a research sub-agent. Four ADRs in one project rotted on unverified external facts, all foreseeably; "the docs say so" and "I recall" are not verification. Mint ADRs inline as decisions land — don't defer them to end-of-grill.
+**Toolchain-fact gate:** before freezing an ADR, verify every load-bearing claim about an external system against the installed toolchain — the gate's verification recipe and the incident behind it live in [ADR-FORMAT.md](../../_shared/ADR-FORMAT.md)'s "Toolchain-fact gate" section. Mint ADRs inline as decisions land — don't defer them to end-of-grill.
 
 ### End-of-grill self-check
 
@@ -86,13 +86,13 @@ Before declaring the grill complete, run and report a self-check:
 
 ## Refusing to run
 
-If grilling is being requested for a `Done` PRD, refuse and suggest a new PRD instead. The PRD is a closed chapter; re-litigation goes through a fresh PRD.
+If grilling is being requested for a `Done` spec, refuse and suggest a new spec instead. The spec is a closed chapter; re-litigation goes through a fresh spec.
 
 ## Anti-patterns
 
 - **Don't ask more than one question at a time.** Multi-question prompts collapse the decision tree — the user can't engage with each branch on its own merit.
 - **Don't accept the first answer if it doesn't actually resolve the branch.** Probe further when the answer is hedged, vague, or sidesteps the question. The point is to reach shared understanding, not check off questions.
-- **Don't propose ADRs that fail any of the three gates.** Easy-to-reverse, unsurprising, or no-real-trade-off decisions belong in the PRD's `## Approach` section, not in the ADRs.
+- **Don't propose ADRs that fail any of the three gates.** Easy-to-reverse, unsurprising, or no-real-trade-off decisions belong in the spec's `## Approach` section, not in the ADRs.
 - **Don't write implementation details into the Glossary.** Only domain-meaningful terms belong there. If a term is only useful to people reading the code, it doesn't go in the glossary.
 - **Don't batch Glossary updates until end-of-session.** Capture each term as it resolves — batching loses precision and risks losing entries entirely.
 - **Don't grill in a vacuum.** Read the Glossary and existing ADRs before starting; cross-reference against actual code when the user makes claims about how it works.

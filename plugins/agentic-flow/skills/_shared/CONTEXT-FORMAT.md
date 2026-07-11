@@ -4,11 +4,11 @@ The Glossary is a living record of domain terms used in the codebase — the sha
 
 It is updated inline by `/grill-me` (and any other skill where a term gets sharpened). It does not represent a snapshot in time — it is the *current* canonical vocabulary.
 
-**Storage.** What belongs (and doesn't) applies in both stores (see [STORE.md](./STORE.md)). **Files store**: `CONTEXT.md`, structured as below. **Notion store**: the Glossary database — one row per term with `Term`, `Definition`, and `Relationships` properties; see [NOTION-RESOLVER.md](./NOTION-RESOLVER.md).
+**Storage.** `CONTEXT.md`, structured as below; the artifact map is [STORE.md](./STORE.md)'s.
 
-## File path (files store)
+## File path
 
-`CONTEXT.md` at repo root (single-context repos), or per-context per `CONTEXT-MAP.md` (multi-context repos).
+`CONTEXT.md` at repo root.
 
 ## Structure
 
@@ -37,8 +37,8 @@ Terms should be capitalized when referenced from other definitions (signaling "t
 Bullet list of how terms relate. One relationship per bullet.
 
 ```markdown
-- A **PRD** contains many **Tickets**
-- A **PRD** is paired with one **Retro**
+- A **Spec** contains many **Tickets**
+- A **Spec** is paired with one **Retro**
 ```
 
 ### `## Flagged ambiguities`
@@ -56,7 +56,7 @@ See `agentic-flow`'s own `CONTEXT.md` at the repo root.
 ## What does NOT belong in CONTEXT.md
 
 - **Implementation details.** "The User table has an `email` column." — that's code; CONTEXT.md is about domain language.
-- **Decisions.** Decisions go to ADRs (cross-PRD) or PRD Approach sections (PRD-local).
+- **Decisions.** Decisions go to ADRs (cross-spec) or spec Approach sections (spec-local).
 - **Process documentation.** "We do code reviews on Tuesdays." — that's CLAUDE.md territory.
 - **Anything that would only be meaningful to a developer, not a domain expert.** CONTEXT.md is the shared vocabulary between humans and agents about *what the system models*, not *how it's built*.
 

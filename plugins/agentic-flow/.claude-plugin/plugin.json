@@ -1,7 +1,7 @@
 {
   "name": "agentic-flow",
   "version": "1.4.0",
-  "description": "AI-augmented software development workflow: PRD/ticket/retro hierarchy with plugin-shipped reviewer agents. Planning artifacts live in a per-repo store — in-repo markdown files or Notion databases.",
+  "description": "AI-augmented software development workflow: spec/ticket/retro hierarchy with plugin-shipped reviewer agents. Planning artifacts live in a per-repo store of in-repo markdown files.",
   "author": {
     "name": "Austin See, Harriet Figueroa"
   },

@@ -9,3 +9,11 @@ Requirements gathered during the 2026-07-08 grill:
 - **Two branch topologies**: flat (each ticket branches from the default branch, one PR per ticket straight to main) and feature-branch epics (a long-lived branch analogous to a PRD branch, ticket PRs stacked against it — review latency makes stacking necessary here in a way it never is in the Personal workflow).
 - **Close-out never merges.** The sequence: draft PR → self-review + fresh-agent review → open PR → post to Slack (employer-required format) → teammate review → manual merge in GitHub. Fresh environment (coder box) per ticket.
 - **First step is a vetting spike over the range-dev plugin**: analyze its skills (start-issue's worktree/branch mechanics, post-slack-pr's required format, commit/PR conventions) and decide what to absorb as vetted fragments vs. build fresh — do not delegate to it sight-unseen. Spike findings feed this idea's promotion to a PRD.
+
+## Notion backend reference
+
+The notion backend was removed from agentic-flow (ADR 0003, PRD 002 ticket 001). If this plugin's storage design wants the resolver as a starting point, it lives in git history at the pre-removal commit `f83bfbf789234a6288b8d08e4c5d25f921d80d62`:
+
+```sh
+git show f83bfbf789234a6288b8d08e4c5d25f921d80d62:plugins/agentic-flow/skills/_shared/NOTION-RESOLVER.md
+```

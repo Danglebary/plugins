@@ -1,10 +1,10 @@
 # ADR format
 
-An ADR (Architectural Decision Record) captures a cross-PRD durable decision.
+An ADR (Architectural Decision Record) captures a cross-spec durable decision.
 
 ADRs are rare by design. Created inline by `/grill-me` (and by `/improve-codebase-architecture`'s grilling loop, when a load-bearing reason emerges for rejecting a refactor candidate) only when **all three gates** of the three-gate test pass.
 
-**Storage.** The three-gate test, body sections, and anti-patterns apply in both stores (see [STORE.md](./STORE.md)). **Files store**: the file path and frontmatter below. **Notion store**: a row in the ADRs database — see the row mapping below and [NOTION-RESOLVER.md](./NOTION-RESOLVER.md).
+**Storage.** The file path and frontmatter below are the encoding; the artifact map is [STORE.md](./STORE.md)'s.
 
 ## Three-gate test
 
@@ -14,31 +14,25 @@ A decision warrants an ADR if and only if all three are true:
 2. **Surprising without context** — a future reader will wonder "why did they do it this way?"
 3. **The result of a real trade-off** — there were genuine alternatives and you picked one for specific reasons.
 
-If any of the three is missing, the decision belongs in the PRD's Approach section (PRD-local), or nowhere at all.
+If any of the three is missing, the decision belongs in the spec's Approach section (spec-local), or nowhere at all.
 
-## File path (files store)
+## Toolchain-fact gate
+
+Before freezing an ADR, verify every load-bearing claim about an external system (stdlib behavior, build-system APIs, language defaults, third-party semantics) against the installed toolchain — read its source, run a probe program, or dispatch a research sub-agent. Four ADRs in one project rotted on unverified external facts, all foreseeably; "the docs say so" and "I recall" are not verification.
+
+## File path
 
 `docs/adr/<NNNN>-<slug>.md`
 
 `<NNNN>` is repo-global, four-digit zero-padded, chronological. `<slug>` is kebab-case.
 
-## Frontmatter (files store)
+## Frontmatter
 
 ```yaml
 ---
 status: accepted | superseded
 ---
 ```
-
-## Row mapping (notion store)
-
-| files store | ADRs database |
-|---|---|
-| `docs/adr/<NNNN>-<slug>.md` | a row in the ADRs database |
-| `<NNNN>` repo-global number | the `ADR ID` (`UNIQUE_ID PREFIX 'ADR'`) |
-| Title heading | the `Title` property |
-| `status:` frontmatter | the `Status` select (`Proposed` / `Accepted` / `Superseded`) |
-| Context / Decision / Consequences / Alternatives | the row **body**, one `##` heading each; a one-line summary may go in the `Decision` property |
 
 ADRs are written `accepted`. The only other state is `superseded`, applied when a later ADR replaces this one (and references the superseding ADR by ID in the body).
 
@@ -96,4 +90,4 @@ Use a single Postgres instance as the write model for all persistent state.
 - **Don't write ADRs for reversible decisions.** A decision you can change cheaply doesn't need a record — change it when wrong.
 - **Don't write ADRs for obvious decisions.** "We use TypeScript" doesn't need an ADR if no one would ask "why TypeScript?"
 - **Don't skip the Alternatives section.** Without alternatives, the ADR is a declaration, not a decision.
-- **Don't edit accepted ADRs.** Supersede them — write a new ADR (or ADRs row) that references the old one and flip the old one's status to `superseded` (`Superseded`).
+- **Don't edit accepted ADRs.** Supersede them — write a new ADR that references the old one and flip the old one's status to `superseded`.
