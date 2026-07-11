@@ -27,3 +27,9 @@ Codifying a "no new gate/knob" requirement lands better as a positive clause nam
 **Outcome**: Exact match
 
 Retiring a blanket doctrine phrase across the corpus is a classification task, not search-and-replace: the canonical source (ADR 0004) must *keep* the retired "offered, never automatic" wording to name what it corrects, and a homonym site (`done/SKILL.md`'s refactor-fork "never automatic", itself a consent gate) legitimately shares the words — so verifying the refinement means telling sync-set site from quotation-by-source from homonym, which a grep-for-zero would have failed three ways. Because ADR 0004's §Consequences had already enumerated the sync-set, this close mostly verified agreement rather than making decisions — the design was front-loaded into the ADR, leaving wording fidelity (state the test, cite rather than re-derive) as the only live risk.
+
+## Ticket 006 — README workflow surfaces
+
+**Outcome**: Extended
+
+Reflecting landed behavior in a flow diagram is a fidelity task, not a paraphrase: the diagram had to preserve the contract's exact distinctions — un-gated ceremony vs. the still-gated close-out, graceful degradation when verification isn't green, and auto-`/done` being explicitly *not* auto-merge — because a looser rendering misleads a reader more than the stale pre-change flow did, and sequencing this ticket last is what let the prose describe the real loop instead of the plan. A corpus that keeps duplicate skill one-liners (plugin README + `engineering/` bucket README) turns a "single surface" ticket into a two-file edit — scoping strictly to the ticket's named surface would have shipped a stale sync-copy, so the honest close records the second file as the Extended scope rather than hiding it.
