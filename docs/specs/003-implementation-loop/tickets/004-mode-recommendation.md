@@ -1,5 +1,5 @@
 ---
-status: open
+status: done
 depends_on: [003]
 ---
 
@@ -21,4 +21,4 @@ Extends the existing ticket-start research sub-agent step, which already assesse
 
 ## Deviations
 
-_None yet._
+- Left the stale `[ticket_start]` comment in `.agentic-flow/settings.toml` ("...assess whether /tdd fits") untouched rather than rewriting it to match the new mode-recommendation wording. It's a deliberately-tolerated stale key (STORE.md config read contract — retired keys are inert; setup no longer ships a `[ticket_start]` block; the retained `strategy` key is the precedent), so editing it would be scope creep into config this ticket doesn't own.

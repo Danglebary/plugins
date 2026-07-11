@@ -15,3 +15,9 @@ Adopting a shared contract into a skill isn't finished when the AC-named section
 **Outcome**: Exact match
 
 Building the plan-then-execute skill *in* plan-then-execute mode fit precisely because a Markdown skill has no runtime unit to drive red-green — and closing it exercised the contract's own graceful-degradation path: with no repo verification configured, "green" had no positive signal, so the honest close was to surface for a manual commit rather than auto-exit. The `/tdd` peer's ticket-section carried most of the design; the cite-not-restate boundary — not fresh prose — is what kept `/implement` from silently re-deriving the shared contract and drifting from it.
+
+## Ticket 004 — Mode recommendation
+
+**Outcome**: Exact match
+
+Codifying a "no new gate/knob" requirement lands better as a positive clause naming the gate the recommendation rides than as silence — an absent statement reads as oversight, an explicit "ratified at the existing plan-approval gate" reads as a decision, echoing the store's own materialized-`_None._`-vs-absent distinction. The close caught a self-inflicted near-miss: a cwd-drifted shell check briefly "refuted" a correct research finding, and only re-verifying against source — the close-out pair's own standing discipline — kept a true fact from being discarded.
