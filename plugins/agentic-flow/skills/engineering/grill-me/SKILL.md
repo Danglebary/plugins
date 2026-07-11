@@ -74,7 +74,7 @@ Don't couple the Glossary to implementation details. Only include terms that are
 
 Only offer an ADR when all three gates pass (hard to reverse, surprising without context, real trade-off) — see [ADR-FORMAT.md](../../_shared/ADR-FORMAT.md). If any gate is missing, the decision lives in the spec's Approach section instead.
 
-**Toolchain-fact gate:** before freezing an ADR, verify every load-bearing claim about an external system (stdlib behavior, build-system APIs, language defaults, third-party semantics) against the installed toolchain — read its source, run a probe program, or dispatch a research sub-agent. Four ADRs in one project rotted on unverified external facts, all foreseeably; "the docs say so" and "I recall" are not verification. Mint ADRs inline as decisions land — don't defer them to end-of-grill.
+**Toolchain-fact gate:** before freezing an ADR, verify every load-bearing claim about an external system against the installed toolchain — the gate's verification recipe and the incident behind it live in [ADR-FORMAT.md](../../_shared/ADR-FORMAT.md)'s "Toolchain-fact gate" section. Mint ADRs inline as decisions land — don't defer them to end-of-grill.
 
 ### End-of-grill self-check
 

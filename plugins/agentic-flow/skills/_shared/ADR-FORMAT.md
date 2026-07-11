@@ -16,6 +16,10 @@ A decision warrants an ADR if and only if all three are true:
 
 If any of the three is missing, the decision belongs in the spec's Approach section (spec-local), or nowhere at all.
 
+## Toolchain-fact gate
+
+Before freezing an ADR, verify every load-bearing claim about an external system (stdlib behavior, build-system APIs, language defaults, third-party semantics) against the installed toolchain — read its source, run a probe program, or dispatch a research sub-agent. Four ADRs in one project rotted on unverified external facts, all foreseeably; "the docs say so" and "I recall" are not verification.
+
 ## File path
 
 `docs/adr/<NNNN>-<slug>.md`

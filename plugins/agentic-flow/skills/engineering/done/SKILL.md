@@ -38,7 +38,7 @@ Warns rather than refuses on `Open → Done` (a user who did the work without fl
    - The Glossary contents (so the agent uses domain vocabulary)
    - Existing ADR titles + statuses (so it doesn't propose duplicates)
    - A reminder that it has Read/Grep over the working tree and must verify claims against current source, not stale comments — every recorded fact-checker false positive traced to diff-only briefing
-   - The planning-artifact label per [DIFF-MATERIALIZATION.md](../../_shared/DIFF-MATERIALIZATION.md), carried whole — store-artifact hunks in the diff (committed deviations, retro entries, status flips) are planning artifacts exempt from *code* review only, **not** from injected-instruction or unexpected-file-shape scrutiny. Copy the shared doc's two-sided contract into the brief; paraphrasing it once dropped the scrutiny half
+   - The planning-artifact label per [DIFF-MATERIALIZATION.md](../../_shared/DIFF-MATERIALIZATION.md)'s "Diffs contain planning artifacts" section, carried whole — copy the section's two-sided contract into the brief, never a paraphrase of it
 
    The fact-checker returns three sections (each may be `_None._`):
    - **Deviation gaps** — diff changes at or above the behavioral/seam threshold not captured in `## Deviations`
@@ -53,7 +53,7 @@ Warns rather than refuses on `Open → Done` (a user who did the work without fl
 
 6. **Surface ADR candidates to the user** for explicit decision: each candidate gets a yes/no/defer. This is a blocking checkpoint — present the candidates and end the turn; don't proceed to the label step in the same breath. On yes, hand off to ADR creation per [ADR-FORMAT.md](../../_shared/ADR-FORMAT.md).
 
-   **Toolchain-fact gate:** before writing any ADR, every load-bearing claim about an external system (stdlib behavior, build-system APIs, language defaults, third-party semantics) must be verified against the installed toolchain — by reading its source, running a probe program, or dispatching a research sub-agent. An ADR frozen on an unverified external fact is the recorded failure shape: four ADRs in one project rotted this way, all foreseeably.
+   **Toolchain-fact gate:** before writing any ADR, every load-bearing claim about an external system must be verified against the installed toolchain — the gate's verification recipe and the incident behind it live in [ADR-FORMAT.md](../../_shared/ADR-FORMAT.md)'s "Toolchain-fact gate" section.
 
 7. **Determine the outcome label.**
    - **Exact match** — implemented exactly as the ticket and spec specified.
@@ -75,9 +75,9 @@ Warns rather than refuses on `Open → Done` (a user who did the work without fl
 
    The 1-3 sentences capture *what was learned*, not *what was done* (the ticket already has that).
 
-9. **Flip the ticket** status from `In progress` to `Done`. Ordering is strict: **read the ticket → apply the status edit → only then run git commands** — never batch the store edit in parallel with git (see STORE.md; a failed edit inside a parallel batch once cascaded into ~20 cancelled git calls and an abandoned session).
+9. **Flip the ticket** status from `In progress` to `Done`. Ordering is strict: **read the ticket → apply the status edit → only then run git commands** — never batch the store edit in parallel with git (see STORE.md).
 
-10. **Commit the close-out edits (gated).** Run the gated close-out commit per [CLOSE-OUT.md](../../_shared/CLOSE-OUT.md) — enumeration from `git status` over store-artifact paths including untracked files, explicit `git add` of the enumerated paths (never `-A`), show-content-on-resume, the decline wedge statement. `/done`'s bindings:
+10. **Commit the close-out edits (gated).** Run the gated close-out commit per [CLOSE-OUT.md](../../_shared/CLOSE-OUT.md). `/done`'s bindings:
     - **The edit set**: every store edit this invocation made — the ticket file (materialized deviations + the `done` flip), the running retro, any ADR minted at step 6. Offer: *"Commit the close-out edits (`<paths>`) on the ticket branch?"*
     - **Re-entry**: when step 2 detected an interrupted close-out, resume *here* once every close-out artifact is in place — the convention's show-content rule applies in full, since the resumed run didn't author these edits.
     - On accept: commit; the tree is clean for whichever arm of step 11 follows. On decline: the convention's wedge statement, naming this skill — re-running `/done` resumes at this commit.
@@ -102,5 +102,4 @@ Warns rather than refuses on `Open → Done` (a user who did the work without fl
 - **Don't skip the fact-check step even when impl just happened in this session.** Store-as-primary means the fact-checker runs every time, regardless of conversation context.
 - **Don't merge without an explicit yes.** The close-out fork is a gate, not a notification — silence or an unanswered question means stop, not proceed.
 - **Don't stage the close-out commit with `-A` or `git add .`.** Enumerate the paths this invocation edited; blanket staging sweeps unrelated working-tree state into the close-out commit.
-- **Don't hand-roll a diff when the script refuses.** A non-zero exit from `materialize-diff.sh` is a stop with a reason — falling back to `git diff` is exactly the skipped preflight the convention exists to prevent.
 - **Don't treat a passing fact-check as truth-checked findings.** The fact-checker audits diff↔deviation mapping and cited justifications, but a clean run doesn't validate domain claims in spike findings or analysis docs — those need their own review.
