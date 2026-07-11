@@ -1,6 +1,6 @@
 ---
 name: next-ticket
-description: Recommend the next ready ticket to work on within the active spec. Reads tickets from the store, computes blocked from dependencies (with defensive cycle detection), suggests an ordering. Optionally flips ticket Open → In progress and cuts the ticket branch from the spec branch — never creating the spec branch; a missing one refuses with /to-tickets' re-enterable bootstrap as the fix. Use when starting work on a spec or finishing a ticket.
+description: Recommend the next ready ticket in the active spec, computing blocked from dependencies. Use when starting work on a spec or finishing a ticket.
 ---
 
 # Next ticket

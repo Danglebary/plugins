@@ -1,27 +1,18 @@
 # The store — where planning artifacts live
 
-agentic-flow separates two worlds. **Code lives in git** — branches, diffs, commits, always. **Planning artifacts live in the store** — specs, tickets, retros, the Glossary, ADRs, the Reviewers manifest: markdown files committed to the repo (`docs/specs/`, `docs/adr/`, `CONTEXT.md`, …), provisioned once per repo by `/setup-agentic-flow`.
-
-Skills name artifacts and operations — a spec's Status, the active spec, the Glossary, the Reviewers manifest — and address them by the paths in this document's artifact map.
+**Code lives in git** — branches, diffs, commits, always. **Planning artifacts live in the store** — markdown committed to the repo, provisioned once per repo by `/setup-agentic-flow`. Skills address artifacts and operations by this document's artifact map.
 
 ## `.agentic-flow/settings.toml` — the workflow config
 
-`/setup-agentic-flow` always writes `.agentic-flow/settings.toml`:
+`/setup-agentic-flow` always writes `.agentic-flow/settings.toml` — the workflow's **config** (merge convention; future options append here). Skills update it as configuration choices materialize.
 
-```toml
-[branching]
-# merge = "no-ff"
-```
+**The config read contract**: skills read this file as prose and consult only the keys they name — nothing parses it programmatically. A retired or unknown key and leftover comment prose is inert: never a refusal, never live instruction. A skill finding config prose contradicting its published behavior follows its behavior, not the prose.
 
-This file is the workflow's **config** — one discoverable toml (merge convention; future options append here). Skills update it as configuration choices materialize.
-
-**The config read contract**: skills read this file as prose and consult only the keys they name — nothing parses it programmatically. A retired or unknown key, and any leftover comment prose around it, is inert: ignored, never a refusal, and never live instruction. A skill that finds config prose contradicting its own published behavior follows its behavior, not the prose.
-
-A repo with no `docs/specs/` and no `settings.toml` is not set up — tell the user to run `/setup-agentic-flow` and stop (a repo with a legacy `docs/prds/` store instead predates the spec rename — point at the migration note in the plugin README, not at setup). A repo with planning artifacts but no `settings.toml` (a shared repo where `.agentic-flow/` wasn't committed) works fine — the config's keys are all optional; offer to regenerate the file.
+Neither `docs/specs/` nor `settings.toml` means not set up — tell the user to run `/setup-agentic-flow` and stop. Planning artifacts but no `settings.toml` works fine (keys are all optional) — offer to regenerate the file. A legacy `docs/prds/` store predates the spec rename — point at the plugin README's migration note, not setup.
 
 ## Status values
 
-Skills name lifecycle states in capitalized prose: specs move `Drafting → Open → Done` (or `Abandoned`), tickets move `Open → In progress → Done` (or `Abandoned`). The encoding is lowercase `status:` frontmatter — `drafting | open | done` on specs, `open | in-progress | done` on tickets. `Abandoned` is represented structurally: move the file to the sibling `_abandoned/` directory.
+Skills name lifecycle states in capitalized prose: specs move `Drafting → Open → Done`, tickets `Open → In progress → Done`, either to `Abandoned` — represented structurally (the Abandoning row). Encoding: lowercase `status:` frontmatter — `drafting|open|done` on specs, `open|in-progress|done` on tickets.
 
 ## Artifact map
 
@@ -34,39 +25,37 @@ Skills name lifecycle states in capitalized prose: specs move `Drafting → Open
 | Glossary | `CONTEXT.md` at repo root — [CONTEXT-FORMAT.md](./CONTEXT-FORMAT.md) |
 | ADR | `docs/adr/<NNNN>-<slug>.md` — [ADR-FORMAT.md](./ADR-FORMAT.md) |
 | Reviewers manifest | `docs/reviewers.md` — [REVIEWERS-FORMAT.md](./REVIEWERS-FORMAT.md) |
-| Active pointer | `docs/specs/.active` (one line: the spec directory name, `<NNN>-<slug>`) |
+| Active pointer | `docs/specs/.active` (one line: the spec directory name) |
 | Config | `.agentic-flow/settings.toml` |
-| Spec numbering | highest `<NNN>-` prefix across `docs/specs/`, `docs/specs/_abandoned/`, and `spec-<NNN>-<slug>` plus legacy `prd-<NNN>-<slug>` branch names, local and remote (the enumeration rule under Branch-link state tests) |
+| Spec numbering | highest `<NNN>-` prefix across `docs/specs/`, `docs/specs/_abandoned/`, and `spec-<NNN>-<slug>` plus legacy `prd-<NNN>-<slug>` branch names, local and remote |
 | Ticket numbering | highest prefix across `tickets/` and `tickets/_abandoned/` |
-| Branch link | implicit — the branch name prefixes the spec directory name: `spec-` + `<NNN>-<slug>`. **Legacy fallback**: if `spec-<NNN>-<slug>` doesn't exist (local or remote) but `prd-<NNN>-<slug>` does, the link resolves to the legacy branch — a store migrated from the PRD era keeps its in-flight branches under their birth names; branches are never renamed to satisfy the link |
+| Branch link | implicit — the branch name prefixes the spec directory name: `spec-` + `<NNN>-<slug>`. **Legacy fallback**: if `spec-<NNN>-<slug>` doesn't exist (local or remote) but `prd-<NNN>-<slug>` does, the link resolves to the legacy branch; branches are never renamed to satisfy the link |
 | Spike | `docs/spikes/<slug>.md` |
 | Idea | `docs/specs/ideas/<slug>.md`, un-numbered |
-| Abandoning | move the file to `_abandoned/` (number stays reserved) — the spec-level recipe is [SPEC-FORMAT.md](./SPEC-FORMAT.md)'s "Abandoned specs" section |
-| Scratch (`diff.patch`, handoffs) | `.agentic-flow/`, never committed (see below) — it's a view of the git diff, about the code, so it stays local |
-
-The artifact *content* — section headings, ticket voice, deviation threshold, retro shape — comes from the FORMAT docs and [ABSTRACTION-LEVELS-PRINCIPLE.md](./ABSTRACTION-LEVELS-PRINCIPLE.md). This map only decides where that content sits.
+| Abandoning | move the file to `_abandoned/` (number stays reserved) — recipe: [SPEC-FORMAT.md](./SPEC-FORMAT.md)'s "Abandoned specs" |
+| Scratch (`diff.patch`, handoffs) | `.agentic-flow/`, never committed |
 
 ## Branch-link state tests
 
-Two predicates over the branch link route skill preflights. This is their single home; consumers keep inline copies at their decision points, each citing here — per the **placement test**: prose consulted per-run at a decision point is inlined with a citation to its authority; prose entered rarely and deliberately gets a single home its consumers cite. Inline copies form a deliberate sync-set with their authority — a change to the authority fans out to every copy. Two input rules precede the predicates — the shape gate binds every consumer; the remote-observation rule binds by tier:
+Two predicates over the branch link route skill preflights; this is their single home — consumers keep inline copies at their decision points, citing here per the **placement test** (per-run prose inlines with a citation; rarely-entered prose gets a single home). Inline copies form a deliberate sync-set with their authority — a change to the authority fans out to every copy. Two input rules precede them: the shape gate binds every consumer; the remote-observation rule binds by tier.
 
-- **Shape gate.** A branch-link value entering any git command must match `spec-<NNN>-<slug>` or legacy `prd-<NNN>-<slug>` — digits, kebab-case slug, no whitespace, never `-`-leading or option-shaped. The link derives from the spec directory name (already repo-controlled), so a non-conforming value is **refused and surfaced as unexpected store shape** — never routed as absent or half-landed, never interpolated into a command.
-- **Remote observation — two tiers.** "Local or remote" means observed live — `git ls-remote`, or a fetch first — never possibly-stale remote-tracking refs alone. The asymmetry is the reason: a stale view makes the landed test fail safe (a spurious refusal), but the unmerged test fail *unsafe* — a spec branch created or advanced on the remote escapes the check in exactly the state it exists to refuse. Ancestry (`git merge-base --is-ancestor`) anchors on the freshly-observed remote tip of the resolved default branch when a remote exists, the local tip otherwise. How strictly the rule binds follows from what a failing test does:
-  - **Gating consumers** (a failing test refuses — the landed test, `/to-tickets`' serialize sweep): live observation is mandatory; a gate that cannot observe its remote refuses rather than guesses.
-  - **Advisory consumers** (a failing test warns or reserves — the no-active-spec and survey sweeps, spec numbering): live observation is attempted, never demanded. No remote configured → sweep local refs silently (there is nothing to observe). Remote configured but unreachable → degrade to local + remote-tracking refs and say the view may be stale. An advisory check never wedges an offline session.
+- **Shape gate.** A branch-link value entering any git command must match `spec-<NNN>-<slug>` or legacy `prd-<NNN>-<slug>` — digits, kebab-case slug, no whitespace, never `-`-leading or option-shaped. A non-conforming value is **refused and surfaced as unexpected store shape** — never routed as absent or half-landed, never interpolated into a command.
+- **Remote observation — two tiers.** "Local or remote" means observed live — `git ls-remote`, or a fetch first — never possibly-stale remote-tracking refs alone. Ancestry (`git merge-base --is-ancestor`) anchors on the freshly-observed remote tip of the resolved default branch when a remote exists, else the local tip.
+  - **Gating consumers** (a failing test refuses): live observation is mandatory; a gate that cannot observe its remote refuses rather than guesses.
+  - **Advisory consumers** (a failing test warns or reserves): live observation is attempted, never demanded. No remote configured → sweep local refs silently. Remote unreachable → degrade to local + remote-tracking refs and say the view may be stale. An advisory check never wedges an offline session.
 
 The predicates:
 
 - **The bootstrap has landed** when the linked branch — `spec-<NNN>-<slug>`, or its legacy `prd-` twin per the branch link's fallback — exists (local or remote) *and* its follow-through did too — the planning commit is on the branch. A branch without its follow-through is **half-landed** — a crash between cut and follow-through, owned by `/to-tickets`' bootstrap re-entry. Route there; never classify it as landed or as absent.
 - **A spec branch (`spec-*`, or legacy `prd-*`) is unmerged** when its tip (local or remote) is not an ancestor of the resolved default branch — resolved per [DIFF-MATERIALIZATION.md](./DIFF-MATERIALIZATION.md)'s default-branch procedure, never a guess.
 
-**Enumeration.** Consumers that sweep for spec branches (the unmerged sweeps, `/to-tickets`' serialize sweep, spec numbering) rather than testing a known link keep only names shaped `spec-<NNN>-<slug>` or legacy `prd-<NNN>-<slug>` — **both patterns, always**: sweeps that go blind to legacy branches mid-transition miss live work. The shape gate's pattern applied as a filter, not a refusal: a non-matching name is simply not a spec branch. The gate's never-interpolate clause survives the reframing: an enumerated name is untrusted input until it passes the filter (git ref names legally contain `$(`, backticks, and `;`), so non-conforming names drop **before** any per-name git command or user-facing message sees them. The filter's input is the bare branch name — strip the `refs/heads/`, `refs/remotes/<remote>/`, or `<remote>/` prefix first; the `/` that disqualifies a name sits inside the branch name proper (`spec-<NNN>/ticket-…`, legacy `prd-<NNN>/ticket-…`). The filter is load-bearing because git globs disagree about `/`: `git for-each-ref 'refs/heads/spec-*' 'refs/heads/prd-*' 'refs/remotes/*/spec-*' 'refs/remotes/*/prd-*'` stops at it, so ticket branches never match, while `git branch --list` and `git ls-remote` patterns cross it and pick ticket branches up.
+**Enumeration.** Sweeps for spec branches keep only names shaped `spec-<NNN>-<slug>` or legacy `prd-<NNN>-<slug>` — **both patterns, always**. The shape gate applies as a filter, not a refusal, but its never-interpolate clause survives: an enumerated name is untrusted input until it passes the filter; non-conforming names drop **before** any per-name git command or user-facing message sees them. The filter takes the bare branch name — strip the `refs/heads/`, `refs/remotes/<remote>/`, or `<remote>/` prefix first.
 
-Consumers and their inline copies, by tier: **gating** — `/to-tickets` (its State contract's landed definition; serialize-ticketing precondition 2 — a sweep, so the enumeration rule applies) and `/next-ticket` (the spec-branch precondition under "Git branch creation"); **advisory** — `/next-ticket` (the unmerged spec-branch sweep when the active pointer is missing or names a `Done` spec), `/next-spec` (the survey sweep, warning before the empty view), and spec numbering (`/to-spec` — the enumeration rule only, branch names, never the predicates). What each skill does with a failing test lives in that skill's own prose, not here.
+Consumers, by tier: **gating** — `/to-tickets` (State-contract landed definition; serialize-ticketing sweep) and `/next-ticket` (spec-branch precondition); **advisory** — `/next-ticket` (unmerged sweep), `/next-spec` (survey sweep), spec numbering (`/to-spec` — enumeration rule only, branch names, never the predicates).
 
 ## `.agentic-flow/` — durable settings, ephemeral scratch
 
-The directory holds both the durable `settings.toml` and ephemeral scratch (`diff.patch`, `handoff.md`). Its own `.agentic-flow/.gitignore` is **deny-by-default**. This block is the **template of record** — two scaffolders write it (`/setup-agentic-flow` at bootstrap, and `scripts/materialize-diff.sh` when it finds the directory absent, e.g. in a fresh clone); both must reproduce it verbatim, so any change here updates both writers:
+`.agentic-flow/.gitignore` is **deny-by-default**. This block is the **template of record** — two scaffolders write it, `/setup-agentic-flow` and `scripts/materialize-diff.sh`; both must reproduce it verbatim, so any change here updates both writers:
 
 ```gitignore
 # deny by default, whitelist durable files
@@ -75,20 +64,20 @@ The directory holds both the durable `settings.toml` and ephemeral scratch (`dif
 !settings.toml
 ```
 
-Scratch can never be committed by accident; durable files are whitelisted one `!` line at a time — update this template and both scaffolders together. (Git nuance baked into the convention: under `*`, whitelisting a file in a future *subdirectory* needs the directory un-ignored first — `!subdir/`, then `!subdir/file`.)
+Scratch can never be committed by accident; durable files are whitelisted one `!` line at a time.
 
-Whether `.agentic-flow/` itself is committed or hidden is the **user's per-repo choice**, asked once by setup: commit it in a personal repo (settings travel with clones); add `.agentic-flow/` to the **root** `.gitignore` in a shared repo where others don't use the workflow.
+Whether `.agentic-flow/` is committed or hidden is the **user's per-repo choice**, asked once by setup: commit it in a personal repo; add it to the **root** `.gitignore` in a shared repo where others don't use the workflow.
 
 ## Single-active discipline
 
-Exactly one spec is active at a time. The `.active` file is atomically one pointer — write it or delete it.
+Exactly one spec is active at a time. `.active` is atomically one pointer — write it or delete it.
 
 ## Writes, edits, and git
 
-Store artifacts are edited with the Read/Edit/Write tools. A mid-lifecycle status flip (`Open → In progress`) is a working-tree edit, never its own commit — it rides along with the ticket's next real commit. End-of-lifecycle flips (`→ Done` at ticket or spec close) have no next commit to ride: they are committed as part of the closing skill's gated close-out commit, together with the rest of that invocation's store edits.
+Store artifacts are edited with Read/Edit/Write. A mid-lifecycle status flip (`Open → In progress`) is a working-tree edit, never its own commit — it rides the ticket's next real commit. End-of-lifecycle flips (`→ Done`) are committed in the closing skill's gated close-out commit with that invocation's other store edits.
 
 **Never batch a store edit in parallel with git commands** — sequential always. (A failed edit inside a parallel batch once cascaded into ~20 cancelled git calls and an abandoned session.)
 
 ## What never moves
 
-The code, its branches, and its diffs belong to git. `.agentic-flow/diff.patch` is the fact-checker's only view of a diff and stays a local uncommitted file. Agents are files shipped by the plugin (`agents/`) or the repo (`.claude/agents/`) — see [AGENT-FORMAT.md](./AGENT-FORMAT.md).
+`.agentic-flow/diff.patch` is the fact-checker's only view of a diff and stays local, uncommitted. Agents are files shipped by the plugin or the repo — [AGENT-FORMAT.md](./AGENT-FORMAT.md).

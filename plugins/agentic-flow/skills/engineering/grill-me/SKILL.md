@@ -1,6 +1,6 @@
 ---
 name: grill-me
-description: Interview the user relentlessly about a plan or design until shared understanding is reached, resolving each branch of the decision tree. Updates the Glossary inline as terms sharpen and offers ADRs when decisions are durable. Use when user wants to stress-test a plan, refine a draft spec, or says "grill me".
+description: Interview the user relentlessly down the decision tree. Use when the user wants to stress-test a plan, refine a draft spec, or says "grill me".
 ---
 
 # Grill me
