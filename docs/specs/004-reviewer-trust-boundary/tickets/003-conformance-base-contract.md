@@ -1,5 +1,5 @@
 ---
-status: open
+status: done
 depends_on: [002]
 ---
 
@@ -24,4 +24,4 @@ The agent change is the citation-grounding inversion in `plugins/agentic-flow/ag
 
 ## Deviations
 
-_None yet._
+_None._
