@@ -1,5 +1,5 @@
 ---
-status: open
+status: in-progress
 depends_on: []
 ---
 
@@ -29,4 +29,5 @@ Apply the replacement most-specific-first: `setup-agentic-flow` → `setup` and 
 
 ## Deviations
 
-_None yet._
+- **Review doc relocated, not renamed in place.** The impl-notes git-mv list named `agentic-flow-review.md` (implying an in-root rename to `pirr-review.md`). Instead, at the user's direction, it moved to a new `docs/reviews/` home with a date-prefixed historical name: `docs/reviews/2026-07-08-whole-plugin-deep-dive.md`. The doc is a superseded point-in-time snapshot (its Tier-1 Notion findings review a backend spec 002 deleted); a dated name under `docs/` signals "archived history" where a root-level `pirr-review.md` would read as a current assessment. The one frozen reference to it (`docs/specs/002-slim-the-baseline/tickets/001-remove-notion-backend.md`) was repointed to the new path so it does not rot — a meaning-preserving reference fix, per the README's frozen-artifact relabel exception.
+- **One capitalized `Agentic-Flow` deliberately preserved.** `docs/reviews/2026-07-08-whole-plugin-deep-dive.md:85` retains `Agentic-Flow` — a historical **Notion workspace page name** in narrative, not the plugin identity. The zero-residual sweep is case-sensitive, so this proper noun survives by design; relabeling it would rewrite a record of what a past page was actually called. All lowercase `agentic-flow` identity tokens were swept.

@@ -12,12 +12,12 @@ That divergence spans the entire lifecycle layer (`/to-tickets`, `/next-ticket`,
 
 ## Decision
 
-The personal and work workflows are separate plugins. agentic-flow remains the personal workflow with **no workflow-mode conditionals**: its lifecycle skills perform local merges at close-out gates, single-path. The work workflow will be a separate plugin (likely work-private, not in this public marketplace) that ships its own lifecycle skills and composes with agentic-flow's knowledge layer by invoking those skills, never forking them.
+The personal and work workflows are separate plugins. pirr remains the personal workflow with **no workflow-mode conditionals**: its lifecycle skills perform local merges at close-out gates, single-path. The work workflow will be a separate plugin (likely work-private, not in this public marketplace) that ships its own lifecycle skills and composes with pirr's knowledge layer by invoking those skills, never forking them.
 
 ## Consequences
 
-- No workflow-mode axis in `settings.toml`; agentic-flow skill prose stays single-path, which directly simplifies the close-out-correctness PRD.
-- agentic-flow's knowledge-layer skills become a cross-plugin API: they must stay lifecycle-agnostic (no assuming the solo close-out), and changes to them can silently break the work plugin — a new sync-set spanning two repos.
+- No workflow-mode axis in `settings.toml`; pirr skill prose stays single-path, which directly simplifies the close-out-correctness PRD.
+- pirr's knowledge-layer skills become a cross-plugin API: they must stay lifecycle-agnostic (no assuming the solo close-out), and changes to them can silently break the work plugin — a new sync-set spanning two repos.
 - Two installed plugins will have similar lifecycle skill names/triggers (`done`, `next-ticket`); auto-invocation collisions need explicit naming/trigger discipline in the work plugin.
 - Divergent formats (Jira ticket encoding vs `TICKET-FORMAT.md`) are new content, not duplication — the fork cost is smaller than it appears.
 - The work plugin is unbuilt; its design (Jira integration, the no-PRD track, PR-based close-out) is banked as future work.

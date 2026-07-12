@@ -26,4 +26,4 @@ Both `(refactor)` passes landed in ticket 002 and both deepened the security pos
 
 ## Cross-cutting
 
-- Bolting the trust-boundary mechanic onto `standards-reviewer` phrased its check against "the diff" and its `+` hunk lines rather than naming `.agentic-flow/diff.patch` literally (ticket 001) — a deliberate choice to stay off DIFF-MATERIALIZATION.md's "exactly two agents name the artifact" invariant, and a standing reminder that adding a mechanic to an agent can quietly introduce cross-doc drift with a shared reference doc.
+- Bolting the trust-boundary mechanic onto `standards-reviewer` phrased its check against "the diff" and its `+` hunk lines rather than naming `.pirr/diff.patch` literally (ticket 001) — a deliberate choice to stay off DIFF-MATERIALIZATION.md's "exactly two agents name the artifact" invariant, and a standing reminder that adding a mechanic to an agent can quietly introduce cross-doc drift with a shared reference doc.

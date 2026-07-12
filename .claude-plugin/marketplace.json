@@ -5,8 +5,8 @@
   },
   "plugins": [
     {
-      "name": "agentic-flow",
-      "source": "./plugins/agentic-flow",
+      "name": "pirr",
+      "source": "./plugins/pirr",
       "description": "AI-augmented software development workflow: spec/ticket/retro hierarchy with plugin-shipped reviewer agents. Planning artifacts live in a per-repo store of in-repo markdown files."
     }
   ]
