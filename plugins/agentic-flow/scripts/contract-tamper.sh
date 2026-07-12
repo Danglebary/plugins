@@ -11,10 +11,17 @@
 # For each (path, heading) target it prints one tab-delimited record:
 #   SECTION<TAB><path><TAB><heading><TAB><changed|unchanged>
 # followed by that section's BASE text, each line prefixed with its absolute base
-# line number (`<N>:<line>`) — consumed by the conformance close-out brief. A base
-# with no such section (file absent at base, or the heading renamed/removed) emits
-# no body lines and reports `changed` (fail-safe). Tamper is data, not an error:
-# exit stays 0 whether or not a section changed.
+# line number (`<N>:<line>`) — consumed by the conformance close-out brief. A
+# target whose section is absent at base (file absent, or the heading renamed/
+# removed/mistyped) — or absent at BOTH refs (a mis-targeted or drifted guard) —
+# reports `changed` with no base body (fail-safe: it surfaces rather than silently
+# passing). Tamper is data, not an error: exit stays 0 whether or not a section
+# changed.
+#
+# Exit codes:
+#   0  success — per-section records emitted (a changed section is data, not an error)
+#   1  usage error, or not inside a git repository
+#   2  unknown base or head ref
 set -euo pipefail
 
 usage='usage: contract-tamper.sh <base> <head> <path> <heading> [<path> <heading> ...]'
@@ -68,7 +75,13 @@ while (($# >= 2)); do
   base_plain=$(printf '%s' "$base_num" | sed 's/^[0-9]*://')
   head_plain=$(printf '%s' "$head_num" | sed 's/^[0-9]*://')
 
-  if [[ "$base_plain" == "$head_plain" ]]; then
+  if [[ -z "$base_num" && -z "$head_num" ]]; then
+    # Target resolves to nothing at either ref — a mis-targeted or drifted guard
+    # (heading typo/case/whitespace, path typo, a format-doc rename the caller
+    # didn't track). Fail safe: surface it rather than reporting a reassuring
+    # all-clear that would also hand ticket 003 an empty base contract silently.
+    flag=changed
+  elif [[ "$base_plain" == "$head_plain" ]]; then
     flag=unchanged
   else
     flag=changed

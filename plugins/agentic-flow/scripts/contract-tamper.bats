@@ -43,7 +43,7 @@ commit() {
   commit tamper
   run bash "$SCRIPT" main ticket tkt.md Goal
   [ "$status" -eq 0 ]
-  [[ "$output" == *"tkt.md"*"Goal"*"changed"* ]]
+  [[ "$output" == *"tkt.md"$'\t'"Goal"$'\t'"changed"* ]]
 }
 
 @test "renamed guarded heading reports changed (fail-safe)" {
@@ -54,7 +54,7 @@ commit() {
   commit rename
   run bash "$SCRIPT" main ticket tkt.md Goal
   [ "$status" -eq 0 ]
-  [[ "$output" == *"tkt.md"*"Goal"*"changed"* ]]
+  [[ "$output" == *"tkt.md"$'\t'"Goal"$'\t'"changed"* ]]
 }
 
 @test "a Deviations-only edit never surfaces (only guarded sections are compared)" {
@@ -78,9 +78,23 @@ commit() {
   commit add-file
   run bash "$SCRIPT" main ticket tkt.md Goal
   [ "$status" -eq 0 ]
-  [[ "$output" == *"tkt.md"*"Goal"*"changed"* ]]
+  [[ "$output" == *"tkt.md"$'\t'"Goal"$'\t'"changed"* ]]
   # No base version exists, so no line-numbered base body is emitted.
   [[ "$output" != *"Brand new file."* ]]
+}
+
+@test "a guarded heading absent at BOTH refs reports changed (fail-safe, not a silent no-op)" {
+  # A mis-targeted or drifted guard (heading typo, case/whitespace mismatch, path
+  # typo, a format-doc rename the caller didn't track) resolves to nothing at both
+  # base and head. It must surface, not report a reassuring all-clear.
+  printf '# Ticket\n\n## Acceptance criteria\n- [ ] a\n' > tkt.md
+  commit base
+  git switch -qc ticket
+  printf '# Ticket\n\n## Acceptance criteria\n- [ ] a edited\n' > tkt.md
+  commit work
+  run bash "$SCRIPT" main ticket tkt.md Goal
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"tkt.md"$'\t'"Goal"$'\t'"changed"* ]]
 }
 
 @test "an unrelated section inserted between guarded sections does not false-positive" {
@@ -171,5 +185,5 @@ commit() {
   commit remove
   run bash "$SCRIPT" main ticket tkt.md Goal
   [ "$status" -eq 0 ]
-  [[ "$output" == *"tkt.md"*"Goal"*"changed"* ]]
+  [[ "$output" == *"tkt.md"$'\t'"Goal"$'\t'"changed"* ]]
 }
