@@ -1,5 +1,5 @@
 ---
-status: open
+status: done
 depends_on: []
 ---
 
@@ -25,4 +25,7 @@ Place the script alongside `scripts/materialize-diff.sh` and follow DIFF-MATERIA
 
 ## Deviations
 
-_None yet._
+- Approach / AC1 (script interface): the script does **not** hardcode the three guarded sections. The invoking skill passes `(path, heading)` target pairs (`contract-tamper.sh <base> <head> <path> <heading> ...`) and the script extract-and-compares each. Keeps the store-dependent "what is guarded and which file holds it" knowledge in `/done` per DIFF-MATERIALIZATION.md's division of labor, and makes the `## Deviations` exemption (AC2) structural — the caller simply never names it. Ratified at the plan gate.
+- Output contract (AC4/AC6; ticket 003's input seam): per target the script prints a tab-delimited `SECTION\t<path>\t<heading>\t<changed|unchanged>` line followed by that section's line-numbered base text. The tamper flag is stdout **data at exit 0**, never a nonzero exit — so the base contract stays consumable regardless of tamper, and a caller's `set -e` cannot misread "tampered" as a script failure. Ratified at the plan gate.
+- (refactor) `contract-tamper.sh` now fails safe to `changed` when a guarded target's section is absent at **both** refs (previously silently `unchanged`) — closes a fail-open on the trust boundary that a heading typo, case/whitespace mismatch, path typo, or an untracked format-doc heading rename would trip, and prevents ticket 003 grounding conformance against a silently-empty base contract. (software-architect + security-engineer + qa-engineer.)
+- (refactor) `/done`'s step-3 tamper surface hardened to an explicit turn-ending **Consent gate** — name the moved sections, end the turn, do not dispatch in the same turn — and now relays stderr and stops on any non-zero script exit, so the acknowledgment can no longer degrade to a notification the executor glides past. The script header also gained a documented exit-code taxonomy matching `materialize-diff.sh`. (prompt-expert; standards-reviewer + dx-expert.)
