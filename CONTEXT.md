@@ -20,7 +20,7 @@ _Avoid_: "shared skills" without qualification (ambiguous with `skills/_shared/`
 The workflow-specific skills that move specs and tickets through their states and integrate code: `/to-tickets`, `/next-ticket`, `/done`, `/improve-codebase-architecture`, `/retro`. Each plugin ships its own.
 
 **Store backend**:
-Where planning artifacts (specs, tickets, retros, Glossary, ADRs) live. Settled 2026-07-09 (PRD 002): `files` (in-repo markdown) is the only backend — the notion backend is removed from agentic-flow, preserved at a pinned pre-removal commit referenced in the work-workflow idea, not as a live file. A storage choice only; carries no workflow semantics.
+Where planning artifacts (specs, tickets, retros, Glossary, ADRs) live. Settled 2026-07-09 (PRD 002): `files` (in-repo markdown) is the only backend — the notion backend is removed from agentic-flow, preserved in git history at the pre-removal commit `f83bfbf` (`git show f83bfbf:plugins/agentic-flow/skills/_shared/NOTION-RESOLVER.md`), not as a live file. A storage choice only; carries no workflow semantics.
 _Avoid_: "backend" for anything other than artifact storage; "store backend" for the Work workflow's per-artifact sourcing (Jira tickets, Notion specs) — a split the seam never expressed (ADR 0001).
 
 **Consent gate**:
