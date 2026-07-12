@@ -29,7 +29,18 @@ Warns rather than refuses on `Open → Done` (a user who did the work without fl
    - **Any implementation path is dirty** — refuse, naming the convention: *implementation is committed on the ticket branch before `/done` runs*. Print the implementation paths; the user commits *those paths only* — co-present store-artifact dirt stays in the tree (a resume signal — [RECOVERY.md](../../_shared/RECOVERY.md#resting-states), implementation-dirt row). Then re-run `/done`.
    - **Only store-artifact paths are dirty** — `/done`'s own interrupted close-out. Don't refuse: open [RECOVERY.md](../../_shared/RECOVERY.md#done-interrupted-close-out) and resume per its walkthrough.
 
-3. **Dispatch the close-out pair — `agentic-flow:deviation-fact-checker` and `agentic-flow:spec-conformance` — in one parallel batch**, both against the same materialized diff. The axes are deliberately split: the fact-checker audits bookkeeping and never editorializes; correctness judgment lives in the conformance agent. The shared brief carries, at minimum:
+3. **Surface contract tampering, then dispatch the close-out pair.**
+
+   **Contract-tamper surface (before dispatch).** A ticket branch can rewrite the very Goal/Acceptance criteria it will be judged conformant against — or the spec's Approach — and be judged against the rewritten bar ([ADR 0005](../../../../../docs/adr/0005-reviewers-distrust-diff-touched-authority.md)). Before dispatching, run the shipped tamper script over the refs step 2 already resolved (`<base>` = spec branch, `<head>` = ticket branch); it is a shipped script rather than inline prose because the check is a section-aware, multi-step hot-path procedure that must not skip a step ([ADR 0002](../../../../../docs/adr/0002-hot-path-classifications-stay-inlined.md)):
+
+   ```
+   bash "${CLAUDE_PLUGIN_ROOT}/scripts/contract-tamper.sh" <base> <head> \
+     <ticket-path> Goal <ticket-path> "Acceptance criteria" <spec-path> Approach
+   ```
+
+   where `<ticket-path>` and `<spec-path>` are the ticket file and `spec.md` named below. For each guarded target it prints a `SECTION\t<path>\t<heading>\t<changed|unchanged>` line (followed by that section's line-numbered base text). If any target reads `changed`, **present the moved section(s) and require the user's explicit acknowledgment before dispatching the pair** — a blocking surface, not a notification: an unacknowledged tamper stops the close-out. `## Deviations` is never a guarded target, so a deviation legitimately authored on the ticket branch never trips it. An untampered close-out reports only `unchanged` and proceeds with no confirm.
+
+   **Dispatch the close-out pair — `agentic-flow:deviation-fact-checker` and `agentic-flow:spec-conformance` — in one parallel batch**, both against the same materialized diff. The axes are deliberately split: the fact-checker audits bookkeeping and never editorializes; correctness judgment lives in the conformance agent. The shared brief carries, at minimum:
    - The diff artifact path (`.agentic-flow/diff.patch`)
    - The ticket's Goal + Acceptance criteria + existing `## Deviations`, **with the ticket file's path** (`docs/specs/<NNN>-<slug>/tickets/<NNN>-<slug>.md`) so the conformance agent can ground its spec-source citations at `file:line`
    - The spec's Approach section **and the spec file's path** (`docs/specs/<NNN>-<slug>/spec.md`) — briefing context for the fact-checker; part of the conformance agent's spec source, and the citation target for any Approach-derived finding

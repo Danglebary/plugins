@@ -1,5 +1,5 @@
 ---
-status: open
+status: in-progress
 depends_on: []
 ---
 
@@ -25,4 +25,5 @@ Place the script alongside `scripts/materialize-diff.sh` and follow DIFF-MATERIA
 
 ## Deviations
 
-_None yet._
+- Approach / AC1 (script interface): the script does **not** hardcode the three guarded sections. The invoking skill passes `(path, heading)` target pairs (`contract-tamper.sh <base> <head> <path> <heading> ...`) and the script extract-and-compares each. Keeps the store-dependent "what is guarded and which file holds it" knowledge in `/done` per DIFF-MATERIALIZATION.md's division of labor, and makes the `## Deviations` exemption (AC2) structural — the caller simply never names it. Ratified at the plan gate.
+- Output contract (AC4/AC6; ticket 003's input seam): per target the script prints a tab-delimited `SECTION\t<path>\t<heading>\t<changed|unchanged>` line followed by that section's line-numbered base text. The tamper flag is stdout **data at exit 0**, never a nonzero exit — so the base contract stays consumable regardless of tamper, and a caller's `set -e` cannot misread "tampered" as a script failure. Ratified at the plan gate.
