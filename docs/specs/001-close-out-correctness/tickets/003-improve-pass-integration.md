@@ -7,7 +7,7 @@ depends_on: [001, 002]
 
 ## Goal
 
-`/improve-codebase-architecture` never strands a ticket branch or a deviation capture: every `(refactor)` entry gets a commit carrier, every pass — including a no-op — ends at the close-out merge offer, a post-merge invocation degrades to a deliberate ad-hoc pass with a named range, and outside-PRD deferrals are banked instead of evaporating.
+`/refactor` never strands a ticket branch or a deviation capture: every `(refactor)` entry gets a commit carrier, every pass — including a no-op — ends at the close-out merge offer, a post-merge invocation degrades to a deliberate ad-hoc pass with a named range, and outside-PRD deferrals are banked instead of evaporating.
 
 ## Acceptance criteria
 

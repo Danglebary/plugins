@@ -10,7 +10,7 @@ All nine goals landed, several needing scope the goal statements didn't enumerat
 
 ## Non-goals — Exact match
 
-The non-goals held under pressure rather than by neglect. PRD 001's recovery machinery moved without weakening — ticket 004's tier-decorrelated verification actively defended the guarantee, its Sonnet weak-executor probe catching a dropped branch-sweep mechanism every stronger seat read past and restoring it. ADR 0002's hot-path copies stayed inlined with the config-file path fanned out to every copy rather than re-litigated (ticket 003), and no gate or model-invocation reduction landed beyond the single sanctioned setup-agentic-flow disable.
+The non-goals held under pressure rather than by neglect. PRD 001's recovery machinery moved without weakening — ticket 004's tier-decorrelated verification actively defended the guarantee, its Sonnet weak-executor probe catching a dropped branch-sweep mechanism every stronger seat read past and restoring it. ADR 0002's hot-path copies stayed inlined with the config-file path fanned out to every copy rather than re-litigated (ticket 003), and no gate or model-invocation reduction landed beyond the single sanctioned setup disable.
 
 ## Approach — Divergence
 
@@ -22,7 +22,7 @@ The module enumeration was the floor, not the ceiling: store-contract couplings 
 
 ## Refactor — Extended
 
-Ticket 005's refactor pass landed two deepenings beyond the ticket's core scope: it grounded the spec-conformance agent's `file:line` citations by having `/done`'s brief pass the ticket and `spec.md` paths for the agent to read to source line numbers, closing an instruction-capability gap where the required citation had no findable target; and it deduped the always-on reviewer default set toward its authority, pointing `REVIEWERS-FORMAT.md`'s example at `/setup-agentic-flow` instead of mirroring the live list.
+Ticket 005's refactor pass landed two deepenings beyond the ticket's core scope: it grounded the spec-conformance agent's `file:line` citations by having `/done`'s brief pass the ticket and `spec.md` paths for the agent to read to source line numbers, closing an instruction-capability gap where the required citation had no findable target; and it deduped the always-on reviewer default set toward its authority, pointing `REVIEWERS-FORMAT.md`'s example at `/setup` instead of mirroring the live list.
 
 ## Cross-cutting
 

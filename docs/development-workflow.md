@@ -35,7 +35,7 @@ flowchart TD
 
     subgraph X["PHASE 3 — Improve (fresh session)"]
         S -- "improve" --> T["/new + steering prompt:<br/>'next agent runs the improve pass'"]
-        T --> U["/improve-codebase-architecture<br/>(deepen / refactor pass)"]
+        T --> U["/refactor<br/>(deepen / refactor pass)"]
     end
 
     U --> F
@@ -66,5 +66,5 @@ flowchart TD
 
 ### Open questions
 
-- **How does `improve-codebase-architecture` relate to Matt's `code-review` skill?** I'm curious whether `code-review` could augment the improve pass, or whether it's actually more closely related to `/done`. Maybe bits of both?
+- **How does `refactor` relate to Matt's `code-review` skill?** I'm curious whether `code-review` could augment the improve pass, or whether it's actually more closely related to `/done`. Maybe bits of both?
 - **Session handoff style:** worth paying attention to when I reach for `/new` + prompt vs. a full process restart, to see if there's an actual pattern behind it.

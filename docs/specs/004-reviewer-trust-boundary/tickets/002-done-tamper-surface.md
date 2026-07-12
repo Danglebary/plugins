@@ -11,7 +11,7 @@ Give `/done` a mechanical alarm when a ticket branch rewrites the contract it wi
 
 ## Acceptance criteria
 
-- [ ] A script under `plugins/agentic-flow/scripts/`, given base and head refs, reports per guarded section (`## Goal`, `## Acceptance criteria`, `## Approach`) whether it changed base→head — reading each version directly via `git show <ref>:<path>` and comparing by canonical heading (from that heading to the next `## ` or EOF).
+- [ ] A script under `plugins/pirr/scripts/`, given base and head refs, reports per guarded section (`## Goal`, `## Acceptance criteria`, `## Approach`) whether it changed base→head — reading each version directly via `git show <ref>:<path>` and comparing by canonical heading (from that heading to the next `## ` or EOF).
 - [ ] `## Deviations` is never compared or reported — the exemption falls out of extracting only the guarded sections.
 - [ ] A renamed or removed guarded heading surfaces as changed (fails safe); an unrelated section inserted between guarded sections does not false-positive.
 - [ ] The script also emits each guarded section's base text with absolute base line numbers prefixed (consumed by ticket 003).

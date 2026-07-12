@@ -20,7 +20,7 @@ Close the `spec-conformance` half of the reviewer trust boundary: the agent rend
 
 ## Implementation notes
 
-The agent change is the citation-grounding inversion in `plugins/agentic-flow/agents/spec-conformance.md`'s "Inputs and verification scope" — scoped to Goal/Acceptance/Approach only. The base line-numbered text comes from ticket 002's script; do not add git access to the agent. The inline lands in the same shared brief both close-out agents receive (`skills/engineering/done/SKILL.md` step 3).
+The agent change is the citation-grounding inversion in `plugins/pirr/agents/spec-conformance.md`'s "Inputs and verification scope" — scoped to Goal/Acceptance/Approach only. The base line-numbered text comes from ticket 002's script; do not add git access to the agent. The inline lands in the same shared brief both close-out agents receive (`skills/engineering/done/SKILL.md` step 3).
 
 ## Deviations
 

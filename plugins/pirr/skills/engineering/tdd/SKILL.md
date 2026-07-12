@@ -1,0 +1,107 @@
+---
+name: tdd
+description: Test-driven development with a red-green-refactor loop. Use when the user wants to build features or fix bugs test-first, wants integration tests, or asks for TDD.
+---
+
+# Test-Driven Development
+
+## Philosophy
+
+**Core principle**: Tests should verify behavior through public interfaces, not implementation details. Code can change entirely; tests shouldn't.
+
+**Good tests** are integration-style: they exercise real code paths through public APIs. They describe _what_ the system does, not _how_ it does it. A good test reads like a specification - "user can checkout with valid cart" tells you exactly what capability exists. These tests survive refactors because they don't care about internal structure.
+
+**Bad tests** are coupled to implementation. They mock internal collaborators, test private methods, or verify through external means (like querying a database directly instead of using the interface). The warning sign: your test breaks when you refactor, but behavior hasn't changed. If you rename an internal function and tests fail, those tests were testing implementation, not behavior.
+
+See [tests.md](tests.md) for examples and [mocking.md](mocking.md) for mocking guidelines.
+
+## Anti-Pattern: Horizontal Slices
+
+**DO NOT write all tests first, then all implementation.** This is "horizontal slicing" - treating RED as "write all tests" and GREEN as "write all code."
+
+This produces **crap tests**:
+
+- Tests written in bulk test _imagined_ behavior, not _actual_ behavior
+- You end up testing the _shape_ of things (data structures, function signatures) rather than user-facing behavior
+- Tests become insensitive to real changes - they pass when behavior breaks, fail when behavior is fine
+- You outrun your headlights, committing to test structure before understanding the implementation
+
+**Correct approach**: Vertical slices via tracer bullets. One test → one implementation → repeat. Each test responds to what you learned from the previous cycle. Because you just wrote the code, you know exactly what behavior matters and how to verify it.
+
+## Workflow
+
+### 1. Planning
+
+When exploring the codebase, use the project's domain glossary so that test names and interface vocabulary match the project's language, and respect ADRs in the area you're touching.
+
+Before writing any code:
+
+- [ ] Confirm with user what interface changes are needed
+- [ ] Confirm with user which behaviors to test (prioritize)
+- [ ] Identify opportunities for [deep modules](deep-modules.md) (small interface, deep implementation)
+- [ ] Design interfaces for [testability](interface-design.md)
+- [ ] List the behaviors to test (not implementation steps)
+- [ ] Get user approval on the plan
+
+Ask: "What should the public interface look like? Which behaviors are most important to test?"
+
+**You can't test everything.** Confirm with the user exactly which behaviors matter most. Focus testing effort on critical paths and complex logic, not every possible edge case.
+
+**Plan-gate discipline.** The proposed interface and test plan carry three marks before approval is requested: (1) state whether the design derives from first principles for this problem or from precedent/diff-minimization — "smallest change" is not an argument; argue from the repo's recorded design philosophy (CLAUDE.md weighting, ADRs); (2) mark each load-bearing constraint as **user-stated** or **assumed**; (3) note the strongest alternative shape and why it loses. User approval is a **blocking** checkpoint — present the plan and end the turn; don't start the tracer bullet in the same breath.
+
+### 2. Tracer Bullet
+
+Write ONE test that confirms ONE thing about the system:
+
+```
+RED:   Write test for first behavior → test fails
+GREEN: Write minimal code to pass → test passes
+```
+
+This is your tracer bullet - proves the path works end-to-end.
+
+### 3. Incremental Loop
+
+For each remaining behavior:
+
+```
+RED:   Write next test → fails
+GREEN: Minimal code to pass → passes
+```
+
+Rules:
+
+- One test at a time
+- Only enough code to pass current test
+- Don't anticipate future tests
+- Keep tests focused on observable behavior
+
+### 4. Refactor — the critical second pass
+
+Once tests are green, take a critical second pass at what you just wrote: now that this behavior exists, is this the right shape? You wrote whatever was simplest to pass the test (correctly) — refactoring is where you check whether the resulting shape holds up.
+
+Lenses and stop conditions: see [refactoring.md](refactoring.md).
+
+**Never refactor while RED.** Get to GREEN first.
+
+## Checklist Per Cycle
+
+```
+[ ] Test describes behavior, not implementation
+[ ] Test uses public interface only
+[ ] Test would survive internal refactor
+[ ] Code is minimal for this test
+[ ] No speculative features added
+```
+
+## Working within an `pirr` ticket
+
+When TDD runs inside an in-progress `pirr` ticket, its stop/record behavior and its clean-completion exit tasks follow the shared [IMPLEMENTATION-LOOP.md](../../_shared/IMPLEMENTATION-LOOP.md) contract — cited here, not restated.
+
+**Stop or record a mid-cycle divergence.** Outside the always-stop list, a seam- or behavioral-level choice the ticket's plan didn't specify but you can responsibly pick is appended to the ticket's `## Deviations` as it emerges and the cycle continues — store-as-primary means the deviation lands in the store (see [STORE.md](../../_shared/STORE.md)) before `/done` runs, not held back for `/done` to discover; threshold and rationale-placement per [ABSTRACTION-LEVELS-PRINCIPLE.md](../../_shared/ABSTRACTION-LEVELS-PRINCIPLE.md). But when the divergence is on the contract's hard always-stop list — its highest-consequence seam moves — or is an unplanned decision you can't responsibly pick, **stop and surface to the user instead of recording and continuing**. The exact triggers live in IMPLEMENTATION-LOOP.md's "Stop or record" section.
+
+**Exit on clean-green completion.** When every planned behavior is green *and* the repo's full verification passes, fire the contract's exit tasks with no intervening prompt: commit the completed implementation on the ticket branch, then invoke `/done`. Two points this mode leans on, both owned by the contract:
+- **Verify with the full suite, not the inner loop's focused tests.** "Green" here is the whole build-and-test suite, resolved per IMPLEMENTATION-LOOP.md's "Resolving the repo's verification" — run it in full even though the red-green cycle only exercised focused tests.
+- **Stage by explicit paths.** Stage the implementation paths *plus* the ticket file — it carries the riding `In progress` flip and any recorded Deviations — never `-A`; a clean tree lets the auto-invoked `/done` materialize its diff normally instead of misrouting to interrupted close-out (the contract's staging section).
+
+**Don't commit past a stop.** If verification is absent, unrunnable, or red, or a stop-and-surface decision was raised, do **not** auto-commit — surface the manual "implementation complete — commit and run `/done`" prompt and stop, per the contract's graceful-degradation rule.
