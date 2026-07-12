@@ -31,6 +31,10 @@ _Avoid_: "confirm gate" as a synonym — that names the mechanism; consent gate 
 A confirm gate whose action is local, reversible, and whose "no" branch never fires and would change nothing if it did — a prompt that reads as consent but only adds friction. Committing completed work on a ticket branch and invoking `/done` are ceremony gates (ADR 0004); they may be automated, fired on a positive clean-completion signal (all planned work done and verification green). The reversible / outward-facing / information-destroying test sorts a gate into consent vs. ceremony.
 _Avoid_: assuming any always-answered-yes gate is ceremony — the test decides, not the answer history alone (a gate can be load-bearing and still usually get a yes).
 
+**Reviewer trust boundary**:
+The line past which a reviewer agent must not let the diff under review define the authority it is judged by. A **standards source**, a ticket's **Goal/Acceptance criteria**, or a spec's **Approach** that the reviewed diff modified is *suspect authority*: surfaced or judged against its base (pre-diff) version, never obeyed as post-diff authority (ADR 0005). Hardened in the shared reviewer agents — not deferred to the Work workflow — because that plugin reviews untrusted-author diffs; latent but harmless in the Personal workflow, where the diff author is the trusted user.
+_Avoid_: "untrusted input" — too broad; the boundary is specifically the diff defining the authority that judges it.
+
 ## Relationships
 
 - The **Personal workflow** and the **Work workflow** are separate plugins; each ships its own **Lifecycle layer**.
