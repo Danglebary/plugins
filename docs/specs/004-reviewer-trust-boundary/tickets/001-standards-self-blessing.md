@@ -1,5 +1,5 @@
 ---
-status: open
+status: done
 depends_on: []
 ---
 
@@ -23,4 +23,4 @@ The caveat lands in `plugins/agentic-flow/agents/standards-reviewer.md`'s `## Pr
 
 ## Deviations
 
-_None yet._
+_None._
