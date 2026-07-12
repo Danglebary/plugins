@@ -11,10 +11,10 @@ The plugin serves the files store only, per ADR 0003. A reader of any skill or s
 
 ## Acceptance criteria
 
-- [ ] `grep -ri notion plugins/agentic-flow/` returns no matches; NOTION-RESOLVER.md does not exist and nothing references it.
+- [ ] `grep -ri notion plugins/pirr/` returns no matches; NOTION-RESOLVER.md does not exist and nothing references it.
 - [ ] STORE.md is a files-only artifact map — no resolution ladder, no per-store columns, no store-equivalence claims.
 - [ ] No skill begins with a resolve-the-store step; skills address store artifacts by their paths (or cite the artifact map for the bindings).
-- [ ] setup-agentic-flow provisions the files layout only and asks no store question; the commit-or-ignore question for `.agentic-flow/` remains.
+- [ ] setup provisions the files layout only and asks no store question; the commit-or-ignore question for `.pirr/` remains.
 - [ ] `docs/prds/ideas/work-workflow-plugin.md` records the pre-removal commit hash and a retrieval command (`git show <hash>:<path>`).
 - [ ] README and plugin CONTEXT.md describe a files-only plugin; the two-backend headline is gone.
 
@@ -25,4 +25,4 @@ The plugin serves the files store only, per ADR 0003. A reader of any skill or s
 ## Deviations
 
 - **The `[store]` config block is gone entirely, not just de-notioned.** With the resolution ladder deleted, no skill reads `store.backend` — so the setup template no longer ships a `[store]` block, and this repo's live `settings.toml` dropped the whole block rather than only its notion comment lines. The config surface is now workflow-only (`[branching]`, `[ticket_start]`); the deliberately-retained stale `[branching] strategy` block is untouched.
-- **Criterion 6's "README" read as every marketplace-facing headline.** Beyond the plugin README and CONTEXT.md, the repo-root `README.md`, `.claude-plugin/marketplace.json`, and the repo-root `CONTEXT.md` preamble carried the same two-backend headline (outside the criterion-1 grep path) and were updated to files-only — the glossary preamble caught by the close-out fact-check after contradicting that file's own Store backend entry. `agentic-flow-review.md` and the docs/ planning history keep their notion mentions as historical record.
+- **Criterion 6's "README" read as every marketplace-facing headline.** Beyond the plugin README and CONTEXT.md, the repo-root `README.md`, `.claude-plugin/marketplace.json`, and the repo-root `CONTEXT.md` preamble carried the same two-backend headline (outside the criterion-1 grep path) and were updated to files-only — the glossary preamble caught by the close-out fact-check after contradicting that file's own Store backend entry. `docs/reviews/2026-07-08-whole-plugin-deep-dive.md` and the docs/ planning history keep their notion mentions as historical record.

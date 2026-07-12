@@ -21,8 +21,8 @@ depends_on: [001]
 
 ## Implementation notes
 
-Cite the Convention doc from ticket 001; don't restate the contract. The narrowed prose is `/tdd`'s "Working within an agentic-flow ticket" section.
+Cite the Convention doc from ticket 001; don't restate the contract. The narrowed prose is `/tdd`'s "Working within an pirr ticket" section.
 
 ## Deviations
 
-- Goal / spec §Approach (spec.md:39): extended the narrowing beyond the AC-named "Working within an agentic-flow ticket" section into `refactoring.md`. AC 5 scoped the edit to that one section, but the Goal's "no contradictory in-flight instruction in the skill" was left partial — `refactoring.md`'s "what gets captured where" still routed always-stop-list seam moves (module split/merge, public-API change, IO-surface change) to record-and-continue. Under the auto-commit-on-green exit task this ticket installs, a refactor-discovered always-stop move would auto-commit past its gate. Split that guidance so the always-stop subset stops-and-surfaces (citing the contract) while dependency-edge and plan-covered moves still record-and-continue. Surfaced by the spec-conformance close-out pass; fixed with user approval.
+- Goal / spec §Approach (spec.md:39): extended the narrowing beyond the AC-named "Working within an pirr ticket" section into `refactoring.md`. AC 5 scoped the edit to that one section, but the Goal's "no contradictory in-flight instruction in the skill" was left partial — `refactoring.md`'s "what gets captured where" still routed always-stop-list seam moves (module split/merge, public-API change, IO-surface change) to record-and-continue. Under the auto-commit-on-green exit task this ticket installs, a refactor-discovered always-stop move would auto-commit past its gate. Split that guidance so the always-stop subset stops-and-surfaces (citing the contract) while dependency-edge and plan-covered moves still record-and-continue. Surfaced by the spec-conformance close-out pass; fixed with user approval.

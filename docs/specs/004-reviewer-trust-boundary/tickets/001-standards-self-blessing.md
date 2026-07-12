@@ -11,15 +11,15 @@ Close the `standards-reviewer` half of the reviewer trust boundary: a documented
 
 ## Acceptance criteria
 
-- [ ] Precedence rule 2 in `standards-reviewer` carries a caveat: a standard whose blessing appears as an added line (`+` hunk line in `.agentic-flow/diff.patch`, excluding the `+++` file header) in a hunk touching the standard's file earns no override authority.
+- [ ] Precedence rule 2 in `standards-reviewer` carries a caveat: a standard whose blessing appears as an added line (`+` hunk line in `.pirr/diff.patch`, excluding the `+++` file header) in a hunk touching the standard's file earns no override authority.
 - [ ] The test is strict and line-granular — any `+` touching the blessing line voids the override (a rewrap included), while a blessing the diff leaves untouched keeps authority even if its file is edited elsewhere — stated unambiguously enough that an executor applies it the same way twice.
 - [ ] When the override is voided, the smell it would have silenced surfaces as an ordinary Candidate with Source reading `baseline: <smell>`, and the mandatory Judgment-call field records that the blessing was self-introduced by this diff, citing the standard's home.
 - [ ] A blessing added outside the review's `base...head` range (pre-existing to this diff) retains override authority — the cross-diff accumulation case is explicitly out of scope.
-- [ ] No change to the agent's output sections or fields, and no `/improve-codebase-architecture` brief change; the caveat cites ADR 0005.
+- [ ] No change to the agent's output sections or fields, and no `/refactor` brief change; the caveat cites ADR 0005.
 
 ## Implementation notes
 
-The caveat lands in `plugins/agentic-flow/agents/standards-reviewer.md`'s `## Precedence` (rule 2). The agent derives the `+`-line check from `.agentic-flow/diff.patch`, which it already reviews hunk by hunk — do not add git access or a dispatcher brief change. The self-blessing note reuses the existing mandatory Judgment-call field; do not add a field or heading.
+The caveat lands in `plugins/pirr/agents/standards-reviewer.md`'s `## Precedence` (rule 2). The agent derives the `+`-line check from `.pirr/diff.patch`, which it already reviews hunk by hunk — do not add git access or a dispatcher brief change. The self-blessing note reuses the existing mandatory Judgment-call field; do not add a field or heading.
 
 ## Deviations
 
