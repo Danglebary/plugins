@@ -1,5 +1,5 @@
 ---
-status: open
+status: done
 ---
 
 # Rename to pirr
