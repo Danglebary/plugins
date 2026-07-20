@@ -40,7 +40,23 @@ _Avoid_: linter, expert, sub-agent (when distinguishing role)
 A **Plugin-shipped agent** invoked by a specific skill for a structured analytical task — not user-facing, not a reviewer, not in the Reviewers manifest. Returns output that calling skills depend on by exact shape. Example: `pirr:deviation-fact-checker`, invoked by `/done` and `/retro`.
 
 **Deviation fact-checker**:
-The **Workflow agent** (`pirr:deviation-fact-checker`) that compares a ticket diff (or spec-branch diff) against the ticket's `## Deviations` section. Returns three sections — `Deviation gaps`, `Misrepresented deviations`, `ADR candidates` — each potentially `_None._`. Calling skills (`/done`, `/retro`) depend on the exact shape.
+The **Workflow agent** (`pirr:deviation-fact-checker`) that compares a ticket diff (or spec-branch diff) against the ticket's `## Deviations` section. Returns three **finding** sections — `Deviation gaps`, `Misrepresented deviations`, `ADR candidates` — each potentially `_None._`, followed by the **Partial verdict** register. Calling skills (`/done`, `/retro`) depend on the finding sections' exact headings; the register is outside that parse contract.
+
+**Partial verdict**:
+A claim-making agent's closing section recording surfaces within its own lens that went unread — unavailable, denied, or simply not consulted — naming each surface and what it would have confirmed. **Contents gap-only, emission mandatory**: it never enumerates what *was* checked, and when there is no gap it emits the sentinel `_Full._`. Silence is off-contract, not a clean result — that asymmetry is what makes the register checkable, and it is why the register is placed ahead of any halt instruction (ADR 0006).
+_Avoid_: "coverage report" (the enumerated form this replaced), "checked, clean" (the rejected per-area requirement), "optional register" — silence was the rejected arm
+
+**Empty read**:
+A search that returned nothing. Evidence of absence only with a **positive control** — the same search matching something known to be present — and only where absence is the claim being made (a *missing* or *dropped* finding). Without the control it is an unresolved surface disguised as a consulted one, and belongs in the **Partial verdict** register rather than in a finding (ADR 0006).
+_Avoid_: treating an empty read as a clean read — the two are distinguishable only by the control
+
+**Resolution preflight**:
+A dispatching skill's check, before any lens is dispatched, that every named `subagent_type` resolves against the available agent types — refusing and naming the unresolved ones rather than proceeding. The deterministic half of the coverage claim: an unknown type hard-errors at the tool boundary, so absence is observable *before* the work, never after it. `/refactor` has carried one since its Reviewers-manifest step; `/done` does not, which is where the recorded degradation happened (ADR 0006).
+_Avoid_: "dispatch validation" — the check is name resolution only, never output inspection
+
+**Dispatch record**:
+The dispatching skill's positive account of which lenses ran — dispatched, returned, refused, or failed to resolve — kept by `/refactor` and `/done`, and **persisted** in the ticket's running-retro entry rather than left in chat. Emission is mandatory, detail gap-only: the clean case is one line. An **attestation**, not a verification — a successful dispatch's return carries no agent identity, and the subagent cannot self-identify either, so nothing downstream can audit it (fired 2026-07-19). Its weight comes from the **Resolution preflight** and the anti-substitution rule beside it, not from its own authority (ADR 0006).
+_Avoid_: "third-party observation" — refuted; the skill writing the record is the same executor whose improvisation is the failure mode
 
 **Three-gate test**:
 The criteria used to decide whether a decision warrants an **ADR**. All three must hold: (1) hard to reverse, (2) surprising without context, (3) the result of a real trade-off.
@@ -83,6 +99,7 @@ The per-repo configuration for `pirr`: `.pirr/settings.toml`, holding workflow c
 - An **ADR** is cross-cutting; not nested under any single **Spec**
 - A **Reviewer agent** is dispatched by `/refactor`, not by individual **Ticket** work
 - A **Workflow agent** is invoked by a specific skill (e.g. `/done`, `/retro`); not via the Reviewers manifest
+- A **Partial verdict** is emitted by a **Plugin-shipped agent**; the **Dispatch record** is kept by the skill that dispatched it — neither layer claims what it cannot attest (ADR 0006)
 - The **Active spec pointer** identifies the *one* implementation-active **Spec** — serialized ticketing (STORE.md's single-active discipline; `/to-tickets`' preconditions) keeps a second **Spec** from going `Open` while one is active or unmerged
 
 ## Flagged ambiguities
