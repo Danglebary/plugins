@@ -2,12 +2,15 @@
 # materialize-diff.sh — the single mechanism by which pirr skills obtain a diff.
 # Contract doc: skills/_shared/DIFF-MATERIALIZATION.md
 #
-# Usage: materialize-diff.sh <base> <head>
+# Usage: materialize-diff.sh <base> <head> [--allow-untracked <path>...]
 #
 # Writes the merge-base three-dot diff (base...head) to .pirr/diff.patch at the
 # repo root, scaffolding .pirr/ and its deny-by-default .gitignore when absent.
 # Refusals are side-effect-free: nothing is scaffolded or written unless every preflight
-# passes. "Dirty" means tracked modifications only — untracked files never refuse.
+# passes. "Dirty" (exit 5) means tracked modifications only; untracked paths are
+# exit 8's business, and a tree carrying both refuses 5 first. Untracked paths
+# are reported, never classified here — the invoking skill decides which are
+# legitimate and re-invokes naming them via --allow-untracked.
 #
 # Exit codes:
 #   0  success — diff written
@@ -18,6 +21,7 @@
 #   5  dirty tree — tracked files have uncommitted modifications
 #   6  empty diff
 #   7  unsafe scratch path — .pirr or an artifact within it is a symlink
+#   8  untracked paths the caller has not acknowledged
 set -euo pipefail
 
 refuse() {
@@ -29,9 +33,22 @@ refuse() {
   exit "$code"
 }
 
-(($# == 2)) || refuse 1 "usage: materialize-diff.sh <base> <head>"
+usage="usage: materialize-diff.sh <base> <head> [--allow-untracked <path>...]"
+(($# >= 2)) || refuse 1 "$usage"
 base=$1
 head=$2
+shift 2
+
+# Acknowledged untracked paths. Deliberately explicit paths, never a bare flag
+# or a glob: the caller can only silence what it can name, and naming them is
+# the classification. Paths must match the script's own exit-8 output verbatim.
+allowed=()
+if (($# > 0)); then
+  [[ $1 == --allow-untracked ]] || refuse 1 "$usage"
+  shift
+  (($# > 0)) || refuse 1 "--allow-untracked requires at least one path"
+  allowed=("$@")
+fi
 
 repo_root=$(git rev-parse --show-toplevel 2>/dev/null) ||
   refuse 1 "not inside a git repository (cwd: $PWD)"
@@ -52,6 +69,26 @@ fi
 dirty=$(git status --porcelain --untracked-files=no)
 [[ -z "$dirty" ]] ||
   refuse 5 "tracked files have uncommitted modifications — commit them first:" "$dirty"
+
+# Untracked paths are absent from a base...head diff and are not enumerated by
+# any close-out commit, so work left never-staged would silently fail to ship.
+# Report them; the invoking skill classifies (this script never reads the
+# artifact map). .pirr/ is this script's own scaffolding, never the user's work.
+untracked=$(git ls-files --others --exclude-standard -- ':(exclude).pirr')
+unacknowledged=""
+while IFS= read -r path; do
+  [[ -n "$path" ]] || continue
+  acknowledged=0
+  for ack in ${allowed[@]+"${allowed[@]}"}; do
+    if [[ "$path" == "$ack" ]]; then
+      acknowledged=1
+      break
+    fi
+  done
+  ((acknowledged)) || unacknowledged+="${path}"$'\n'
+done <<< "$untracked"
+[[ -z "$unacknowledged" ]] ||
+  refuse 8 "untracked files are absent from the diff — classify before proceeding:" "${unacknowledged%$'\n'}"
 
 git diff --quiet "${base_sha}...${head_sha}" &&
   refuse 6 "empty diff for ${base}...${head} (merge-base $(git rev-parse --short "$merge_base"))"

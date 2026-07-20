@@ -27,7 +27,7 @@ Refuses if any ticket isn't `Done` (lists outstanding tickets). An already-`Done
 
    **Verify the diff is complete before fact-checking it:** every `Done` ticket's work must be reachable from the spec branch tip. If the ticket branch still exists, ancestor-check its tip (`git merge-base --is-ancestor`). If the branch is gone — the normal state — locate the ticket's close commit *positively*: the commit that set the ticket's status to `done`, found in the spec branch's history of the ticket file (`git log <spec branch> -S 'status: done' -- <ticket path>`). Found → the close and everything under it is reachable. Not found → the close never reached the spec branch (branch deleted or never merged): the spec diff is silently missing that ticket — stop; if its branch survives, offer that ticket's close-out merge per [CLOSE-OUT.md](../../_shared/CLOSE-OUT.md) (ticket branch → spec branch); if not, warn the work is recoverable only from the reflog. Never infer "merged" from a branch's absence.
 
-   **One preflight the script cannot make:** the running retro must be committed before the synthesis consumes it — the rewrite preserves the running form in git history *only* (see [RETRO-FORMAT.md](../../_shared/RETRO-FORMAT.md)). An *untracked* `retro.md` never trips the script's dirty check (tracked-only by design) yet has no history: verify the running retro is tracked, and refuse if not — name the exact path and the always-works fix: commit it on the spec branch, then re-run `/retro`. (Only when a ticket's `done` flip is *also* uncommitted is resuming that `/done` close the better route — its commit gate carries the retro along.)
+   **One preflight the script cannot make:** the running retro must be committed before the synthesis consumes it — the rewrite preserves the running form in git history *only* (see [RETRO-FORMAT.md](../../_shared/RETRO-FORMAT.md)). An *untracked* `retro.md` never trips the script's exit-5 dirty check (tracked-only by design) and, being a store artifact, would pass exit 8's classification — yet it has no history: verify the running retro is tracked, and refuse if not — name the exact path and the always-works fix: commit it on the spec branch, then re-run `/retro`. (Only when a ticket's `done` flip is *also* uncommitted is resuming that `/done` close the better route — its commit gate carries the retro along.)
 
    Run the script:
 
@@ -35,9 +35,18 @@ Refuses if any ticket isn't `Done` (lists outstanding tickets). An already-`Done
    bash "${CLAUDE_PLUGIN_ROOT}/scripts/materialize-diff.sh" <base> <head>
    ```
 
-   On success the diff is at `.pirr/diff.patch` — the fact-checker has no git access; this artifact is its only view of the diff. On any non-zero exit, follow the shared doc's exit-code table: relay stderr and stop — never fall back to a hand-rolled `git diff`. Exit 5 (dirty tree) is the one exit `/retro` interprets before stopping. Classify the dirty paths (store-artifact paths per STORE.md's artifact map: `docs/specs/**`, `docs/adr/**`, `docs/spikes/**`, `docs/reviewers.md`, `CONTEXT.md`, `.pirr/settings.toml`; everything else is implementation):
+   On success the diff is at `.pirr/diff.patch` — the fact-checker has no git access; this artifact is its only view of the diff. On any non-zero exit, follow the shared doc's exit-code table: relay stderr and stop — never fall back to a hand-rolled `git diff`. Exits 5 and 8 are the two `/retro` interprets before stopping. Both classify against the same division (store-artifact paths per STORE.md's artifact map: `docs/specs/**`, `docs/adr/**`, `docs/spikes/**`, `docs/reviewers.md`, `CONTEXT.md`, `.pirr/settings.toml`; everything else is implementation).
+
+   **Exit 5 (tracked dirt)** — two arms:
    - **Any implementation path is dirty** — refuse, naming the convention: implementation is committed before close-out runs. Print the implementation paths; the user commits *those paths only* — co-present store-artifact dirt stays in the tree (a resume signal; the rule is the implementation-dirt row of [RECOVERY.md](../../_shared/RECOVERY.md#resting-states)).
    - **Only store-artifact paths are dirty** — an interrupted state this close owns. Open [RECOVERY.md](../../_shared/RECOVERY.md#retro-interrupted-close) and route per its walkthrough, which reads the `Done` flip's position against this skill's store-edit order.
+
+   **Exit 8 (untracked paths)** — three arms, splitting store artifacts by authorship as [CLOSE-OUT.md](../../_shared/CLOSE-OUT.md)'s enumeration does:
+   - **Any reported path is implementation** — refuse, same convention, naming what the exit prevented: a never-staged file is in neither the diff nor the close-out commit, so closing now would ship nothing of it. This arm fires even alongside legitimate planning artifacts.
+   - **Only store artifacts, authored by this invocation** — proceed: re-invoke with `--allow-untracked` naming them.
+   - **Only store artifacts this invocation did not author** — proceed the same way, **and name them to the user** as excluded from this close. At spec scope this is the common case: a working store normally carries banked ideas and drafted specs that have nothing to do with this spec.
+
+   Note the untracked `retro.md` case is already refused by the preflight above, which is strictly stronger than this exit: an untracked running retro fails on having no history for the synthesis to preserve, not merely on being untracked.
 
 4. **Invoke `pirr:deviation-fact-checker`** with, at minimum:
    - The diff artifact path (`.pirr/diff.patch`)

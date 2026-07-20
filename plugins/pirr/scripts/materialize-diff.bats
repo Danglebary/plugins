@@ -48,6 +48,17 @@ merge_now() {
   [[ "$output" == *usage* ]]
 }
 
+@test "an unrecognized third argument refuses with exit 1 and prints usage" {
+  run bash "$SCRIPT" main ticket --force
+  [ "$status" -eq 1 ]
+  [[ "$output" == *usage* ]]
+}
+
+@test "--allow-untracked with no paths refuses with exit 1" {
+  run bash "$SCRIPT" main ticket --allow-untracked
+  [ "$status" -eq 1 ]
+}
+
 @test "outside a git repository refuses with exit 1" {
   mkdir -p "$BATS_TEST_TMPDIR/notrepo"
   cd "$BATS_TEST_TMPDIR/notrepo"
@@ -112,18 +123,114 @@ merge_now() {
   [[ "$output" == *base.txt* ]]
 }
 
-@test "untracked files never cause a refusal" {
+@test "a never-staged file refuses with exit 8 and names it" {
   commit_on ticket work.txt
-  echo stray > stray.txt
-  mkdir -p docs
-  echo draft > docs/draft.md
+  mkdir -p src
+  echo impl > src/impl.ts
+  run bash "$SCRIPT" main ticket
+  [ "$status" -eq 8 ]
+  [[ "$output" == *src/impl.ts* ]]
+}
+
+@test "exit 8 never names a gitignored file" {
+  commit_on ticket work.txt
+  printf 'ignored/\n*.log\n' > .gitignore
+  git add .gitignore
+  git commit -qm "add gitignore"
+  mkdir -p ignored
+  echo secret > ignored/secret.txt
+  echo noise > junk.log
+  echo impl > impl.ts
+  run bash "$SCRIPT" main ticket
+  [ "$status" -eq 8 ]
+  [[ "$output" == *impl.ts* ]]
+  [[ "$output" != *secret.txt* ]]
+  [[ "$output" != *junk.log* ]]
+}
+
+@test "a new file under a new directory is named as its own path, not the directory" {
+  # git status --porcelain collapses this to "?? newdir/", which would name a
+  # directory the user cannot act on. ls-files --others reports per-file.
+  commit_on ticket work.txt
+  mkdir -p newdir/nested
+  echo impl > newdir/nested/impl.ts
+  run bash "$SCRIPT" main ticket
+  [ "$status" -eq 8 ]
+  [[ "$output" == *newdir/nested/impl.ts* ]]
+}
+
+@test "acknowledged untracked paths proceed and the diff is written" {
+  # Supersedes "untracked files never cause a refusal": legitimate planning
+  # artifacts still must never wedge a close-out, but the skill now says so by
+  # naming them rather than the script silently ignoring every untracked path.
+  commit_on ticket work.txt
+  mkdir -p docs/specs/ideas
+  echo banked > docs/specs/ideas/stray.md
+  run bash "$SCRIPT" main ticket --allow-untracked docs/specs/ideas/stray.md
+  [ "$status" -eq 0 ]
+  [ -s .pirr/diff.patch ]
+}
+
+@test "an unacknowledged path still refuses even alongside acknowledged ones" {
+  commit_on ticket work.txt
+  mkdir -p docs/specs/ideas
+  echo banked > docs/specs/ideas/stray.md
+  echo impl > impl.ts
+  run bash "$SCRIPT" main ticket --allow-untracked docs/specs/ideas/stray.md
+  [ "$status" -eq 8 ]
+  [[ "$output" == *impl.ts* ]]
+  [[ "$output" != *stray.md* ]]
+}
+
+@test "a staged-but-uncommitted new file still refuses with exit 5, not 8" {
+  commit_on ticket work.txt
+  echo impl > staged.ts
+  git add staged.ts
+  run bash "$SCRIPT" main ticket
+  [ "$status" -eq 5 ]
+  [[ "$output" == *staged.ts* ]]
+}
+
+@test "tracked dirt alongside untracked paths refuses with exit 5, not 8" {
+  # The untracked check sits after the dirty check, so exit 5 keeps its meaning
+  # and its stderr contract: commit the tracked dirt first, then re-run.
+  commit_on ticket work.txt
+  echo changed > base.txt
+  echo impl > impl.ts
+  run bash "$SCRIPT" main ticket
+  [ "$status" -eq 5 ]
+  [[ "$output" == *base.txt* ]]
+}
+
+@test "the script's own .pirr scaffolding never trips exit 8 on a later run" {
+  # This repo tracks .pirr/.gitignore, so the hazard is invisible here: in a
+  # consuming repo that neither tracks nor ignores .pirr, run 1 scaffolds an
+  # untracked .pirr/.gitignore that run 2 would otherwise refuse on.
+  commit_on ticket work.txt
+  run bash "$SCRIPT" main ticket
+  [ "$status" -eq 0 ]
+  [ -f .pirr/.gitignore ]
+  [ -n "$(git ls-files --others --exclude-standard -- .pirr)" ]
   run bash "$SCRIPT" main ticket
   [ "$status" -eq 0 ]
 }
 
+@test "a nested .pirr the script does not own is still reported" {
+  # The exclusion is root-anchored: it covers this script's scaffold, not a
+  # directory that merely shares its name deeper in the user's tree.
+  commit_on ticket work.txt
+  mkdir -p sub/.pirr
+  echo impl > sub/.pirr/thing.ts
+  run bash "$SCRIPT" main ticket
+  [ "$status" -eq 8 ]
+  [[ "$output" == *sub/.pirr/thing.ts* ]]
+}
+
 @test "exit 5 stderr names tracked dirt only, never untracked files" {
-  # Close-out commit gates enumerate untracked store files from git status
-  # precisely because this stderr can never name them — pin the negative.
+  # Exit 5 stays tracked-only: untracked paths are exit 8's business, and a
+  # tree with both refuses 5 first. Close-out commit gates therefore still
+  # enumerate untracked store files from git status, never from this stderr —
+  # pin the negative, which exit 8's arrival narrows rather than repeals.
   commit_on ticket work.txt
   echo changed > base.txt
   mkdir -p docs/specs/ideas
@@ -254,6 +361,15 @@ merge_now() {
   git switch -qc ticket
   run bash "$SCRIPT" main ticket
   [ "$status" -eq 6 ]
+  [ ! -d .pirr ]
+}
+
+@test "an exit-8 refusal creates no .pirr scaffold" {
+  commit_on ticket work.txt
+  echo impl > impl.ts
+  [ ! -d .pirr ]
+  run bash "$SCRIPT" main ticket
+  [ "$status" -eq 8 ]
   [ ! -d .pirr ]
 }
 

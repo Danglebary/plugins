@@ -1,5 +1,5 @@
 ---
-status: open
+status: in-progress
 depends_on: []
 ---
 
@@ -30,4 +30,10 @@ Classification stays in the skills: the script reports paths and does not consul
 
 ## Deviations
 
-_None yet._
+**The script gained an `--allow-untracked <path>...` argument; the recovery stash was left alone.** The ticket specifies the new exit but not how a skill that classifies its untracked paths as legitimate then obtains a diff — the refusal is side-effect-free, so nothing is written. The alternative considered first was widening `RECOVERY.md`'s resume stash to `-u`, which was verified to round-trip correctly. It was rejected on frequency: untracked banked ideas and drafted specs are the store's normal resting state (this repo carries six), so every routine `/done` and `/retro` would pay a stash-and-pop round trip — including that recipe's documented push/pop crash window — to get past a preflight this ticket adds, for files that provably cannot affect a `base...head` diff. The acknowledgment argument keeps classification in the skills as the Implementation notes require (the script never reads the artifact map), and takes explicit paths rather than a bare flag or glob so a caller can only silence what it can name. `RECOVERY.md` is untouched as a result.
+
+**The `.pirr/` exclusion is a root-anchored pathspec, not `-x`/`--exclude`.** Both satisfy the acceptance criterion. `--exclude=.pirr/` is depth-agnostic and would also hide a user's `sub/.pirr/thing.ts`, which the script does not own; `-- ':(exclude).pirr'` covers only the scaffold at the repo root. Pinned by its own test.
+
+**The untracked check sits after the exit-5 dirty check.** The ticket lists `materialize-diff.bats:115` and `:124` as equivalent rewrites; they are not. With this ordering `:124`'s assertions remain correct and only its justifying comment was wrong, so it was corrected rather than inverted — calling it a behavior flip would have been false. `:115` was genuinely superseded: its intent (legitimate planning artifacts must never wedge a close-out) now lives on the acknowledgment test, which names the lineage. Ordering is itself pinned by a test.
+
+**`/refactor` was given the exit-8 classification too, though the ticket names only `/done` and `/retro`.** `refactor/SKILL.md` invokes the same script and handled exit 5 only, so shipping this ticket alone would have hard-stopped every refactor pass on any untracked banked idea — the normal state of a working store. It cites `/done`'s arms rather than restating them. Deferring this to the later lifecycle-skill ticket would have shipped a known regression in between.

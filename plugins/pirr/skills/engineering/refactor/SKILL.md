@@ -45,10 +45,14 @@ The domain language names good seams; ADRs record decisions the skill should not
    Then run the script:
 
    ```
-   bash "${CLAUDE_PLUGIN_ROOT}/scripts/materialize-diff.sh" <base> <head>
+   bash "${CLAUDE_PLUGIN_ROOT}/scripts/materialize-diff.sh" <base> <head> [--allow-untracked <path>...]
    ```
 
-   On success the diff is at `.pirr/diff.patch`. On any non-zero exit, follow the shared doc's exit-code table: relay stderr and stop — never fall back to a hand-rolled `git diff`. Exit 5 (dirty tree) is the one exit this skill interprets before stopping: `/done` commits every close-out edit before its fork, so this pass starts from a clean tree by construction. Route the dirt per the interrupted-close discriminator ([RECOVERY.md](../../_shared/RECOVERY.md#resting-states)): implementation dirt is uncommitted work — surface it and stop; store-artifact dirt with the ticket's `done` flip *uncommitted* is `/done`'s interrupted close-out — point back at re-running `/done`; store-artifact dirt with the flip already committed is this skill's own interrupted pass — resume at the close-out (step 9), where the convention's show-content-on-resume rule governs the straggler commit.
+   On success the diff is at `.pirr/diff.patch`. On any non-zero exit, follow the shared doc's exit-code table: relay stderr and stop — never fall back to a hand-rolled `git diff`.
+
+   **Exit 8 (untracked paths)** classifies exactly as `/done` step 2's exit-8 arms do — implementation refuses; store artifacts proceed via `--allow-untracked`, named to the user when this pass didn't author them. Read those arms, don't re-derive them. A refactor pass runs on a tree that routinely carries banked ideas and drafted specs, so relaying-and-stopping here would wedge the common case rather than catch anything.
+
+   **Exit 5 (dirty tree)** is interpreted before stopping: `/done` commits every close-out edit before its fork, so this pass starts from a clean tree by construction. Route the dirt per the interrupted-close discriminator ([RECOVERY.md](../../_shared/RECOVERY.md#resting-states)): implementation dirt is uncommitted work — surface it and stop; store-artifact dirt with the ticket's `done` flip *uncommitted* is `/done`'s interrupted close-out — point back at re-running `/done`; store-artifact dirt with the flip already committed is this skill's own interrupted pass — resume at the close-out (step 9), where the convention's show-content-on-resume rule governs the straggler commit.
 
 4. **Dispatch each reviewer in parallel** via the Agent tool. Reviewer agents read only the working tree (`Read/Grep/Glob`, no store access), so the brief must carry every planning input they need: resolve each from the store (step 1) and inline it. Every reviewer brief contains:
    - The diff (or scope) and the steering prompt: *"Review the following changes through your area of expertise. Identify deepening opportunities or architectural concerns per your lens. Output structured findings with file/line citations."*

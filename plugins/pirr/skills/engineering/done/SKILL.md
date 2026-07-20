@@ -25,9 +25,16 @@ Warns rather than refuses on `Open → Done` (a user who did the work without fl
    bash "${CLAUDE_PLUGIN_ROOT}/scripts/materialize-diff.sh" <base> <head>
    ```
 
-   On success the diff is at `.pirr/diff.patch` — the close-out agents have no git access; this artifact is their only view of the diff. On any non-zero exit, follow the shared doc's exit-code table: relay stderr and stop — never fall back to a hand-rolled `git diff`. Exit 5 (dirty tree) is the one exit `/done` interprets before stopping. Classify the dirty paths first — **store-artifact paths per STORE.md's artifact map** (`docs/specs/**`, `docs/adr/**`, `docs/spikes/**`, `docs/reviewers.md`, `CONTEXT.md`, `.pirr/settings.toml`); everything else is implementation:
+   On success the diff is at `.pirr/diff.patch` — the close-out agents have no git access; this artifact is their only view of the diff. On any non-zero exit, follow the shared doc's exit-code table: relay stderr and stop — never fall back to a hand-rolled `git diff`. Exits 5 and 8 are the two `/done` interprets before stopping. Both classify their paths against the same division — **store-artifact paths per STORE.md's artifact map** (`docs/specs/**`, `docs/adr/**`, `docs/spikes/**`, `docs/reviewers.md`, `CONTEXT.md`, `.pirr/settings.toml`); everything else is implementation.
+
+   **Exit 5 (tracked dirt)** — two arms:
    - **Any implementation path is dirty** — refuse, naming the convention: *implementation is committed on the ticket branch before `/done` runs*. Print the implementation paths; the user commits *those paths only* — co-present store-artifact dirt stays in the tree (a resume signal — [RECOVERY.md](../../_shared/RECOVERY.md#resting-states), implementation-dirt row). Then re-run `/done`.
    - **Only store-artifact paths are dirty** — `/done`'s own interrupted close-out. Don't refuse: open [RECOVERY.md](../../_shared/RECOVERY.md#done-interrupted-close-out) and resume per its walkthrough.
+
+   **Exit 8 (untracked paths)** — three arms, splitting the store-artifact case by authorship exactly as [CLOSE-OUT.md](../../_shared/CLOSE-OUT.md)'s enumeration does. A two-way split would misread a banked idea as an interrupted close:
+   - **Any reported path is implementation** — refuse, same convention as above, and say plainly what the exit prevented: *a never-staged file is absent from the diff and from the close-out commit's enumeration — closing now would ship nothing of it*. Print the implementation paths; the user stages or removes them, then re-runs `/done`. This arm fires even when legitimate planning artifacts are reported alongside — one unstaged implementation file refuses the whole close.
+   - **Only store artifacts, authored by this invocation** — this run's own in-flight edits (a minted ADR, a first `retro.md`). Proceed: re-invoke the script with `--allow-untracked` naming them.
+   - **Only store artifacts this invocation did not author** — another spec's draft, a banked idea, the ordinary resting state of a working store. Proceed the same way, **and name them to the user** as excluded from this close — the same visibility CLOSE-OUT.md's enumeration owes them, applied one step earlier so nothing is silently acknowledged.
 
 3. **Surface contract tampering, then dispatch the close-out pair.**
 
