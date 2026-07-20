@@ -1,5 +1,5 @@
 ---
-status: open
+status: in-progress
 depends_on: []
 ---
 
@@ -26,4 +26,5 @@ The multiple-match response mirrors the posture the script already takes when a 
 
 ## Deviations
 
-_None yet._
+- Acceptance criteria (AC8, "have bats fixtures"): the suite gained two assertion helpers (`assert_output_contains` / `refute_output_contains`) and this ticket's new tests route their `$output` checks through them. On bash 3.2 — the only bash on macOS — a failing `[[ ]]` inside a function does not trip `errexit` and does not fire the ERR trap, so in a bats test only the *final* command decides pass/fail and every earlier `[[ ]]` fails silently. Fixtures whose assertions cannot fail would not have satisfied AC8. Scoped deliberately to this ticket's own tests; the corpus-wide sweep is ticket 006.
+- The helpers take a **literal substring** rather than a glob pattern. Passing a pattern through a variable loses the ability to quote parts of it literally, which would have turned the `[ ]` in every Acceptance-criteria checkbox fixture into a bracket expression. The quoted expansion inside `case` keeps metacharacters inert.
