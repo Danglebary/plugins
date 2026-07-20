@@ -25,6 +25,10 @@ The rules governing what counts as having checked something are stated nowhere, 
 
 This is a Principle doc, not a Format doc — it binds skills as well as agents, which is precisely why ADR 0006 rejected homing the rule in `AGENT-FORMAT.md`. Name it accordingly.
 
+### Deferred steers
+
+- From ticket 001's refactor pass: **`spec.md`'s `file:line` citations into the corpus are stale — re-resolve every anchor by its quoted phrase, never by the number.** Ticket 001's diff shifted the lines the spec points at: `DIFF-MATERIALIZATION.md:52` → the "Three semantics guarantees" block at `:55-:56`, `:62` → `:66`, `:66` → `:70`; `/refactor:62` → `:66`; `/done:65` → `:71`; and `IMPLEMENTATION-LOOP.md:26` still exists but no longer contains the sentence the spec quotes from it (deleted and superseded at `:28`). `spec.md` is frozen *and* a `contract-tamper.sh` guarded target, so correcting the numbers in place would trip a Consent gate on the very document this ticket is judged against — the anchors get re-resolved at implementation time instead.
+
 ## Deviations
 
 _None yet._

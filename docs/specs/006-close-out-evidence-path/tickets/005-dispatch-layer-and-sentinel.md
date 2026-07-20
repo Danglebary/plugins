@@ -31,6 +31,11 @@ Do not pass `.pirr/diff.patch`'s path to reviewer agents: exactly two agent bodi
 
 The anti-substitution rule has a shape to match in both skills — the existing refusal to fall back to a hand-rolled diff.
 
+### Deferred steers
+
+- From ticket 001's refactor pass: **re-resolve `spec.md`'s anchors by quoted phrase, not by line number.** Three of this ticket's own anchors moved in ticket 001's diff: `DIFF-MATERIALIZATION.md:62` (the two-agent artifact contract this ticket's Implementation notes rest on) → `:66`; `/refactor:62` (the per-area "checked, clean" requirement this ticket removes) → `:66`; `/done:65` (the sentinel sentence this ticket rehomes) → `:71`. `spec.md` is frozen and a `contract-tamper.sh` guarded target, so the numbers stay and the anchors get re-resolved here.
+- From ticket 001's refactor pass: **`/refactor`'s brief requires a toolchain verification no agent can perform** — all fifteen are `tools: [Read, Grep, Glob]`. This ticket already edits that brief line to drop "checked, clean"; decide at the same time whether the toolchain-verification half survives unchanged, since it is currently an instruction every dispatched lens must decline. Paired steer on ticket 004, which owns the register side of the same gap.
+
 ## Deviations
 
 _None yet._
