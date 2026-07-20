@@ -15,6 +15,12 @@ setup() {
   git init -q -b main
   git config user.email test@example.com
   git config user.name test
+  # Killing the global config is not enough for the exit-8 tests: --exclude-standard
+  # still consults $XDG_CONFIG_HOME/git/ignore (or ~/.config/git/ignore), which
+  # GIT_CONFIG_GLOBAL does not cover. A contributor carrying *.log or *.ts there
+  # would otherwise see exit-8 paths silently dropped — a fail on their machine
+  # only, or worse, a gitignore test passing without the repo .gitignore.
+  git config core.excludesFile /dev/null
   echo base > base.txt
   git add base.txt
   git commit -qm initial
@@ -169,6 +175,56 @@ merge_now() {
   run bash "$SCRIPT" main ticket --allow-untracked docs/specs/ideas/stray.md
   [ "$status" -eq 0 ]
   [ -s .pirr/diff.patch ]
+}
+
+@test "every acknowledged path is honored, not just the first" {
+  # The skills re-invoke naming *every* reported path, so the plural case is the
+  # normal one — a store carrying several banked ideas. A regression that read
+  # only $1 would pass every single-path case above.
+  commit_on ticket work.txt
+  mkdir -p docs/specs/ideas docs/adr
+  echo one > docs/specs/ideas/one.md
+  echo two > docs/specs/ideas/two.md
+  echo three > docs/adr/0001-x.md
+  run bash "$SCRIPT" main ticket --allow-untracked \
+    docs/specs/ideas/one.md docs/specs/ideas/two.md docs/adr/0001-x.md
+  [ "$status" -eq 0 ]
+  [ -s .pirr/diff.patch ]
+}
+
+@test "acknowledging some of many still refuses, naming only the rest" {
+  # The complement of the case above: proves the loop subtracts per path rather
+  # than short-circuiting once any argument matches.
+  commit_on ticket work.txt
+  mkdir -p docs/specs/ideas
+  echo one > docs/specs/ideas/one.md
+  echo two > docs/specs/ideas/two.md
+  run bash "$SCRIPT" main ticket --allow-untracked docs/specs/ideas/one.md
+  [ "$status" -eq 8 ]
+  [[ "$output" == *two.md* ]]
+  [[ "$output" != *one.md* ]]
+}
+
+@test "a path containing a space is acknowledged as one path" {
+  # Pins the ${allowed[@]+"${allowed[@]}"} guard's quoting under bash 3.2: the
+  # elements must survive expansion whole, or a spaced path would split into two
+  # acknowledgments that match nothing.
+  commit_on ticket work.txt
+  mkdir -p docs/specs/ideas
+  echo banked > "docs/specs/ideas/with space.md"
+  run bash "$SCRIPT" main ticket --allow-untracked "docs/specs/ideas/with space.md"
+  [ "$status" -eq 0 ]
+}
+
+@test "an acknowledgment is a literal, never a pattern" {
+  # --allow-untracked is an acknowledgment, not an override: a caller can only
+  # silence what it can name. A glob must silence nothing.
+  commit_on ticket work.txt
+  mkdir -p docs/specs/ideas
+  echo banked > docs/specs/ideas/stray.md
+  run bash "$SCRIPT" main ticket --allow-untracked '*'
+  [ "$status" -eq 8 ]
+  [[ "$output" == *stray.md* ]]
 }
 
 @test "an unacknowledged path still refuses even alongside acknowledged ones" {

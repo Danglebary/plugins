@@ -32,6 +32,11 @@ The register replaces the terminal halt rather than being appended after it — 
 
 The presence check is the weaker half of the verification — this repo's recorded drifts were semantic (a dropped rule, a halved label), all of which a heading grep would pass. The decorrelated re-read is what actually catches those.
 
+### Deferred steers
+
+- From ticket 001's refactor pass: **re-resolve `spec.md`'s anchors by quoted phrase, not by line number.** This ticket's spec-side justification cites `DIFF-MATERIALIZATION.md:66` for the injected-instruction scrutiny requirement; ticket 001's diff moved it to `:70`. The spec is frozen and tamper-guarded, so the numbers stay as written and the anchors get re-resolved here.
+- From ticket 001's refactor pass: **all fifteen agents are `tools: [Read, Grep, Glob]` — no Bash — while `/refactor`'s brief (`refactor/SKILL.md:66`) requires every reviewer to "verify any severity-determining claim about an external system against the installed toolchain."** No dispatched agent can satisfy that; all seven dispatched in ticket 001's pass reported the gap unprompted, which is the register behavior this ticket formalizes. Ticket 005 removes the *other* half of that same brief line ("checked, clean") and touches this half nowhere. Decide here whether the partial-verdict register is the whole answer (an agent declares the unfired claim) or whether the brief requirement itself must change — the two are not the same fix, and shipping only the register leaves the skill still demanding the impossible.
+
 ## Deviations
 
 _None yet._

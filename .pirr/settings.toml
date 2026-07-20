@@ -13,7 +13,7 @@ strategy = "serial"
 # Merge convention for ticket → PRD and PRD → main merges — read by whichever
 # skill runs CLOSE-OUT.md's gated merge; that doc's Consumers section owns the
 # reader list. Never guessed.
-# merge = "no-ff"
+merge = "no-ff"
 
 [ticket_start]
 # When true, /next-ticket dispatches a research sub-agent as a standing

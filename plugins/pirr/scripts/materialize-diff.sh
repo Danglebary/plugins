@@ -88,7 +88,8 @@ while IFS= read -r path; do
   ((acknowledged)) || unacknowledged+="${path}"$'\n'
 done <<< "$untracked"
 [[ -z "$unacknowledged" ]] ||
-  refuse 8 "untracked files are absent from the diff — classify before proceeding:" "${unacknowledged%$'\n'}"
+  refuse 8 "untracked files are absent from the diff — classify before proceeding:" "${unacknowledged%$'\n'}" \
+    "stage or remove any that are implementation; re-run with --allow-untracked '<path>' ... to acknowledge the rest."
 
 git diff --quiet "${base_sha}...${head_sha}" &&
   refuse 6 "empty diff for ${base}...${head} (merge-base $(git rev-parse --short "$merge_base"))"
