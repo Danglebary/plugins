@@ -277,6 +277,26 @@ refute_output_contains() {
   refute_output_contains "Second goal."
 }
 
+@test "a heading doubled only at head reports changed but still emits the clean base body" {
+  # Ambiguity suppresses the base body only when BASE is the ambiguous ref. Here
+  # base resolves to exactly one section, so its text is a well-defined contract
+  # and is still handed to the brief — discarding it would weaken the reviewer's
+  # evidence without making the verdict safer. The verdict is `changed` either
+  # way, which is the caller's blocking gate.
+  printf '# Ticket\n\n## Goal\nOnly goal.\n' > tkt.md
+  commit base
+  git switch -qc ticket
+  printf '# Ticket\n\n## Goal\nOnly goal.\n\n## Notes\nx\n\n## Goal\nSecond goal.\n' > tkt.md
+  commit double-at-head
+  run bash "$SCRIPT" main ticket tkt.md Goal
+  [ "$status" -eq 0 ]
+  assert_output_contains "tkt.md"$'\t'"Goal"$'\t'"changed"
+  assert_output_contains "3:## Goal"
+  assert_output_contains "4:Only goal."
+  # The emitted body is BASE's, never head's.
+  refute_output_contains "Second goal."
+}
+
 @test "a ~~~ fence is as inert as a backtick fence" {
   printf '# Ticket\n\n## Goal\nDeliver X.\n\n~~~markdown\n## Fenced heading\n~~~\n\nTrailing goal text.\n\n## Acceptance criteria\n- [ ] a\n' > tkt.md
   commit base
