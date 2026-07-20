@@ -49,7 +49,7 @@ Success writes the merge-base three-dot diff to repo-root `.pirr/diff.patch`, pr
 | 7 | unsafe scratch path — `.pirr` or an artifact within it is a symlink (path on stderr) | a hostile or misconfigured repo — surface it, stop |
 | 8 | untracked paths the caller has not acknowledged (paths on stderr) | like exit 5, this exit's response belongs to the invoking skill — classify the paths, then re-invoke with `--allow-untracked` naming the legitimate ones. A consumer with no classification arm of its own relays the paths and stops; that is survivable, never a wedge — the user stages or removes the offender and re-runs |
 
-Two semantics guarantees worth naming:
+Three semantics guarantees worth naming:
 
 - **A base that has advanced past the branch point is normal, never a refusal.** Divergence is exactly what merge-base three-dot semantics exists for; the diff contains only the head side's changes.
 - **Untracked is not one category, and the split is the invoking skill's to make.** An untracked path is either a legitimate planning artifact (a drafted spec, a banked idea) — which must never wedge a close-out — or implementation that was never staged, which must stop one. The two are indistinguishable to the script: it reports every untracked path on exit 8 and classifies none of them, because classification is a store-artifact-map judgment that belongs in the skills (duplicating the map into the script would add a sixth member to a sync-set that already spans five files). The skill classifies and re-invokes with `--allow-untracked`. Unstaged implementation is the failure this exit exists for: absent from a `base...head` diff and absent from a close-out commit's store-path enumeration, it would otherwise close clean and silently not ship.

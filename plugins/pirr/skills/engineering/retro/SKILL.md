@@ -32,7 +32,7 @@ Refuses if any ticket isn't `Done` (lists outstanding tickets). An already-`Done
    Run the script:
 
    ```
-   bash "${CLAUDE_PLUGIN_ROOT}/scripts/materialize-diff.sh" <base> <head>
+   bash "${CLAUDE_PLUGIN_ROOT}/scripts/materialize-diff.sh" <base> <head> [--allow-untracked <path>...]
    ```
 
    On success the diff is at `.pirr/diff.patch` — the fact-checker has no git access; this artifact is its only view of the diff. On any non-zero exit, follow the shared doc's exit-code table: relay stderr and stop — never fall back to a hand-rolled `git diff`. Exits 5 and 8 are the two `/retro` interprets before stopping. Both classify against the same division (store-artifact paths per STORE.md's artifact map: `docs/specs/**`, `docs/adr/**`, `docs/spikes/**`, `docs/reviewers.md`, `CONTEXT.md`, `.pirr/settings.toml`; everything else is implementation).
@@ -41,10 +41,9 @@ Refuses if any ticket isn't `Done` (lists outstanding tickets). An already-`Done
    - **Any implementation path is dirty** — refuse, naming the convention: implementation is committed before close-out runs. Print the implementation paths; the user commits *those paths only* — co-present store-artifact dirt stays in the tree (a resume signal; the rule is the implementation-dirt row of [RECOVERY.md](../../_shared/RECOVERY.md#resting-states)).
    - **Only store-artifact paths are dirty** — an interrupted state this close owns. Open [RECOVERY.md](../../_shared/RECOVERY.md#retro-interrupted-close) and route per its walkthrough, which reads the `Done` flip's position against this skill's store-edit order.
 
-   **Exit 8 (untracked paths)** — three arms, splitting store artifacts by authorship as [CLOSE-OUT.md](../../_shared/CLOSE-OUT.md)'s enumeration does:
+   **Exit 8 (untracked paths).** Classify **per path, never by the set as a whole** — [CLOSE-OUT.md](../../_shared/CLOSE-OUT.md)'s enumeration is per-entry, and a mixed set matching no arm is how a whole-set test fails:
    - **Any reported path is implementation** — refuse, same convention, naming what the exit prevented: a never-staged file is in neither the diff nor the close-out commit, so closing now would ship nothing of it. This arm fires even alongside legitimate planning artifacts.
-   - **Only store artifacts, authored by this invocation** — proceed: re-invoke with `--allow-untracked` naming them.
-   - **Only store artifacts this invocation did not author** — proceed the same way, **and name them to the user** as excluded from this close. At spec scope this is the common case: a working store normally carries banked ideas and drafted specs that have nothing to do with this spec.
+   - **No reported path is implementation** — proceed: re-invoke with `--allow-untracked` naming **every** reported path, then split them by authorship in what you tell the user — this invocation's own edits pass without comment; those it did **not** author are **named** as excluded from this close. At spec scope the foreign set is the common case: a working store normally carries banked ideas and drafted specs with nothing to do with this spec.
 
    Note the untracked `retro.md` case is already refused by the preflight above, which is strictly stronger than this exit: an untracked running retro fails on having no history for the synthesis to preserve, not merely on being untracked.
 

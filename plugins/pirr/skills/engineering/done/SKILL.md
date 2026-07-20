@@ -22,7 +22,7 @@ Warns rather than refuses on `Open → Done` (a user who did the work without fl
 2. **Materialize the ticket diff via the shared convention.** Resolve the refs per [DIFF-MATERIALIZATION.md](../../_shared/DIFF-MATERIALIZATION.md): `<base>` is the spec branch, `<head>` is the ticket branch (non-standard branching: ask the user for the refs). Run the script:
 
    ```
-   bash "${CLAUDE_PLUGIN_ROOT}/scripts/materialize-diff.sh" <base> <head>
+   bash "${CLAUDE_PLUGIN_ROOT}/scripts/materialize-diff.sh" <base> <head> [--allow-untracked <path>...]
    ```
 
    On success the diff is at `.pirr/diff.patch` — the close-out agents have no git access; this artifact is their only view of the diff. On any non-zero exit, follow the shared doc's exit-code table: relay stderr and stop — never fall back to a hand-rolled `git diff`. Exits 5 and 8 are the two `/done` interprets before stopping. Both classify their paths against the same division — **store-artifact paths per STORE.md's artifact map** (`docs/specs/**`, `docs/adr/**`, `docs/spikes/**`, `docs/reviewers.md`, `CONTEXT.md`, `.pirr/settings.toml`); everything else is implementation.
@@ -31,10 +31,9 @@ Warns rather than refuses on `Open → Done` (a user who did the work without fl
    - **Any implementation path is dirty** — refuse, naming the convention: *implementation is committed on the ticket branch before `/done` runs*. Print the implementation paths; the user commits *those paths only* — co-present store-artifact dirt stays in the tree (a resume signal — [RECOVERY.md](../../_shared/RECOVERY.md#resting-states), implementation-dirt row). Then re-run `/done`.
    - **Only store-artifact paths are dirty** — `/done`'s own interrupted close-out. Don't refuse: open [RECOVERY.md](../../_shared/RECOVERY.md#done-interrupted-close-out) and resume per its walkthrough.
 
-   **Exit 8 (untracked paths)** — three arms, splitting the store-artifact case by authorship exactly as [CLOSE-OUT.md](../../_shared/CLOSE-OUT.md)'s enumeration does. A two-way split would misread a banked idea as an interrupted close:
+   **Exit 8 (untracked paths).** Classify **per path, never by the set as a whole** — [CLOSE-OUT.md](../../_shared/CLOSE-OUT.md)'s enumeration is per-entry, and a mixed set (this run's own artifacts alongside a foreign banked idea) is the ordinary resumed-close state, not an edge case. A whole-set test leaves the mixed case matching no arm:
    - **Any reported path is implementation** — refuse, same convention as above, and say plainly what the exit prevented: *a never-staged file is absent from the diff and from the close-out commit's enumeration — closing now would ship nothing of it*. Print the implementation paths; the user stages or removes them, then re-runs `/done`. This arm fires even when legitimate planning artifacts are reported alongside — one unstaged implementation file refuses the whole close.
-   - **Only store artifacts, authored by this invocation** — this run's own in-flight edits (a minted ADR, a first `retro.md`). Proceed: re-invoke the script with `--allow-untracked` naming them.
-   - **Only store artifacts this invocation did not author** — another spec's draft, a banked idea, the ordinary resting state of a working store. Proceed the same way, **and name them to the user** as excluded from this close — the same visibility CLOSE-OUT.md's enumeration owes them, applied one step earlier so nothing is silently acknowledged.
+   - **No reported path is implementation** — proceed: re-invoke the script with `--allow-untracked` naming **every** reported path. Then split them by authorship in what you tell the user, exactly as CLOSE-OUT.md's enumeration does: paths this invocation authored (a minted ADR, a first `retro.md`) are its own in-flight edits and pass without comment; paths it did **not** author — another spec's draft, a banked idea, the ordinary resting state of a working store — are **named to the user** as excluded from this close. That is the visibility CLOSE-OUT.md owes them, applied one step earlier so nothing is silently acknowledged.
 
 3. **Surface contract tampering, then dispatch the close-out pair.**
 
