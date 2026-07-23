@@ -41,6 +41,10 @@ The Markdown body is the agent's system prompt. Structure freely, but a typical 
 
 <structured shape the agent produces; calling skills depend on this>
 
+### Partial verdict
+
+<surfaces within the lens that went unread, each naming the surface and what checking it would have confirmed; `_Full._` when there is no gap>
+
 ## Anti-patterns
 
 <what NOT to do; reliability traps>
@@ -81,7 +85,7 @@ Three finding sections, each may be empty (output `_None._` when so), followed b
 [surfaces within the lens that went unread — unavailable, denied, or unconsulted — each naming the surface and what checking it would have confirmed; `_Full._` when there is no gap]
 ```
 
-Each finding cites the specific diff hunk(s) that support it (file path + line range), so the calling skill can verify cheaply. The **finding** sections are the parse contract — calling skills read them by exact heading; the register sits outside that contract, and a surface reported there is never also a finding ([EVIDENCE-PRINCIPLE.md](./EVIDENCE-PRINCIPLE.md)).
+Each finding cites the specific diff hunk(s) that support it (file path + line range), so the calling skill can verify cheaply. The **finding** sections are the parse contract — calling skills read them by exact heading. The register sits outside that contract in *contents* only, never in presence: the caller never parses register entries, but it does check that the register exists, and a register-less return is degraded, not clean ([EVIDENCE-PRINCIPLE.md](./EVIDENCE-PRINCIPLE.md)). A surface reported in the register is never also a finding.
 
 ## Anti-patterns
 

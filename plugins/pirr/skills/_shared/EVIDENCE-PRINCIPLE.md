@@ -12,11 +12,11 @@ The same rule materialized in a store artifact has three states, not two: an **a
 
 ## The Partial verdict register
 
-Every claim-making agent ends its output with a register of the surfaces *within the lens it ran* that went unread — unavailable, denied, or simply not consulted — naming each surface and what checking it would have confirmed.
+Every claim-making agent ends its output with a register of the surfaces *within the lens it ran* that went unread — unavailable, denied, or simply not consulted — naming each surface and what checking it would have confirmed. **Claim-making** has an operational test: the agent's return asserts findings, verdicts, or absences about material it examined, rather than only producing an artifact. Both shipped classes ([AGENT-FORMAT.md](./AGENT-FORMAT.md)'s Reviewer and Workflow agents) qualify, and so does any future agent meeting the test — the qualifier scopes the rule; it is not an opt-out.
 
 - **Contents are gap-only.** The register never enumerates what *was* checked — the enumerated form is rejected (ADR 0006).
 - **Emission is mandatory.** When there is no gap, the register is the sentinel `_Full._` — one token, recording that the gap check ran. `_Full._` is not itself a coverage claim.
-- **A return carrying no register is off-contract.** Silence is not an available outcome, and is therefore never a clean result; the missing register is the one post-hoc signal the dispatch layer has that a return degraded.
+- **A return carrying no register is off-contract.** Silence is not an available outcome, and is therefore never a clean result; the missing register is the one post-hoc signal the dispatch layer has that a return degraded. The signal has an assigned receiver: the dispatch layer checks every return for the register's *presence* — never its contents — and a register-less return is recorded in the dispatch record as degraded, not as returned.
 - **The register sits ahead of any instruction that would halt output.** A register placed after a halt ("output `_No candidates._` and stop") is unreachable in exactly the case it exists for — an unread surface and an empty candidate list correlate.
 
 A worked example: an agent instructed to verify a claim against the installed toolchain, holding a tool grant of `Read, Grep, Glob`, cannot execute anything — that check is a register entry (the surface, and what running it would have confirmed), never a silent skip and never a fabricated pass.
@@ -27,13 +27,13 @@ A surface reported in the register is never also reported as a finding, and a fi
 
 ## The Empty read corollary
 
-An empty search is evidence of absence only when the agent can name the **pattern** it searched, the **paths** it searched, and a **control match** — the same search matching something known to be present, proving the search resolved.
+An empty search is evidence of absence only when the agent can name the **pattern** it searched, the **paths** it searched, and a **positive control** — the same tool over the same paths with a pattern known to be present, matching it, proving the search resolved.
 
 The rule binds only where absence is the claim — a *missing* or *dropped* finding. An empty read can never be evidence *for* presence, so no other claim needs it. Without the control, the empty result is an unresolved surface: it goes in the register, not in a findings section.
 
 ## The Dispatch record
 
-The dispatching skill keeps a record of which lenses were dispatched, which returned, and which refused or failed to resolve — written from the manifest before results arrive, and persisted in the ticket's running-retro entry rather than left in chat. Emission is mandatory and detail is gap-only, mirroring `_Full._`: the clean case is one line, and a record written only when something breaks makes absence meaningless.
+The record is kept by the per-ticket dispatchers — `/refactor` and `/done` (ADR 0006); `/retro` cites this doc for the agent-layer rules and the honesty rule's three states, and keeps no record of its own. The keeper composes the record from its intended lens list — the names the **Resolution preflight** checked: the Reviewers manifest for `/refactor`, the close-out pair for `/done` — before any result arrives, records which lenses returned, refused, or failed to resolve, and persists it in the ticket's running-retro entry rather than leaving it in chat. Emission is mandatory and detail is gap-only, mirroring `_Full._`: the clean case is one line, and a record written only when something breaks makes absence meaningless.
 
 The record is an **attestation, not a verification**. Nothing downstream can audit it: a successful dispatch's return carries no agent identity, and the subagent cannot self-identify — detection of a degraded dispatch is available only *before* dispatch, never reconstructible after it. The record's weight therefore rests on the pre-dispatch resolution check and the rule beside it, both external to any executor's self-report:
 
@@ -43,9 +43,9 @@ The record is an **attestation, not a verification**. Nothing downstream can aud
 ## Anti-patterns
 
 - **Enumerated coverage.** Per-area "checked, clean" lines are the rejected form — the register lists gaps, never inventory.
-- **Treating an empty read as a clean read.** The two are distinguishable only by the control match.
+- **Treating an empty read as a clean read.** The two are distinguishable only by the positive control.
 - **Treating the register as optional.** Silence was the rejected arm; no register means off-contract, not clean.
 - **A register behind a halt instruction.** Unreachable precisely when a gap exists.
-- **A gap reported twice.** A surface belongs in the register or in a finding's caveat, never both.
+- **A gap promoted twice.** A surface is never reported as both a register entry and a *finding*; a finding's caveat referencing a registered surface is the same gap in two roles, not a double report.
 - **Recovering an unresolved lens by inlining.** The lens did not run; producing its output shape anyway manufactures evidence of a review that never happened.
 - **A dispatch record written only on failure.** If the clean case writes nothing, absence carries no meaning.

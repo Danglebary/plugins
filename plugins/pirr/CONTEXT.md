@@ -42,6 +42,10 @@ A **Plugin-shipped agent** invoked by a specific skill for a structured analytic
 **Deviation fact-checker**:
 The **Workflow agent** (`pirr:deviation-fact-checker`) that compares a ticket diff (or spec-branch diff) against the ticket's `## Deviations` section. Returns three **finding** sections — `Deviation gaps`, `Misrepresented deviations`, `ADR candidates` — each potentially `_None._`, followed by the **Partial verdict** register. Calling skills (`/done`, `/retro`) depend on the finding sections' exact headings; the register is outside that parse contract.
 
+**Claim-making agent**:
+An agent whose return asserts findings, verdicts, or absences about material it examined — as opposed to one that only produces an artifact. The gate on the **Partial verdict** register's obligation: both **Reviewer agent**s and **Workflow agent**s qualify, and so does any future agent meeting the test (EVIDENCE-PRINCIPLE.md).
+_Avoid_: reading the qualifier as an opt-out — no shipped `pirr` agent is exempt
+
 **Partial verdict**:
 A claim-making agent's closing section recording surfaces within its own lens that went unread — unavailable, denied, or simply not consulted — naming each surface and what it would have confirmed. **Contents gap-only, emission mandatory**: it never enumerates what *was* checked, and when there is no gap it emits the sentinel `_Full._`. Silence is off-contract, not a clean result — that asymmetry is what makes the register checkable, and it is why the register is placed ahead of any halt instruction (ADR 0006).
 _Avoid_: "coverage report" (the enumerated form this replaced), "checked, clean" (the rejected per-area requirement), "optional register" — silence was the rejected arm
