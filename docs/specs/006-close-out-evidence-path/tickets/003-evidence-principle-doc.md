@@ -1,5 +1,5 @@
 ---
-status: in-progress
+status: done
 depends_on: []
 ---
 
@@ -31,4 +31,4 @@ This is a Principle doc, not a Format doc — it binds skills as well as agents,
 
 ## Deviations
 
-_None yet._
+_None._
