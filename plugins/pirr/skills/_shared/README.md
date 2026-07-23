@@ -23,6 +23,7 @@ Format docs define each artifact's *content shape* (sections, voice, thresholds)
 ## Principle docs
 
 - [ABSTRACTION-LEVELS-PRINCIPLE.md](./ABSTRACTION-LEVELS-PRINCIPLE.md) — three levels (behavioral, seam-level, code-shape) and the rules that fall out: ticket voice, deviation threshold, rationale placement
+- [EVIDENCE-PRINCIPLE.md](./EVIDENCE-PRINCIPLE.md) — coverage claims split by attestability: the honesty rule, the Partial verdict register, the Empty read corollary, the Dispatch record (ADR 0006)
 
 ## Convention docs
 

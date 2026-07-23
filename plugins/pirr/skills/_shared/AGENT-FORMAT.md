@@ -46,6 +46,8 @@ The Markdown body is the agent's system prompt. Structure freely, but a typical 
 <what NOT to do; reliability traps>
 ```
 
+Whatever shape the body takes, a claim-making agent's `## Output format` ends with the **Partial verdict** register: contents gap-only, emission mandatory (`_Full._` when there is no gap), placed so that no halt instruction precedes it. A return carrying no register is off-contract. The rule lives in [EVIDENCE-PRINCIPLE.md](./EVIDENCE-PRINCIPLE.md) — an agent author inherits it by following this shape.
+
 ## Two classes of `pirr` agents
 
 The plugin ships two kinds at `agents/`:
@@ -64,7 +66,7 @@ Example contract from `deviation-fact-checker`:
 ```markdown
 ## Output format
 
-Three sections, each may be empty (output `_None._` when so):
+Three finding sections, each may be empty (output `_None._` when so), followed by the Partial verdict register:
 
 ### Deviation gaps
 [unrecorded changes from the diff that should be captured in `## Deviations`]
@@ -74,9 +76,12 @@ Three sections, each may be empty (output `_None._` when so):
 
 ### ADR candidates
 [architectural choices in the diff that may warrant an ADR per the three-gate test]
+
+### Partial verdict
+[surfaces within the lens that went unread — unavailable, denied, or unconsulted — each naming the surface and what checking it would have confirmed; `_Full._` when there is no gap]
 ```
 
-Each finding cites the specific diff hunk(s) that support it (file path + line range), so the calling skill can verify cheaply.
+Each finding cites the specific diff hunk(s) that support it (file path + line range), so the calling skill can verify cheaply. The **finding** sections are the parse contract — calling skills read them by exact heading; the register sits outside that contract, and a surface reported there is never also a finding ([EVIDENCE-PRINCIPLE.md](./EVIDENCE-PRINCIPLE.md)).
 
 ## Anti-patterns
 
