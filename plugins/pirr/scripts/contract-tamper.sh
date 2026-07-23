@@ -12,16 +12,22 @@
 #   SECTION<TAB><path><TAB><heading><TAB><changed|unchanged>
 # followed by that section's BASE text, each line prefixed with its absolute base
 # line number (`<N>:<line>`) — consumed by the conformance close-out brief. A
-# target whose section is absent at base (file absent, or the heading renamed/
-# removed/mistyped) — or absent at BOTH refs (a mis-targeted or drifted guard) —
-# reports `changed` with no base body (fail-safe: it surfaces rather than silently
-# passing). Tamper is data, not an error: exit stays 0 whether or not a section
-# changed.
+# target that does not resolve to exactly one section at a ref reports `changed` as
+# a fail-safe — surfacing rather than silently passing — for any of: the section
+# absent at base (file absent, or the heading renamed/removed/mistyped), absent at
+# BOTH refs (a mis-targeted or drifted guard), or the heading matching more than
+# once outside fences (ambiguous, unknowable which is the contract). The base body
+# is emitted only when the base ref resolved to exactly one section, so a heading
+# doubled only at head still hands over its clean base text. Tamper is data, not an
+# error: exit stays 0 whether or not a section changed.
 #
 # Exit codes:
 #   0  success — per-section records emitted (a changed section is data, not an error)
 #   1  usage error, or not inside a git repository
 #   2  unknown base or head ref
+# (There is no exit 3: the ambiguity fail-safe above is folded into a `changed`
+# record, never surfaced as a script exit — unlike materialize-diff.sh, where every
+# numbered exit code is a refusal.)
 set -euo pipefail
 
 usage='usage: contract-tamper.sh <base> <head> <path> <heading> [<path> <heading> ...]'
@@ -56,7 +62,10 @@ git rev-parse --verify --quiet "${head}^{commit}" >/dev/null 2>&1 ||
 # heading, so it neither ends the section nor starts one. A fence is tracked by
 # marker char and length (CommonMark: 3+ backticks or tildes, indented 0-3), so a
 # ``` block nested inside a ~~~ block doesn't close it early — the shape a corpus
-# of markdown-about-markdown actually writes.
+# of markdown-about-markdown actually writes. A closer must also be bare — only
+# trailing spaces or tabs; CommonMark forbids an info string on a close — so a
+# fence-marker line carrying trailing text is content, not a close, and does not
+# end the block (openers, by contrast, may carry an info string).
 #
 # Exits 3 when the heading matches more than once outside fences, printing nothing:
 # which of the two sections is the contract is unknowable, so there is no base text
@@ -71,7 +80,8 @@ section() {
         if (fence == "") {
           fence = marker
         } else if (substr(marker, 1, 1) == substr(fence, 1, 1) &&
-                   length(marker) >= length(fence)) {
+                   length(marker) >= length(fence) &&
+                   substr($0, RSTART + RLENGTH) ~ /^[ \t]*$/) {
           fence = ""
         }
       } else if (fence == "") {

@@ -323,6 +323,148 @@ refute_output_contains() {
   assert_output_contains "10:- [ ] a"
 }
 
+@test "a non-bare closing fence is content, not a close, so a rewrite below it reports changed" {
+  # CommonMark: a closing fence may not carry an info string, so `` ```markdown ``
+  # inside a `` ``` `` block is content, not a close. A fence-close that ignored
+  # bareness would flip parity here, read `## sample` as a real heading, truncate
+  # the section, and report a reassuring `unchanged` over the rewritten body below.
+  printf '# Ticket\n\n## Goal\nDeliver X.\n```\n```markdown\n## sample\nSecret contract.\n```\n\nTrailing goal text.\n\n## Acceptance criteria\n- [ ] a\n' > tkt.md
+  commit base
+  git switch -qc ticket
+  printf '# Ticket\n\n## Goal\nDeliver X.\n```\n```markdown\n## sample\nSecret contract REWRITTEN.\n```\n\nTrailing goal text.\n\n## Acceptance criteria\n- [ ] a\n' > tkt.md
+  commit tamper-below-nonbare-close
+  run bash "$SCRIPT" main ticket tkt.md Goal
+  [ "$status" -eq 0 ]
+  assert_output_contains "tkt.md"$'\t'"Goal"$'\t'"changed"
+  refute_output_contains "Goal"$'\t'"unchanged"
+}
+
+@test "a non-bare closing fence keeps the section body spanning to the real next heading" {
+  printf '# Ticket\n\n## Goal\nDeliver X.\n```\n```markdown\n## sample\nSecret contract.\n```\n\nTrailing goal text.\n\n## Acceptance criteria\n- [ ] a\n' > tkt.md
+  commit base
+  git switch -qc ticket
+  echo other > other.txt
+  commit work
+  run bash "$SCRIPT" main ticket tkt.md Goal
+  [ "$status" -eq 0 ]
+  assert_output_contains "tkt.md"$'\t'"Goal"$'\t'"unchanged"
+  # The fenced block (info-string line included) and everything after it, up to the
+  # real next heading, is body — at absolute base line numbers.
+  assert_output_contains "8:Secret contract."
+  assert_output_contains "11:Trailing goal text."
+  # ...and the real next heading still ends it.
+  refute_output_contains "Acceptance criteria"
+}
+
+@test "a backtick fence nested in a tilde fence does not close it early (marker char)" {
+  # The ``` at line 6 is a different marker char than the ~~~ opener, so it must not
+  # close it; `## inner sample` stays fenced content, not a heading that truncates.
+  printf '# Ticket\n\n## Goal\nDeliver X.\n~~~\n```\n## inner sample\nkeep me\n~~~\n\nTrailing goal text.\n\n## Acceptance criteria\n- [ ] a\n' > tkt.md
+  commit base
+  git switch -qc ticket
+  printf '# Ticket\n\n## Goal\nDeliver X.\n~~~\n```\n## inner sample\nkeep me\n~~~\n\nTrailing REWRITTEN.\n\n## Acceptance criteria\n- [ ] a\n' > tkt.md
+  commit tamper
+  run bash "$SCRIPT" main ticket tkt.md Goal
+  [ "$status" -eq 0 ]
+  assert_output_contains "tkt.md"$'\t'"Goal"$'\t'"changed"
+  assert_output_contains "7:## inner sample"
+  refute_output_contains "Acceptance criteria"
+}
+
+@test "a shorter same-char fence does not close a longer one (marker length)" {
+  # The 3-backtick line at 6 is shorter than the 4-backtick opener, so it must not
+  # close it; the 4-backtick line at 9 does.
+  printf '# Ticket\n\n## Goal\nDeliver X.\n````\n```\n## inner\nkeep\n````\n\nTrailing goal text.\n\n## Acceptance criteria\n- [ ] a\n' > tkt.md
+  commit base
+  git switch -qc ticket
+  printf '# Ticket\n\n## Goal\nDeliver X.\n````\n```\n## inner\nkeep\n````\n\nTrailing REWRITTEN.\n\n## Acceptance criteria\n- [ ] a\n' > tkt.md
+  commit tamper
+  run bash "$SCRIPT" main ticket tkt.md Goal
+  [ "$status" -eq 0 ]
+  assert_output_contains "tkt.md"$'\t'"Goal"$'\t'"changed"
+  assert_output_contains "7:## inner"
+  refute_output_contains "Acceptance criteria"
+}
+
+@test "a fence indented up to three spaces still toggles state" {
+  # CommonMark allows 0-3 spaces of indent on a fence line. The 3-space-indented
+  # opener/closer must still bracket the block, so `## inner` stays fenced content.
+  printf '# Ticket\n\n## Goal\nDeliver X.\n   ```\n## inner\n   ```\n\nTrailing goal text.\n\n## Acceptance criteria\n- [ ] a\n' > tkt.md
+  commit base
+  git switch -qc ticket
+  printf '# Ticket\n\n## Goal\nDeliver X.\n   ```\n## inner\n   ```\n\nTrailing REWRITTEN.\n\n## Acceptance criteria\n- [ ] a\n' > tkt.md
+  commit tamper
+  run bash "$SCRIPT" main ticket tkt.md Goal
+  [ "$status" -eq 0 ]
+  assert_output_contains "tkt.md"$'\t'"Goal"$'\t'"changed"
+  assert_output_contains "6:## inner"
+  refute_output_contains "Acceptance criteria"
+}
+
+@test "a four-space-indented fence marker does not open a fence" {
+  # Four leading spaces is past CommonMark's 0-3 fence indent, so the ``` at line 5
+  # is not a fence; the real `## Acceptance criteria` still ends the section rather
+  # than being swallowed as fenced content.
+  printf '# Ticket\n\n## Goal\nDeliver X.\n    ```\nstill goal body\n## Acceptance criteria\n- [ ] a\n' > tkt.md
+  commit base
+  git switch -qc ticket
+  echo other > other.txt
+  commit work
+  run bash "$SCRIPT" main ticket tkt.md Goal
+  [ "$status" -eq 0 ]
+  assert_output_contains "tkt.md"$'\t'"Goal"$'\t'"unchanged"
+  assert_output_contains "6:still goal body"
+  refute_output_contains "Acceptance criteria"
+}
+
+@test "a fenced occurrence of the guarded heading inside its own body is not counted as a duplicate" {
+  # `## Goal` appears once as the real heading and once as fenced sample text. The
+  # fenced copy must not inflate the ambiguity counter — the section reports
+  # unchanged with its full body, not the changed/no-body ambiguity fail-safe.
+  printf '# Ticket\n\n## Goal\nReal goal.\n```\n## Goal\n```\nStill goal body.\n\n## Acceptance criteria\n- [ ] a\n' > tkt.md
+  commit base
+  git switch -qc ticket
+  echo other > other.txt
+  commit work
+  run bash "$SCRIPT" main ticket tkt.md Goal
+  [ "$status" -eq 0 ]
+  assert_output_contains "tkt.md"$'\t'"Goal"$'\t'"unchanged"
+  assert_output_contains "6:## Goal"
+  assert_output_contains "8:Still goal body."
+  refute_output_contains "Acceptance criteria"
+}
+
+@test "an unterminated backtick fence keeps a later heading from ending the section" {
+  # Mirror of the ~~~ unterminated case, for backticks: the fence opened at line 5
+  # never closes, so `## Acceptance criteria` is fenced content and capture runs to
+  # EOF rather than ending at what looks like the next heading.
+  printf '# Ticket\n\n## Goal\nDeliver X.\n```\nunterminated fence opens here\n\n## Acceptance criteria\n- [ ] a\n' > tkt.md
+  commit base
+  git switch -qc ticket
+  echo other > other.txt
+  commit work
+  run bash "$SCRIPT" main ticket tkt.md Goal
+  [ "$status" -eq 0 ]
+  assert_output_contains "8:## Acceptance criteria"
+  assert_output_contains "9:- [ ] a"
+}
+
+@test "a ~~~ fenced section's base body spans the fence at absolute base line numbers" {
+  # The backtick equivalent is pinned by "a section's base body spans its fenced
+  # block"; this closes the ~~~ asymmetry, where only the changed flag was asserted.
+  printf '# Ticket\n\n## Goal\nDeliver X.\n\n~~~markdown\n## Fenced heading\n~~~\n\nTrailing goal text.\n\n## Acceptance criteria\n- [ ] a\n' > tkt.md
+  commit base
+  git switch -qc ticket
+  echo other > other.txt
+  commit work
+  run bash "$SCRIPT" main ticket tkt.md Goal
+  [ "$status" -eq 0 ]
+  assert_output_contains "7:## Fenced heading"
+  assert_output_contains "10:Trailing goal text."
+  refute_output_contains "12:## Acceptance criteria"
+  refute_output_contains "- [ ] a"
+}
+
 @test "removed guarded heading reports changed (fail-safe)" {
   printf '# Ticket\n\n## Goal\nDeliver X.\n\n## Acceptance criteria\n- [ ] a\n' > tkt.md
   commit base
