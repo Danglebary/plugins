@@ -1,5 +1,5 @@
 ---
-status: open
+status: done
 depends_on: []
 ---
 
@@ -31,4 +31,5 @@ This is a Principle doc, not a Format doc — it binds skills as well as agents,
 
 ## Deviations
 
-_None yet._
+- (refactor) The Dispatch record's seam is scoped and source-neutral: keepers named as `/refactor` and `/done` per ADR 0006 (`spec.md`'s Modules-touched assignment of a record to `/retro` diverges; left to ticket 005 to record when it lands), composition stated as the preflight-checked intended lens list rather than `/refactor`'s manifest, and the missing-register signal assigned its receiver — the dispatch layer checks register presence and records a register-less return as degraded (restated at AGENT-FORMAT.md's parse-contract line). Ticket 005 transcribes one unambiguous contract instead of reconciling four documents.
+- (refactor) The register contract is corrected ahead of ticket 004's corpus copy: the gap-reported-twice anti-pattern reworded from caveat/register exclusivity — which forced a false `_Full._` in the doc's own worked example — to promotion-only, and "claim-making agent" given an operational membership test in the doc and a minted Glossary entry.
