@@ -1,5 +1,5 @@
 ---
-status: open
+status: in-progress
 depends_on: [001, 003]
 ---
 
@@ -41,4 +41,8 @@ The presence check is the weaker half of the verification — this repo's record
 
 ## Deviations
 
-_None yet._
+- The refactor-brief toolchain steer (this ticket's deferred steers) is decided here and executed in ticket 005: the Partial verdict register is **not** the whole answer — `/refactor`'s brief line demanding toolchain verification from `[Read, Grep, Glob]` agents remains an instruction-capability mismatch — so that brief half is to be reworded to route un-runnable checks into the register. The edit lands in ticket 005, which already edits that exact line to drop "checked, clean" (its own paired steer says to decide the toolchain half at the same time); two tickets editing one line was rejected, and this ticket's Goal keeps dispatching skills out of scope. Ratified at this ticket's plan gate; handoff recorded in the running retro.
+- Four members of the "three sections" sync-set named in the acceptance criteria — `AGENT-FORMAT.md`, both `CONTEXT.md`s, and the READMEs — already carried the reworded form when this ticket started (written by ticket 003 and during grilling). The criterion is satisfied for them by the mechanical check proving no un-reworded copy remains, not by edits in this diff.
+- The two reporting lenses gained `planted instruction` as an explicit Lens value in their output templates — the clause makes a planted instruction a candidate, and a candidate whose Lens field has no matching option invites improvisation. A one-word template addition, below the seam for the parse contract (the Lens line's option list is not parsed by callers).
+- The live register-firing observation could not be confirmed this session: the dispatch served the pre-edit agent body (proved by a probe that had the agent quote its own Output format — it reproduced the old halt line), so the forced-gap fixture fired against a body without a register. The observation is recorded as blocked in the running retro and re-runs post-reload, paired with ticket 005's preflight-refusal observation. Session-scope corollary recorded there: a close-out pair dispatched in this same session runs pre-edit bodies and returns no register — expected, not a defect.
+- Two decorrelated-re-read fixes beyond the planned edit set, both fixed here per the acceptance criteria: all fifteen registers cite EVIDENCE-PRINCIPLE.md alongside ADR 0006 (the doc claims the agents cite it; before this, none did), and both close-out bodies' absence-claim bullets gained the Empty-read positive-control requirement with register routing (canon binds it to exactly the "missing"/"dropped" claims those bullets govern; neither body carried it).
