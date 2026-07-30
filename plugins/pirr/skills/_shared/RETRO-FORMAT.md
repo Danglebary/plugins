@@ -17,8 +17,31 @@ Appended by `/done` when a ticket closes.
 
 **Outcome**: Exact match | Extended | Divergence | Omitted
 
+**Dispatch**: <lenses dispatched and how each resolved>
+
 <1-3 sentences on what was learned>
 ```
+
+This template is a two-member sync set with `/done`'s step-8 copy — a change here fans out to that skill.
+
+### The `**Dispatch**` field
+
+The **Dispatch record** ([EVIDENCE-PRINCIPLE.md](./EVIDENCE-PRINCIPLE.md)) — which lenses the close dispatched and how each resolved, so a lens that never ran is legible after the session ends. Written by `/done` from the close-out pair; `/refactor` appends its own from the Reviewers manifest, marked `**Dispatch** (refactor):` to distinguish the two keepers in one entry. `/retro` keeps no record and adds no line.
+
+Emission is mandatory, detail is gap-only. The clean case is one line; only the three non-clean states (`degraded`, `refused`, `unresolved`) carry detail, naming the lens and what its absence cost:
+
+```markdown
+**Dispatch**: close-out pair — both returned.
+**Dispatch** (refactor): 7 reviewers — all returned.
+```
+
+```markdown
+**Dispatch**: close-out pair — `pirr:deviation-fact-checker` returned;
+`pirr:spec-conformance` unresolved (not a registered dispatch type until the plugin reloaded —
+the conformance judgment did not run).
+```
+
+The record is an **attestation, not a verification**: it states what was dispatched and what came back, never that a lens was correct. Nothing downstream can audit it, which is why the pre-dispatch **Resolution preflight** carries its weight.
 
 ### Outcome labels
 

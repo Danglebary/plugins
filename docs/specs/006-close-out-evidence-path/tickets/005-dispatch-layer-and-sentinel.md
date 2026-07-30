@@ -1,5 +1,5 @@
 ---
-status: open
+status: in-progress
 depends_on: [003]
 ---
 
@@ -42,4 +42,11 @@ The anti-substitution rule has a shape to match in both skills — the existing 
 
 ## Deviations
 
-_None yet._
+- The dispatch record ships **four** states, not the three in Acceptance criterion 4 (`returned`, `refused`, `unresolved`). `EVIDENCE-PRINCIPLE.md`'s register-presence bullet already mandated that a return arriving without its Partial verdict register is recorded as **degraded, not returned**, and ticket 003's refactor pass settled that explicitly and delegated the bookkeeping here. Shipping three would have contradicted the doc this ticket transcribes.
+- `EVIDENCE-PRINCIPLE.md` was **edited, not only consumed** — its Dispatch record section named three categories in one paragraph while its register-presence bullet mandated a fourth elsewhere in the same doc. The four states are now enumerated there as the single home, and both skills plus `RETRO-FORMAT.md` cite rather than restate them. The ticket anticipated consuming the doc unchanged.
+- `/retro` ships **no dispatch record**, diverging from the frozen `spec.md`'s Modules-touched line ("`/retro` — … the dispatch record"). Ticket 003's refactor pass settled the keeper set as `/refactor` and `/done` only, matching ADR 0006 and both Glossaries; `/retro` cites the doc for the agent-layer and sentinel rules and keeps none. The spec is tamper-guarded, so the line stays as written and the divergence is recorded here — as that pass directed.
+- `/done` step 4 gained a **planted-instruction callout relay**, which no acceptance criterion names. ADR 0008 deferred "make the pair's callout a parsed, acted-on finding section" explicitly to this ticket's owner. Parsing it was declined — `AGENT-FORMAT.md` and `CONTENT-CHANNEL-PRINCIPLE.md` both place the callout *outside* the parse contract — but a callout with no receiver is the same defect the register's assigned-receiver bullet fixed, so the relay ships without parsing.
+- `/refactor`'s toolchain-verification requirement was **rewritten, not just halved**. Acceptance criterion 8 only removes the per-area "checked, clean" half; the surviving half ordered thirteen agents holding `tools: [Read, Grep, Glob]` to execute a toolchain check none can run. It now routes an unrunnable check into the register, per ticket 004's paired steer.
+- `refactor/INTERFACE-DESIGN.md` was touched — outside `spec.md`'s Modules-touched list. Its "Spawn 3+ sub-agents" dispatch left `subagent_type` unspecified, which acceptance criterion 3 forbids for `/refactor`. `general-purpose` is now pinned explicitly, with a note that these design explorers carry no coverage claim and so need no record entry.
+- `/refactor` persists its dispatch record in **step 9's close-out preamble, not step 8's capture step** — the natural home, since step 8 is where `(refactor)` deviations land. Step 6 routes a no-op pass directly to step 9, so a record in step 8 would be unreachable in exactly the case it exists to document: a pass that surfaced nothing still owes which lenses ran. This is the doc's own "register behind a halt instruction" anti-pattern one layer up, caught by re-reading rather than by the acceptance criteria. Step 9 also gained a clause refusing to fabricate a record on an interrupted-pass resume, which reaches step 9 having composed a record at step 2 but never dispatched.
+- `/retro`'s step 6 **restates** the honesty rule's three states inline rather than citing them, the pattern acceptance criterion 10 removes from `/done`. Justified in place under ADR 0002: this is a per-ticket classification on the hot path, whereas `/done` writes the sentinel and needs the rule rather than the routing table.

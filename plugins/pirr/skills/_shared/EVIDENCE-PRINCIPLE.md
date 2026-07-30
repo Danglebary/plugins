@@ -35,7 +35,14 @@ The rule binds only where absence is the claim — a *missing* or *dropped* find
 
 ## The Dispatch record
 
-The record is kept by the per-ticket dispatchers — `/refactor` and `/done` (ADR 0006); `/retro` cites this doc for the agent-layer rules and the honesty rule's three states, and keeps no record of its own. The keeper composes the record from its intended lens list — the names the **Resolution preflight** checked: the Reviewers manifest for `/refactor`, the close-out pair for `/done` — before any result arrives, records which lenses returned, refused, or failed to resolve, and persists it in the ticket's running-retro entry rather than leaving it in chat. Emission is mandatory and detail is gap-only, mirroring `_Full._`: the clean case is one line, and a record written only when something breaks makes absence meaningless.
+The record is kept by the per-ticket dispatchers — `/refactor` and `/done` (ADR 0006); `/retro` cites this doc for the agent-layer rules and the honesty rule's three states, and keeps no record of its own. The keeper composes the record from its intended lens list — the names the **Resolution preflight** checked: the Reviewers manifest for `/refactor`, the close-out pair for `/done` — before any result arrives, and settles each entry as its result lands (or fails to) in one of four states, and persists it in the ticket's running-retro entry rather than leaving it in chat. Emission is mandatory and detail is gap-only, mirroring `_Full._`: the clean case is one line, and a record written only when something breaks makes absence meaningless.
+
+- **returned** — a return arrived carrying its Partial verdict register.
+- **degraded** — a return arrived without the register. The presence check above assigns this state; a register-less return is never recorded as returned.
+- **refused** — the lens declined or errored after dispatch.
+- **unresolved** — the name failed the **Resolution preflight**; nothing was dispatched and that lens did not run.
+
+Only `returned` carries no detail. The other three name the lens and what its absence cost — which question went unanswered, not merely that a slot is empty.
 
 The record is an **attestation, not a verification**. Nothing downstream can audit it: a successful dispatch's return carries no agent identity, and the subagent cannot self-identify — detection of a degraded dispatch is available only *before* dispatch, never reconstructible after it. The record's weight therefore rests on the pre-dispatch resolution check and the rule beside it, both external to any executor's self-report:
 

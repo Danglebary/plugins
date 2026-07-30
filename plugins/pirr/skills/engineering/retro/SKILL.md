@@ -64,8 +64,14 @@ Refuses if any ticket isn't `Done` (lists outstanding tickets). An already-`Done
 
 6. **Read inputs for synthesis:**
    - The spec — section structure and intent.
-   - The running retro — per-ticket entries with outcome labels.
+   - The running retro — per-ticket entries with outcome labels. Each entry's `**Dispatch**` line is a record, not commentary: it belongs to the ticket's close, and the synthesis neither summarizes nor carries it forward (see [RETRO-FORMAT.md](../../_shared/RETRO-FORMAT.md)).
    - Each ticket's `## Deviations` section — granular divergences (including `(refactor)`-marked entries).
+
+   **Report any ticket whose `## Deviations` was never materialized.** The section has three states, not two ([EVIDENCE-PRINCIPLE.md](../../_shared/EVIDENCE-PRINCIPLE.md)'s honesty rule): **absent** reads "nobody checked", the `_None yet._` placeholder reads "not yet", and an explicit `_None._` reads "checked, clean". Every `Done` ticket should carry the third — `/done`'s step 5 materializes it at close. A `Done` ticket still reading absent or placeholder means that close skipped the step, so its clean-looking emptiness is not a claim: **name those tickets to the user before synthesizing**, and don't let the synthesis read them as `Exact match` by default. Which tickets were never fact-checked is the spec-scope form of which lenses never ran — the same distinction, one layer up.
+
+   This is a report, not a gate: it does not refuse the close. But an unreported unmaterialized section silently becomes a clean synthesis line, which is precisely the silence-as-clean-result the honesty rule forbids.
+
+   (The three states are spelled out here rather than only cited because this is a per-ticket classification on the hot path — [ADR 0002](../../../../../docs/adr/0002-hot-path-classifications-stay-inlined.md). `/done`'s step 5 cites the doc instead: it *writes* the sentinel and needs the rule, not the routing table.)
 
 7. **Synthesize per spec section.** For each of the spec's five sections (Problem, Goals, Non-goals, Approach, Modules touched):
    - Determine the dominant outcome label across the tickets that touched this section. If the section had no real activity, label it `Exact match` and say so briefly.
@@ -122,6 +128,7 @@ Refuses if any ticket isn't `Done` (lists outstanding tickets). An already-`Done
 
 - **Don't write `## Next steps`, `## Future work`, or `## Roadmap`.** Strictly backward-looking. Forward-looking lessons go into a new spec.
 - **Don't fabricate outcomes.** If the running retro, deviations, and fact-checker output don't reveal what happened in a section, ask the user.
+- **Don't read an unmaterialized `## Deviations` as a clean one.** Absent and `_None yet._` mean nobody checked and not-yet; only an explicit `_None._` is a claim. Report the tickets carrying the first two (step 6) instead of synthesizing over them.
 - **Don't lose ticket-level granularity** — reference specific tickets by number.
 - **Don't pad sections with below-threshold deviations to look thorough.** Internal refactors, private renames, formatting churn don't belong in a synthesized retro; a section whose tickets had no above-threshold divergence gets `Exact match`.
 - **Don't skip the fact-check step even if every `/done` fact-checked cleanly.** Spec-level diff often surfaces things ticket-level diffs miss — particularly seams that shifted gradually across tickets, none capturing the cumulative move.
