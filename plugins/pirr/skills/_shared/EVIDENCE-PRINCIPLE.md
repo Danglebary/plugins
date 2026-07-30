@@ -12,12 +12,14 @@ The same rule materialized in a store artifact has three states, not two: an **a
 
 ## The Partial verdict register
 
-Every claim-making agent ends its output with a register of the surfaces *within the lens it ran* that went unread — unavailable, denied, or simply not consulted — naming each surface and what checking it would have confirmed. **Claim-making** has an operational test: the agent's return asserts findings, verdicts, or absences about material it examined, rather than only producing an artifact. Both shipped classes ([AGENT-FORMAT.md](./AGENT-FORMAT.md)'s Reviewer and Workflow agents) qualify, and so does any future agent meeting the test — the qualifier scopes the rule; it is not an opt-out.
+Every claim-making agent ends its output with a register of the surfaces *within the lens it ran* that it could not resolve — unavailable, denied, simply not consulted, or read-but-unresolved (an empty search whose positive control failed, per the **Empty read** corollary below) — naming each surface and what resolving it would have confirmed. **Claim-making** has an operational test: the agent's return asserts findings, verdicts, or absences about material it examined, rather than only producing an artifact. Both shipped classes ([AGENT-FORMAT.md](./AGENT-FORMAT.md)'s Reviewer and Workflow agents) qualify, and so does any future agent meeting the test — the qualifier scopes the rule; it is not an opt-out.
 
 - **Contents are gap-only.** The register never enumerates what *was* checked — the enumerated form is rejected (ADR 0006).
 - **Emission is mandatory.** When there is no gap, the register is the sentinel `_Full._` — one token, recording that the gap check ran. `_Full._` is not itself a coverage claim.
 - **A return carrying no register is off-contract.** Silence is not an available outcome, and is therefore never a clean result; the missing register is the one post-hoc signal the dispatch layer has that a return degraded. The signal has an assigned receiver: the dispatch layer checks every return for the register's *presence* — never its contents — and a register-less return is recorded in the dispatch record as degraded, not as returned.
 - **The register sits ahead of any instruction that would halt output.** A register placed after a halt ("output `_No candidates._` and stop") is unreachable in exactly the case it exists for — an unread surface and an empty candidate list correlate.
+
+The register is copied into every shipped agent body (`plugins/pirr/agents/*.md`) as a deliberate sync-set — a change to its wording here fans out to every copy, and to the `work-plugins` fork's copies by hand.
 
 A worked example: an agent instructed to verify a claim against the installed toolchain, holding a tool grant of `Read, Grep, Glob`, cannot execute anything — that check is a register entry (the surface, and what running it would have confirmed), never a silent skip and never a fabricated pass.
 
@@ -29,7 +31,7 @@ A surface reported in the register is never also reported as a finding, and a fi
 
 An empty search is evidence of absence only when the agent can name the **pattern** it searched, the **paths** it searched, and a **positive control** — the same tool over the same paths with a pattern known to be present, matching it, proving the search resolved.
 
-The rule binds only where absence is the claim — a *missing* or *dropped* finding. An empty read can never be evidence *for* presence, so no other claim needs it. Without the control, the empty result is an unresolved surface: it goes in the register, not in a findings section.
+The rule binds only where absence is the claim — a *missing* or *dropped* finding. An empty read can never be evidence *for* presence, so no other claim needs it. The control is run **before** the classification, never in place of it: an empty result whose control was never attempted is an unfinished search, not a gap. Only a control that was attempted and failed to match makes the empty result an unresolved surface — it goes in the register, not in a findings section.
 
 ## The Dispatch record
 
