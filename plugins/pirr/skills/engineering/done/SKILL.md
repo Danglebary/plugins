@@ -54,17 +54,17 @@ Warns rather than refuses on `Open → Done` (a user who did the work without fl
    - A reminder that they have Read/Grep over the working tree and must verify claims against current source, not stale comments — every recorded fact-checker false positive traced to diff-only briefing
    - The planning-artifact label per [DIFF-MATERIALIZATION.md](../../_shared/DIFF-MATERIALIZATION.md)'s "Diffs contain planning artifacts" section, carried whole — copy the section's two-sided contract into the brief, never a paraphrase of it
 
-   The fact-checker additionally receives existing ADR titles + statuses (so it doesn't propose duplicates) and returns three sections (each may be `_None._`):
+   The fact-checker additionally receives existing ADR titles + statuses (so it doesn't propose duplicates) and returns three finding sections (each may be `_None._`), followed by its Partial verdict register:
    - **Deviation gaps** — diff changes at or above the behavioral/seam threshold not captured in `## Deviations`
    - **Misrepresented deviations** — entries in `## Deviations` that don't match the diff
    - **ADR candidates** — choices in the diff that may warrant an ADR per the three-gate test
 
-   The conformance agent judges the diff against its spec source — the ticket's Goal and Acceptance criteria plus the spec's Approach — and returns three sections (each may be `_None._`):
+   The conformance agent judges the diff against its spec source — the ticket's Goal and Acceptance criteria plus the spec's Approach — and returns three finding sections (each may be `_None._`), followed by its Partial verdict register:
    - **Missing or partial requirements** — spec-source requirements the diff doesn't satisfy, or satisfies only partially
    - **Scope creep** — diff changes serving no spec-source requirement
    - **Implemented but looks wrong** — requirements whose implementation contradicts the spec source, each finding citing the spec line and the diff hunk
 
-   The fact-checker is briefed against the threshold in [ABSTRACTION-LEVELS-PRINCIPLE.md](../../_shared/ABSTRACTION-LEVELS-PRINCIPLE.md). Below-threshold diff content (private renames, formatting, internal refactors) is **not** flagged as gaps — noise, not deviations. `_None._` across all three sections is a valid, common outcome on small in-module tickets.
+   The fact-checker is briefed against the threshold in [ABSTRACTION-LEVELS-PRINCIPLE.md](../../_shared/ABSTRACTION-LEVELS-PRINCIPLE.md). Below-threshold diff content (private renames, formatting, internal refactors) is **not** flagged as gaps — noise, not deviations. `_None._` across all three finding sections is a valid, common outcome on small in-module tickets.
 
 4. **Adversarially review both reports, then present them separately.** Check each finding against its cited diff hunks — and, for conformance findings, the cited spec lines — and drop what the citations don't support (below-threshold gaps, findings the working tree refutes). Render the two reports under separate headings, the fact-check then the conformance report, never merged into one list, never reranked against each other: the axes answer different questions (is the bookkeeping accurate; does the implementation satisfy the spec source), and a merged ranking would bury one answer under the other.
 

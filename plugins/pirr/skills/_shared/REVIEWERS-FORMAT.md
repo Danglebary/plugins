@@ -53,7 +53,7 @@ Reviewer agents dispatched by `/refactor` for refactor candidate-finding.
 
 - **Re-run `/setup`** to refresh the manifest when plugin updates ship new always-on reviewers or when repo content has changed enough that specialized-reviewer detection should re-run. Idempotent — surfaces diffs and applies confirmed changes.
 - **Edit manually** to add or remove specific reviewers. The list is plain markdown.
-- **Repo-specific reviewers** are added by hand: create the `.md` file in `.claude/agents/`, then add the bare name to this manifest.
+- **Repo-specific reviewers** are added by hand: create the `.md` file in `.claude/agents/` following [AGENT-FORMAT.md](./AGENT-FORMAT.md) — a claim-making reviewer inherits the **Partial verdict** register and the **content channel** rule from that shape — then add the bare name to this manifest.
 
 ## Anti-patterns
 

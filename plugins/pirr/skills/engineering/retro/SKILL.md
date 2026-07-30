@@ -56,11 +56,11 @@ Refuses if any ticket isn't `Done` (lists outstanding tickets). An already-`Done
    - A reminder that it has Read/Grep over the working tree and must verify claims against current source, not stale comments
    - The planning-artifact label per [DIFF-MATERIALIZATION.md](../../_shared/DIFF-MATERIALIZATION.md)'s "Diffs contain planning artifacts" section, carried whole — copy the section's two-sided contract into the brief, never a paraphrase of it. A spec-scope diff always contains store-artifact hunks — every ticket's committed close-out edits — so the label is load-bearing, not decorative.
 
-   The fact-checker returns its three pinned sections — Deviation gaps, Misrepresented deviations, ADR candidates — at spec scope. Same threshold applies (see [ABSTRACTION-LEVELS-PRINCIPLE.md](../../_shared/ABSTRACTION-LEVELS-PRINCIPLE.md)): below-threshold churn doesn't accumulate into deviations at spec scope; don't surface it.
+   The fact-checker returns its three pinned finding sections — Deviation gaps, Misrepresented deviations, ADR candidates — followed by its Partial verdict register, at spec scope. Same threshold applies (see [ABSTRACTION-LEVELS-PRINCIPLE.md](../../_shared/ABSTRACTION-LEVELS-PRINCIPLE.md)): below-threshold churn doesn't accumulate into deviations at spec scope; don't surface it.
 
    Adversarially review findings against cited diff hunks. Spec-scope gaps tend to be cross-cutting things ticket-level diffs missed — seams that shifted across tickets — not new below-threshold churn.
 
-5. **Apply confirmed late-stage updates.** Append any newly-discovered deviations to the relevant ticket's `## Deviations`. Surface ADR candidates for explicit decision. If the fact-check returns `_None._` across the board, that's a clean spec — proceed to synthesis.
+5. **Apply confirmed late-stage updates.** Append any newly-discovered deviations to the relevant ticket's `## Deviations`. Surface ADR candidates for explicit decision. If the fact-check returns `_None._` across all three finding sections, that's a clean spec — proceed to synthesis.
 
 6. **Read inputs for synthesis:**
    - The spec — section structure and intent.
