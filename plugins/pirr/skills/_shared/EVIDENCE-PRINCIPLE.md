@@ -40,7 +40,7 @@ The record is kept by the per-ticket dispatchers — `/refactor` and `/done` (AD
 - **returned** — a return arrived carrying its Partial verdict register.
 - **degraded** — a return arrived without the register. The presence check above assigns this state; a register-less return is never recorded as returned.
 - **refused** — the lens declined or errored after dispatch.
-- **unresolved** — the name failed the **Resolution preflight**; nothing was dispatched and that lens did not run.
+- **unresolved** — the lens did not run because the **Resolution preflight** refused. Two causes reach this state, and a refusal settles the **whole** composed list with it: the name that failed to resolve, and every other lens, which resolved cleanly but was never dispatched because the refusal precedes all dispatch. Leaving the resolvable entries unsettled would blank most of the record in the one emission that is its only record. The record names *which* names failed to resolve — that is the actionable half, and without it the reader re-derives it by hand or hunts for a second broken name that does not exist.
 
 Only `returned` carries no detail. The other three name the lens and what its absence cost — which question went unanswered, not merely that a slot is empty. A persisted record never pairs `returned` with `unresolved`: the preflight refuses before any lens is dispatched, so an unresolved name means nothing ran.
 
@@ -50,6 +50,7 @@ The record is an **attestation, not a verification**. Nothing downstream can aud
 
 - **Resolution preflight.** Before any lens is dispatched, every named `subagent_type` is checked against the available agent types; an unresolved name refuses, naming it.
 - **Anti-substitution.** A `subagent_type` that does not resolve means *that lens did not run*. It is never recovered by inlining the agent's body into a general-purpose agent — an inlined agent reproduces the output contract, so the degraded return looks on-contract, which is why the recovery is forbidden rather than detected.
+- **Pinned dispatch type.** Every dispatch names its `subagent_type` explicitly. The field is optional at the tool boundary and an omitted type resolves silently to a general-purpose agent with no error and no marker — the same substitution as above, reached by omission rather than by choice. This binds the record keepers and the design explorers `/refactor` spawns — the latter pinned `general-purpose` rather than left unspecified, because carrying no coverage claim is not a licence to be silently redirected. Whether it also binds dispatchers that keep no record (`/retro`'s fact-checker invocation, `/next-ticket`'s research sub-agent) is **open**: ADR 0006's Decision scopes the dispatch layer to the two keepers, while its Consequences state the hazard generally.
 
 ## Anti-patterns
 

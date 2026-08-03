@@ -45,9 +45,10 @@ Reviewer agents dispatched by `/refactor` for refactor candidate-finding.
 ## What `/refactor` does with this
 
 1. Reads the manifest.
-2. Verifies each listed agent name resolves to a registered agent (plugin-shipped or repo-specific). If any don't, refuses with a clear list of missing names — silent skipping is the trap to avoid (incomplete review presented as complete).
-3. Dispatches all listed reviewers in parallel against the relevant diff (typically the just-closed ticket's diff, post-`/done`).
-4. Merges their findings through the deepening framework before presenting candidates.
+2. Composes its **Dispatch record** from these names — before the check below, and before any result arrives ([EVIDENCE-PRINCIPLE.md](./EVIDENCE-PRINCIPLE.md)). Every entry here becomes a record entry, so a name listed is a name accounted for.
+3. Verifies each listed agent name resolves to a registered agent (plugin-shipped or repo-specific). If any don't, refuses with a clear list of missing names — silent skipping is the trap to avoid (incomplete review presented as complete).
+4. Dispatches all listed reviewers in parallel against the relevant diff (typically the just-closed ticket's diff, post-`/done`), **passing each name here as `subagent_type` verbatim**. An entry's spelling *is* the dispatch, not a label for one — which is why a typo refuses at step 3 rather than silently reviewing with a general-purpose agent.
+5. Merges their findings through the deepening framework before presenting candidates.
 
 ## Maintenance
 

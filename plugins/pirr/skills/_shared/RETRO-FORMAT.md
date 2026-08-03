@@ -8,7 +8,7 @@ The retro is a two-pass document paired to each spec: it accumulates per-ticket 
 
 ## Running form (per-ticket entries)
 
-Appended by `/done` when a ticket closes.
+Appended by `/done` when a ticket closes, then by `/refactor`'s close-out, which adds its own `**Dispatch** (refactor):` line to the entry `/done` already wrote. Two writers, so a modified running-form `retro.md` does not identify which one left it dirty — see the precondition below.
 
 ### Per-ticket entry format
 
@@ -57,7 +57,7 @@ The same labels appear in the synthesized form, applied per spec section instead
 
 Written by `/retro` (no args), which **restructures `retro.md` in place**. The running form is preserved in git history; the live file becomes the structured synthesis.
 
-**Committed-running-retro precondition.** Git history is the *only* place the running form survives the rewrite, so `/retro` refuses to synthesize while the running retro has uncommitted content — a modified `retro.md`, or an untracked one. Fix: commit the retro directly on the spec branch (or, when the ticket's `done` flip is also uncommitted, resume that `/done` close and let its commit gate carry the retro), then re-run `/retro`.
+**Committed-running-retro precondition.** Git history is the *only* place the running form survives the rewrite, so `/retro` refuses to synthesize while the running retro has uncommitted content — a modified `retro.md`, or an untracked one. Fix: commit the retro directly on the spec branch — or resume whichever writer left it dirty and let that skill's commit gate carry it. The ticket's `done` flip discriminates: **uncommitted** alongside the retro dirt means an interrupted `/done` close (resume `/done`); **already committed** means an interrupted `/refactor` pass, which writes the retro at step 9 before its gates (re-run `/refactor`, whose gate 2 commits the record). Then re-run `/retro`.
 
 ### Sections
 
