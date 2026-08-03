@@ -42,7 +42,9 @@ The record is kept by the per-ticket dispatchers — `/refactor` and `/done` (AD
 - **refused** — the lens declined or errored after dispatch.
 - **unresolved** — the name failed the **Resolution preflight**; nothing was dispatched and that lens did not run.
 
-Only `returned` carries no detail. The other three name the lens and what its absence cost — which question went unanswered, not merely that a slot is empty.
+Only `returned` carries no detail. The other three name the lens and what its absence cost — which question went unanswered, not merely that a slot is empty. A persisted record never pairs `returned` with `unresolved`: the preflight refuses before any lens is dispatched, so an unresolved name means nothing ran.
+
+**Two cases have no retro entry to persist into, and in both the emission is the record.** A **refusal** — the preflight found an unresolved name — ends the close or pass before its retro step, so the refusal message carries the record. And a `/refactor` pass scoped to no ticket (its general ad-hoc arm) has no per-ticket entry at all, so the record is emitted to the user and stated as unpersisted. Neither is the leave-it-in-chat failure this rule forbids: that failure is a *completed* dispatch whose record was never written down. Emission stays mandatory in every case; persistence binds wherever a ticket entry exists to receive it.
 
 The record is an **attestation, not a verification**. Nothing downstream can audit it: a successful dispatch's return carries no agent identity, and the subagent cannot self-identify — detection of a degraded dispatch is available only *before* dispatch, never reconstructible after it. The record's weight therefore rests on the pre-dispatch resolution check and the rule beside it, both external to any executor's self-report:
 

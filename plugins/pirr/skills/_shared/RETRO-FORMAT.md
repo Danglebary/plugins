@@ -36,10 +36,11 @@ Emission is mandatory, detail is gap-only. The clean case is one line; only the 
 ```
 
 ```markdown
-**Dispatch**: close-out pair — `pirr:deviation-fact-checker` returned;
-`pirr:spec-conformance` unresolved (not a registered dispatch type until the plugin reloaded —
-the conformance judgment did not run).
+**Dispatch** (refactor): 7 reviewers — `pirr:qa-engineer` degraded (returned findings with no
+Partial verdict register, so its gap check is unaccounted for); the other 6 returned.
 ```
+
+A persisted record never pairs `returned` with `unresolved`. The **Resolution preflight** refuses before *any* lens is dispatched, so an unresolved name means nothing ran and the close or pass ends there — the refusal message carries that record, and no retro entry receives it. `degraded` and `refused` are the states that legitimately sit beside `returned` in a persisted line.
 
 The record is an **attestation, not a verification**: it states what was dispatched and what came back, never that a lens was correct. Nothing downstream can audit it, which is why the pre-dispatch **Resolution preflight** carries its weight.
 

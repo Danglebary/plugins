@@ -7,7 +7,7 @@ description: "Close a spec: synthesize the running retro into structured form, f
 
 Close a spec by synthesizing the running retro into structured form, with one final fact-check pass against the full spec-branch **git diff**. Code and its diff stay in git; spec text and status live in the store. The close ends in the shared close-out shape: one gated commit of everything the invocation wrote, then the gated merge into the default branch.
 
-References: [STORE.md](../../_shared/STORE.md) (artifact paths); [RETRO-FORMAT.md](../../_shared/RETRO-FORMAT.md); [ABSTRACTION-LEVELS-PRINCIPLE.md](../../_shared/ABSTRACTION-LEVELS-PRINCIPLE.md) (deviation threshold); [DIFF-MATERIALIZATION.md](../../_shared/DIFF-MATERIALIZATION.md) (the diff); [CLOSE-OUT.md](../../_shared/CLOSE-OUT.md) (the gates).
+References: [STORE.md](../../_shared/STORE.md) (artifact paths); [RETRO-FORMAT.md](../../_shared/RETRO-FORMAT.md); [ABSTRACTION-LEVELS-PRINCIPLE.md](../../_shared/ABSTRACTION-LEVELS-PRINCIPLE.md) (deviation threshold); [DIFF-MATERIALIZATION.md](../../_shared/DIFF-MATERIALIZATION.md) (the diff); [CLOSE-OUT.md](../../_shared/CLOSE-OUT.md) (the gates); [EVIDENCE-PRINCIPLE.md](../../_shared/EVIDENCE-PRINCIPLE.md) (the honesty rule's three states, and the **Partial verdict** register this skill's fact-checker return carries — `/retro` keeps no **Dispatch record** of its own, per that doc's keeper set).
 
 ## State contract
 

@@ -35,11 +35,15 @@ The domain language names good seams; ADRs record decisions the skill should not
 
 1. **Read the Glossary and any ADRs in the area you're touching.** Domain naming should come from the Glossary; ADRs constrain what's already settled.
 
-2. **Read the Reviewers manifest.** Each entry is a namespaced agent name (e.g. `pirr:qa-engineer` for plugin-shipped, bare names for repo-specific in `.claude/agents/`). **Verify each name resolves** — the **Resolution preflight** ([EVIDENCE-PRINCIPLE.md](../../_shared/EVIDENCE-PRINCIPLE.md)). If any listed agent isn't registered, refuse with a clear list of missing names — silent skipping presents an incomplete review as complete. The usual cause is a newly authored or renamed agent that isn't a registered dispatch type until the plugin reloads. Format references: [REVIEWERS-FORMAT.md](../../_shared/REVIEWERS-FORMAT.md), [AGENT-FORMAT.md](../../_shared/AGENT-FORMAT.md).
+2. **Read the Reviewers manifest.** Each entry is a namespaced agent name (e.g. `pirr:qa-engineer` for plugin-shipped, bare names for repo-specific in `.claude/agents/`). Format references: [REVIEWERS-FORMAT.md](../../_shared/REVIEWERS-FORMAT.md), [AGENT-FORMAT.md](../../_shared/AGENT-FORMAT.md).
+
+   The next two moves run **in this order** — compose the record, *then* check the names. The order is the whole point: the check refuses, and a record composed after it would not exist in the one case that refusal describes.
+
+   **Compose the dispatch record from the manifest names — before any result arrives, and before the check below.** Enter every manifest entry unsettled, and settle each as its result lands or fails to, per the shared doc's four states (`returned`, `degraded`, `refused`, `unresolved`). Composing it from the returns instead would make a lens that never ran invisible — the failure the record exists to prevent.
+
+   **Verify each name resolves** — the **Resolution preflight** ([EVIDENCE-PRINCIPLE.md](../../_shared/EVIDENCE-PRINCIPLE.md)). If any listed agent isn't registered, mark those names `unresolved` in the record and **refuse with a clear list of them, emitting the record as part of the refusal** — silent skipping presents an incomplete review as complete. The pass ends before step 9, so that emission is the record's only one; no retro entry receives it. The usual cause is a newly authored or renamed agent that isn't a registered dispatch type until the plugin reloads.
 
    **Anti-substitution.** A `subagent_type` that does not resolve means *that lens did not run* — **never recover it by inlining the agent's body into a general-purpose agent**, the way step 3's exit-code discipline never falls back to a hand-rolled `git diff`. An inlined agent reproduces the output contract, so the degraded return looks on-contract and nothing downstream can tell: the recovery is forbidden rather than detected. Report the lens as not having run; don't manufacture its findings.
-
-   **Compose the dispatch record now — before any result arrives** — from the manifest names this preflight just checked, per the shared doc's four states (`returned`, `degraded`, `refused`, `unresolved`). Settle each entry as its return lands or fails to; step 9's close-out persists it. Composing it from the returns instead would make a lens that never ran invisible, which is the failure the record exists to prevent.
 
 3. **Materialize the diff via the shared convention.** Route on the just-closed ticket's branch first:
    - **Ticket branch exists** (typical — `/done`'s refactor-pass arm): resolve refs per [DIFF-MATERIALIZATION.md](../../_shared/DIFF-MATERIALIZATION.md) — `<base>` is the spec branch, `<head>` is the ticket branch.
