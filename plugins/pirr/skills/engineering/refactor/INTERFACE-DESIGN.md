@@ -18,7 +18,7 @@ Show this to the user, then immediately proceed to Step 2. The user reads and th
 
 ### 2. Spawn sub-agents
 
-Spawn 3+ sub-agents in parallel using the Agent tool. Each must produce a **radically different** interface for the deepened module.
+Spawn 3+ sub-agents in parallel using the Agent tool, **pinning `subagent_type: general-purpose` explicitly on each**. These are design explorers, not lenses from the Reviewers manifest — general-purpose is the right type, but it is pinned rather than left to the tool's default so an unspecified type never stands in for a deliberate one (the rule is in [EVIDENCE-PRINCIPLE.md](../../_shared/EVIDENCE-PRINCIPLE.md); these dispatches carry no coverage claim, so they need no dispatch-record entry). Each must produce a **radically different** interface for the deepened module.
 
 Prompt each sub-agent with a separate technical brief (file paths, coupling details, dependency category from [DEEPENING.md](DEEPENING.md), what sits behind the seam). The brief is independent of the user-facing problem-space explanation in Step 1. Give each agent a different design constraint:
 
