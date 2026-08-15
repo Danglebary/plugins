@@ -3,6 +3,7 @@
 # Contract doc: ../skills/_shared/DIFF-MATERIALIZATION.md
 
 SCRIPT="$BATS_TEST_DIRNAME/materialize-diff.sh"
+load test_helpers
 
 setup() {
   # Shield fixtures from the contributor's global/system git config — a stray
@@ -51,13 +52,13 @@ merge_now() {
 @test "missing arguments refuse with exit 1 and print usage" {
   run bash "$SCRIPT"
   [ "$status" -eq 1 ]
-  [[ "$output" == *usage* ]]
+  assert_output_contains "usage"
 }
 
 @test "an unrecognized third argument refuses with exit 1 and prints usage" {
   run bash "$SCRIPT" main ticket --force
   [ "$status" -eq 1 ]
-  [[ "$output" == *usage* ]]
+  assert_output_contains "usage"
 }
 
 @test "--allow-untracked with no paths refuses with exit 1" {
@@ -76,13 +77,13 @@ merge_now() {
   commit_on ticket work.txt
   run bash "$SCRIPT" no-such-branch ticket
   [ "$status" -eq 2 ]
-  [[ "$output" == *no-such-branch* ]]
+  assert_output_contains "no-such-branch"
 }
 
 @test "unknown head ref refuses with exit 2 and names the ref" {
   run bash "$SCRIPT" main no-such-branch
   [ "$status" -eq 2 ]
-  [[ "$output" == *no-such-branch* ]]
+  assert_output_contains "no-such-branch"
 }
 
 @test "disjoint histories refuse with exit 3 and name both refs" {
@@ -94,14 +95,16 @@ merge_now() {
   git commit -qm "disjoint root"
   run bash "$SCRIPT" rootless ticket
   [ "$status" -eq 3 ]
-  [[ "$output" == *rootless* && "$output" == *ticket* ]]
+  assert_output_contains "rootless"
+  assert_output_contains "ticket"
 }
 
 @test "head that is an ancestor of base refuses with exit 4 (reversed arguments)" {
   commit_on ticket work.txt
   run bash "$SCRIPT" ticket main
   [ "$status" -eq 4 ]
-  [[ "$output" == *ticket* && "$output" == *main* ]]
+  assert_output_contains "ticket"
+  assert_output_contains "main"
 }
 
 @test "modified tracked file refuses with exit 5 and prints the path" {
@@ -109,7 +112,7 @@ merge_now() {
   echo changed > base.txt
   run bash "$SCRIPT" main ticket
   [ "$status" -eq 5 ]
-  [[ "$output" == *base.txt* ]]
+  assert_output_contains "base.txt"
 }
 
 @test "staged tracked modification refuses with exit 5 and prints the path" {
@@ -118,7 +121,7 @@ merge_now() {
   git add base.txt
   run bash "$SCRIPT" main ticket
   [ "$status" -eq 5 ]
-  [[ "$output" == *base.txt* ]]
+  assert_output_contains "base.txt"
 }
 
 @test "deleted tracked file refuses with exit 5 and prints the path" {
@@ -126,7 +129,7 @@ merge_now() {
   rm base.txt
   run bash "$SCRIPT" main ticket
   [ "$status" -eq 5 ]
-  [[ "$output" == *base.txt* ]]
+  assert_output_contains "base.txt"
 }
 
 @test "a never-staged file refuses with exit 8 and names it" {
@@ -135,7 +138,7 @@ merge_now() {
   echo impl > src/impl.ts
   run bash "$SCRIPT" main ticket
   [ "$status" -eq 8 ]
-  [[ "$output" == *src/impl.ts* ]]
+  assert_output_contains "src/impl.ts"
 }
 
 @test "exit 8 never names a gitignored file" {
@@ -149,9 +152,9 @@ merge_now() {
   echo impl > impl.ts
   run bash "$SCRIPT" main ticket
   [ "$status" -eq 8 ]
-  [[ "$output" == *impl.ts* ]]
-  [[ "$output" != *secret.txt* ]]
-  [[ "$output" != *junk.log* ]]
+  assert_output_contains "impl.ts"
+  refute_output_contains "secret.txt"
+  refute_output_contains "junk.log"
 }
 
 @test "a new file under a new directory is named as its own path, not the directory" {
@@ -162,7 +165,7 @@ merge_now() {
   echo impl > newdir/nested/impl.ts
   run bash "$SCRIPT" main ticket
   [ "$status" -eq 8 ]
-  [[ "$output" == *newdir/nested/impl.ts* ]]
+  assert_output_contains "newdir/nested/impl.ts"
 }
 
 @test "acknowledged untracked paths proceed and the diff is written" {
@@ -201,8 +204,8 @@ merge_now() {
   echo two > docs/specs/ideas/two.md
   run bash "$SCRIPT" main ticket --allow-untracked docs/specs/ideas/one.md
   [ "$status" -eq 8 ]
-  [[ "$output" == *two.md* ]]
-  [[ "$output" != *one.md* ]]
+  assert_output_contains "two.md"
+  refute_output_contains "one.md"
 }
 
 @test "a path containing a space is acknowledged as one path" {
@@ -224,7 +227,7 @@ merge_now() {
   echo banked > docs/specs/ideas/stray.md
   run bash "$SCRIPT" main ticket --allow-untracked '*'
   [ "$status" -eq 8 ]
-  [[ "$output" == *stray.md* ]]
+  assert_output_contains "stray.md"
 }
 
 @test "an unacknowledged path still refuses even alongside acknowledged ones" {
@@ -234,8 +237,8 @@ merge_now() {
   echo impl > impl.ts
   run bash "$SCRIPT" main ticket --allow-untracked docs/specs/ideas/stray.md
   [ "$status" -eq 8 ]
-  [[ "$output" == *impl.ts* ]]
-  [[ "$output" != *stray.md* ]]
+  assert_output_contains "impl.ts"
+  refute_output_contains "stray.md"
 }
 
 @test "a staged-but-uncommitted new file still refuses with exit 5, not 8" {
@@ -244,7 +247,7 @@ merge_now() {
   git add staged.ts
   run bash "$SCRIPT" main ticket
   [ "$status" -eq 5 ]
-  [[ "$output" == *staged.ts* ]]
+  assert_output_contains "staged.ts"
 }
 
 @test "tracked dirt alongside untracked paths refuses with exit 5, not 8" {
@@ -255,7 +258,7 @@ merge_now() {
   echo impl > impl.ts
   run bash "$SCRIPT" main ticket
   [ "$status" -eq 5 ]
-  [[ "$output" == *base.txt* ]]
+  assert_output_contains "base.txt"
 }
 
 @test "the script's own .pirr scaffolding never trips exit 8 on a later run" {
@@ -279,7 +282,7 @@ merge_now() {
   echo impl > sub/.pirr/thing.ts
   run bash "$SCRIPT" main ticket
   [ "$status" -eq 8 ]
-  [[ "$output" == *sub/.pirr/thing.ts* ]]
+  assert_output_contains "sub/.pirr/thing.ts"
 }
 
 @test "exit 5 stderr names tracked dirt only, never untracked files" {
@@ -293,15 +296,16 @@ merge_now() {
   echo banked > docs/specs/ideas/stray.md
   run bash "$SCRIPT" main ticket
   [ "$status" -eq 5 ]
-  [[ "$output" == *base.txt* ]]
-  [[ "$output" != *stray.md* ]]
+  assert_output_contains "base.txt"
+  refute_output_contains "stray.md"
 }
 
 @test "empty diff refuses with exit 6 and names both refs" {
   git switch -qc ticket
   run bash "$SCRIPT" main ticket
   [ "$status" -eq 6 ]
-  [[ "$output" == *main* && "$output" == *ticket* ]]
+  assert_output_contains "main"
+  assert_output_contains "ticket"
 }
 
 @test "base advanced past the branch point yields the merge-base diff, not a refusal" {
@@ -313,8 +317,8 @@ merge_now() {
   run bash "$SCRIPT" main ticket
   [ "$status" -eq 0 ]
   run cat .pirr/diff.patch
-  [[ "$output" == *work.txt* ]]
-  [[ "$output" != *mainline.txt* ]]
+  assert_output_contains "work.txt"
+  refute_output_contains "mainline.txt"
 }
 
 @test "artifact keeps a/ b/ prefixes even when the repo sets diff.noprefix" {
@@ -333,7 +337,7 @@ merge_now() {
   ln -s "$BATS_TEST_TMPDIR/decoy.txt" .pirr/diff.patch
   run bash "$SCRIPT" main ticket
   [ "$status" -eq 7 ]
-  [[ "$output" == *diff.patch* ]]
+  assert_output_contains "diff.patch"
   [ "$(cat "$BATS_TEST_TMPDIR/decoy.txt")" = "PRECIOUS" ]
 }
 
@@ -383,8 +387,8 @@ merge_now() {
   run bash "$SCRIPT" "${MERGE_SHA}^1" "$MERGE_SHA"
   [ "$status" -eq 0 ]
   run cat .pirr/diff.patch
-  [[ "$output" == *work.txt* ]]
-  [[ "$output" != *mainline.txt* ]]
+  assert_output_contains "work.txt"
+  refute_output_contains "mainline.txt"
 }
 
 @test "post-merge row reversed (<merge> <merge>^1) refuses with exit 4" {
@@ -442,5 +446,5 @@ merge_now() {
   commit_on ticket work.txt
   run bash "$SCRIPT" main ticket
   [ "$status" -eq 0 ]
-  [[ "$output" == *.pirr/diff.patch* ]]
+  assert_output_contains ".pirr/diff.patch"
 }

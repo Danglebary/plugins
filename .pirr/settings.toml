@@ -21,3 +21,15 @@ merge = "no-ff"
 # assumptions, assess whether /tdd fits. The config is the standing consent —
 # no per-ticket prompt.
 research_opener = true
+
+[verification]
+# The repo's full build-and-test suite — read by whichever skill resolves
+# verification; IMPLEMENTATION-LOOP.md's "Resolving the repo's verification"
+# owns the ladder, the precedence, and the degradation rule. Never guessed,
+# never restated here.
+#
+# Repo-specific facts this file is the only place to state: run from the repo
+# root; this repo ships no /verify skill, so this key is what resolves; there is
+# no build step — the bats suites are the whole of it (bats-core, developed
+# against 1.13).
+command = "bats plugins/pirr/scripts/"

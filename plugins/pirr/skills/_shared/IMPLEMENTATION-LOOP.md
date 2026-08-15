@@ -41,10 +41,10 @@ Green is a **positive** signal, never an assumed one. The loop auto-commits only
 "The repo's verification" is the **full build and test suite** — the same check `/done`'s merge gate runs ([CLOSE-OUT.md](./CLOSE-OUT.md#the-gated-merge)): one verification convention serving both the exit task here and the merge gate there. It runs in full even in `/tdd` mode, where the inner loop exercised only focused tests. It is **resolved, never improvised**, from three sources — first match wins:
 
 1. **A project verify skill** — the repo's own `/verify`-style skill, if it ships one. Purpose-built and executable, it is the least-ambiguous statement of how to verify this repo, so it wins.
-2. **A verification key in `.pirr/settings.toml`** — explicit structured config.
+2. **`[verification] command` in `.pirr/settings.toml`** — explicit structured config. That table and key are the canonical shape; a repo naming it anything else is not resolvable by source 2 and falls through to source 3.
 3. **A verification convention stated in the repo's `CLAUDE.md`** — prose, the interpretation-prone fallback.
 
-No source resolves → no verification is configured → the loop degrades per above (surface, don't commit). Both loop skills resolve it the same way, so `/tdd` and `/implement` can never disagree on what "green" means.
+No source resolves → no verification is configured → **the consumer degrades rather than assuming a pass**, and what that means is the consumer's own pending action: the loop's exit task surfaces and does not commit; the gated merge surfaces and does not delete the merged branch. Absent and unrunnable degrade exactly as red does — never as green. Both loop skills resolve it the same way, so `/tdd` and `/implement` can never disagree on what "green" means.
 
 ## The commit boundary — this is the implementation commit, not the close-out commit
 

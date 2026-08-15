@@ -3,6 +3,7 @@
 # contract-tamper surface (ADR 0005; placement per ADR 0002).
 
 SCRIPT="$BATS_TEST_DIRNAME/contract-tamper.sh"
+load test_helpers
 
 setup() {
   # Shield fixtures from the contributor's global/system git config so pass/fail
@@ -22,36 +23,6 @@ commit() {
   git commit -qm "$1"
 }
 
-# Assert on `run`'s captured $output.
-#
-# These exist because a bare `[[ ... ]]` is an unreliable assertion here: on bash
-# 3.2 a failing `[[ ]]` inside a function does not trip `errexit` and does not
-# fire the ERR trap, so in a bats test only the FINAL command decides pass/fail
-# and every earlier `[[ ]]` fails silently. Wrapping the check in a function makes
-# each call a simple command at the call site, which `errexit` does honor.
-#
-# They take a literal substring, not a glob: the quoted expansion inside `case`
-# keeps metacharacters inert, so an expected value containing `[ ]` (every
-# checkbox in an Acceptance criteria fixture) matches as written rather than as a
-# bracket expression.
-assert_output_contains() {
-  case "$output" in
-    *"$1"*) return 0 ;;
-  esac
-  printf 'expected output to contain: %s\nactual output:\n%s\n' "$1" "$output" >&2
-  return 1
-}
-
-refute_output_contains() {
-  case "$output" in
-    *"$1"*)
-      printf 'expected output NOT to contain: %s\nactual output:\n%s\n' "$1" "$output" >&2
-      return 1
-      ;;
-  esac
-  return 0
-}
-
 @test "unchanged section reports unchanged and emits base text with line numbers" {
   printf '# Ticket\n\n## Goal\nDeliver X.\n' > tkt.md
   commit base
@@ -60,9 +31,9 @@ refute_output_contains() {
   commit work
   run bash "$SCRIPT" main ticket tkt.md Goal
   [ "$status" -eq 0 ]
-  [[ "$output" == *"SECTION"*"tkt.md"*"Goal"*"unchanged"* ]]
-  [[ "$output" == *"3:## Goal"* ]]
-  [[ "$output" == *"4:Deliver X."* ]]
+  assert_output_contains "SECTION"$'\t'"tkt.md"$'\t'"Goal"$'\t'"unchanged"
+  assert_output_contains "3:## Goal"
+  assert_output_contains "4:Deliver X."
 }
 
 @test "edited section body reports changed" {
@@ -73,7 +44,7 @@ refute_output_contains() {
   commit tamper
   run bash "$SCRIPT" main ticket tkt.md Goal
   [ "$status" -eq 0 ]
-  [[ "$output" == *"tkt.md"$'\t'"Goal"$'\t'"changed"* ]]
+  assert_output_contains "tkt.md"$'\t'"Goal"$'\t'"changed"
 }
 
 @test "renamed guarded heading reports changed (fail-safe)" {
@@ -84,7 +55,7 @@ refute_output_contains() {
   commit rename
   run bash "$SCRIPT" main ticket tkt.md Goal
   [ "$status" -eq 0 ]
-  [[ "$output" == *"tkt.md"$'\t'"Goal"$'\t'"changed"* ]]
+  assert_output_contains "tkt.md"$'\t'"Goal"$'\t'"changed"
 }
 
 @test "a Deviations-only edit never surfaces (only guarded sections are compared)" {
@@ -96,8 +67,8 @@ refute_output_contains() {
   # The caller guards only Goal/Acceptance/Approach — never Deviations.
   run bash "$SCRIPT" main ticket tkt.md Goal
   [ "$status" -eq 0 ]
-  [[ "$output" == *"Goal"$'\t'"unchanged"* ]]
-  [[ "$output" != *"Deviations"* ]]
+  assert_output_contains "Goal"$'\t'"unchanged"
+  refute_output_contains "Deviations"
 }
 
 @test "a base file absent at the base ref reports changed (fail-safe) with no base body" {
@@ -108,9 +79,9 @@ refute_output_contains() {
   commit add-file
   run bash "$SCRIPT" main ticket tkt.md Goal
   [ "$status" -eq 0 ]
-  [[ "$output" == *"tkt.md"$'\t'"Goal"$'\t'"changed"* ]]
+  assert_output_contains "tkt.md"$'\t'"Goal"$'\t'"changed"
   # No base version exists, so no line-numbered base body is emitted.
-  [[ "$output" != *"Brand new file."* ]]
+  refute_output_contains "Brand new file."
 }
 
 @test "a guarded heading absent at BOTH refs reports changed (fail-safe, not a silent no-op)" {
@@ -124,7 +95,7 @@ refute_output_contains() {
   commit work
   run bash "$SCRIPT" main ticket tkt.md Goal
   [ "$status" -eq 0 ]
-  [[ "$output" == *"tkt.md"$'\t'"Goal"$'\t'"changed"* ]]
+  assert_output_contains "tkt.md"$'\t'"Goal"$'\t'"changed"
 }
 
 @test "an unrelated section inserted between guarded sections does not false-positive" {
@@ -137,8 +108,8 @@ refute_output_contains() {
   commit insert
   run bash "$SCRIPT" main ticket tkt.md Goal tkt.md "Acceptance criteria"
   [ "$status" -eq 0 ]
-  [[ "$output" == *"Goal"$'\t'"unchanged"* ]]
-  [[ "$output" == *"Acceptance criteria"$'\t'"unchanged"* ]]
+  assert_output_contains "Goal"$'\t'"unchanged"
+  assert_output_contains "Acceptance criteria"$'\t'"unchanged"
 }
 
 @test "guards sections across two files, reporting each independently" {
@@ -150,9 +121,9 @@ refute_output_contains() {
   commit tamper-approach
   run bash "$SCRIPT" main ticket tkt.md Goal tkt.md "Acceptance criteria" spec.md Approach
   [ "$status" -eq 0 ]
-  [[ "$output" == *"tkt.md"$'\t'"Goal"$'\t'"unchanged"* ]]
-  [[ "$output" == *"tkt.md"$'\t'"Acceptance criteria"$'\t'"unchanged"* ]]
-  [[ "$output" == *"spec.md"$'\t'"Approach"$'\t'"changed"* ]]
+  assert_output_contains "tkt.md"$'\t'"Goal"$'\t'"unchanged"
+  assert_output_contains "tkt.md"$'\t'"Acceptance criteria"$'\t'"unchanged"
+  assert_output_contains "spec.md"$'\t'"Approach"$'\t'"changed"
 }
 
 @test "base body carries the section's absolute base line numbers, not head's" {
@@ -165,22 +136,22 @@ refute_output_contains() {
   commit shift
   run bash "$SCRIPT" main ticket tkt.md "Acceptance criteria"
   [ "$status" -eq 0 ]
-  [[ "$output" == *"6:## Acceptance criteria"* ]]
-  [[ "$output" == *"7:- [ ] a"* ]]
-  [[ "$output" == *"8:- [ ] b"* ]]
+  assert_output_contains "6:## Acceptance criteria"
+  assert_output_contains "7:- [ ] a"
+  assert_output_contains "8:- [ ] b"
 }
 
 @test "too few arguments refuse with exit 1 and print usage" {
   run bash "$SCRIPT" main ticket tkt.md
   [ "$status" -eq 1 ]
-  [[ "$output" == *usage* ]]
+  assert_output_contains "usage"
 }
 
 @test "an odd trailing argument (unpaired path/heading) refuses with exit 1" {
   # Arg-shape is checked before any git, so no repo fixture is needed.
   run bash "$SCRIPT" main ticket tkt.md Goal spec.md
   [ "$status" -eq 1 ]
-  [[ "$output" == *usage* ]]
+  assert_output_contains "usage"
 }
 
 @test "outside a git repository refuses with exit 1" {
@@ -196,7 +167,7 @@ refute_output_contains() {
   git switch -qc ticket
   run bash "$SCRIPT" no-such-base ticket tkt.md Goal
   [ "$status" -eq 2 ]
-  [[ "$output" == *no-such-base* ]]
+  assert_output_contains "no-such-base"
 }
 
 @test "unknown head ref refuses with exit 2 and names the ref" {
@@ -204,7 +175,7 @@ refute_output_contains() {
   commit base
   run bash "$SCRIPT" main no-such-head tkt.md Goal
   [ "$status" -eq 2 ]
-  [[ "$output" == *no-such-head* ]]
+  assert_output_contains "no-such-head"
 }
 
 @test "a fenced heading inside a guarded section does not truncate it" {
@@ -473,5 +444,5 @@ refute_output_contains() {
   commit remove
   run bash "$SCRIPT" main ticket tkt.md Goal
   [ "$status" -eq 0 ]
-  [[ "$output" == *"tkt.md"$'\t'"Goal"$'\t'"changed"* ]]
+  assert_output_contains "tkt.md"$'\t'"Goal"$'\t'"changed"
 }
