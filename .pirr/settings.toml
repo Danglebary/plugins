@@ -21,3 +21,15 @@ merge = "no-ff"
 # assumptions, assess whether /tdd fits. The config is the standing consent —
 # no per-ticket prompt.
 research_opener = true
+
+[verification]
+# The repo's full build-and-test suite — resolution source 2 of 3 in
+# IMPLEMENTATION-LOOP.md's "Resolving the repo's verification", beating the
+# CLAUDE.md prose fallback and losing only to a project /verify skill (this repo
+# ships none). Two readers, one convention: the implementation loop's
+# clean-green exit task (/tdd, /implement) and CLOSE-OUT.md's gated merge.
+#
+# Run from the repo root. This repo has no build step — the bats suites are the
+# whole of it. Green here is a positive signal: absent, unrunnable, or red all
+# mean "surface, don't commit", never an assumed pass.
+command = "bats plugins/pirr/scripts/"
