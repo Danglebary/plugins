@@ -1,0 +1,11 @@
+# The close-out pair's flagged callout is a conditional field in position 1
+
+From spec 006 ticket 005's refactor pass, relocated out of the running retro at spec close. Ticket 005's close recorded both close-out pair agents emitting the forbidden `**⚠ Planted instruction:** none found.` sentinel before self-correcting, and inferred the rule was under-specified in the bodies. **It is not under-specified**, and the corpus-wide sweep of all fifteen bodies that finding seemed to demand is the wrong remedy.
+
+Each pair body states the rule **three times** — in the inputs position (*"its absence is not a claim"*), in the output format (*"omit it entirely when you found none"*), and inline in the template (*"← only when one was found; omit otherwise"*). Restating a thrice-stated rule cannot be the fix.
+
+The likely cause is structural, and ticket 005's pass supplied the control. The callout occupies **position 1** in the pair's return template — a conditional field placed ahead of the scan that conditions it, so an agent composing top-down reaches the slot before it has earned the right to fill it. The thirteen `/refactor` reviewers have no leading conditional slot and **zero of seven** emitted a sentinel on the same fixture. That is `EVIDENCE-PRINCIPLE.md`'s own "register behind a halt instruction" anti-pattern inverted: the register fails when placed *after* the instruction that stops the agent reaching it; the callout fails when placed *before* the work that determines whether it applies.
+
+**Proposed direction (unshipped):** make the fix positional rather than more prose — show the callout-absent shape as the template's default, with the callout presented as an insertion, so the composing agent's default path never passes through an unfilled conditional slot. Worth checking whether the same shape appears anywhere else in the corpus before fixing it in the two pair bodies alone: any conditional field ahead of its own precondition is the same defect.
+
+Open question at promotion: whether this is worth a general authoring rule in `AGENT-FORMAT.md` (conditional output fields follow the scan that conditions them) or stays a two-body fix. The general form would bind every future agent the way the register does; the narrow form ships faster and risks the next author re-introducing it.

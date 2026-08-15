@@ -1,5 +1,5 @@
 ---
-status: open
+status: done
 ---
 
 # The close-out evidence path
