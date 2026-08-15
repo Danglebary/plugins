@@ -31,7 +31,7 @@ commit() {
   commit work
   run bash "$SCRIPT" main ticket tkt.md Goal
   [ "$status" -eq 0 ]
-  assert_output_in_order "SECTION" "tkt.md" "Goal" "unchanged"
+  assert_output_contains "SECTION"$'\t'"tkt.md"$'\t'"Goal"$'\t'"unchanged"
   assert_output_contains "3:## Goal"
   assert_output_contains "4:Deliver X."
 }
@@ -144,14 +144,14 @@ commit() {
 @test "too few arguments refuse with exit 1 and print usage" {
   run bash "$SCRIPT" main ticket tkt.md
   [ "$status" -eq 1 ]
-  assert_output_contains usage
+  assert_output_contains "usage"
 }
 
 @test "an odd trailing argument (unpaired path/heading) refuses with exit 1" {
   # Arg-shape is checked before any git, so no repo fixture is needed.
   run bash "$SCRIPT" main ticket tkt.md Goal spec.md
   [ "$status" -eq 1 ]
-  assert_output_contains usage
+  assert_output_contains "usage"
 }
 
 @test "outside a git repository refuses with exit 1" {
@@ -167,7 +167,7 @@ commit() {
   git switch -qc ticket
   run bash "$SCRIPT" no-such-base ticket tkt.md Goal
   [ "$status" -eq 2 ]
-  assert_output_contains no-such-base
+  assert_output_contains "no-such-base"
 }
 
 @test "unknown head ref refuses with exit 2 and names the ref" {
@@ -175,7 +175,7 @@ commit() {
   commit base
   run bash "$SCRIPT" main no-such-head tkt.md Goal
   [ "$status" -eq 2 ]
-  assert_output_contains no-such-head
+  assert_output_contains "no-such-head"
 }
 
 @test "a fenced heading inside a guarded section does not truncate it" {

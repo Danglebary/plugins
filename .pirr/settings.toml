@@ -23,13 +23,13 @@ merge = "no-ff"
 research_opener = true
 
 [verification]
-# The repo's full build-and-test suite — resolution source 2 of 3 in
-# IMPLEMENTATION-LOOP.md's "Resolving the repo's verification", beating the
-# CLAUDE.md prose fallback and losing only to a project /verify skill (this repo
-# ships none). Two readers, one convention: the implementation loop's
-# clean-green exit task (/tdd, /implement) and CLOSE-OUT.md's gated merge.
+# The repo's full build-and-test suite — read by whichever skill resolves
+# verification; IMPLEMENTATION-LOOP.md's "Resolving the repo's verification"
+# owns the ladder, the precedence, and the degradation rule. Never guessed,
+# never restated here.
 #
-# Run from the repo root. This repo has no build step — the bats suites are the
-# whole of it. Green here is a positive signal: absent, unrunnable, or red all
-# mean "surface, don't commit", never an assumed pass.
+# Repo-specific facts this file is the only place to state: run from the repo
+# root; this repo ships no /verify skill, so this key is what resolves; there is
+# no build step — the bats suites are the whole of it (bats-core, developed
+# against 1.13).
 command = "bats plugins/pirr/scripts/"

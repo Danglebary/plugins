@@ -12,23 +12,35 @@
 # That discipline is necessary but not sufficient, and the gap is worth naming.
 # A helper stubbed to `return 0` still passes every positive-path test here — an
 # assertion that something succeeds cannot distinguish a working helper from one
-# that always succeeds. The negative-path tests are what actually pin the mechanism:
-# stub all three helpers to `return 0` and tests 1, 3, 4, 6 and 8 fail. When adding
-# a positive case, add its negative twin, or the new coverage proves nothing.
+# that always succeeds. The negative-path tests are what actually pin the
+# mechanism: stub both helpers to `return 0` and 9 of these 13 tests fail
+# (1, 3, 4, 6, 7, 8, 9, 10, 11 — measured, not assumed). When adding a positive
+# case, add its negative twin, or the new coverage proves nothing.
 
 HELPERS="$BATS_TEST_DIRNAME/test_helpers.bash"
 source "$HELPERS"
 
-# Write a one-test bats file that sources the helpers, runs $1 as a NON-FINAL
-# command, and ends with a command that always succeeds. If the helper cannot
-# fail its test, this file passes.
+# write_probe <assertion-line> <fixture-output>
+#
+# Writes a one-test bats file at $probe (set here, read by the caller) that
+# sources the helpers, sets $output to <fixture-output>, runs <assertion-line>
+# as a NON-FINAL command, and ends with a command that always succeeds. If the
+# helper cannot fail its test, that file passes.
+#
+# <fixture-output> is passed as PLAIN TEXT — this function quotes it into the
+# generated source. Requiring callers to pre-quote invited a probe whose
+# `output=hello world` ran `world` as a command and exercised an empty $output,
+# passing for the wrong reason.
+#
+# The probe `source`s an absolute path rather than `load test_helpers`: it is
+# written to $BATS_TEST_TMPDIR, where a relative `load` cannot resolve.
 write_probe() {
   probe="$BATS_TEST_TMPDIR/probe.bats"
   {
     printf '#!/usr/bin/env bats\n'
-    printf 'source %s\n' "$HELPERS"
+    printf "source '%s'\n" "$HELPERS"
     printf '@test "probe" {\n'
-    printf '  output=%s\n' "$2"
+    printf "  output='%s'\n" "$2"
     printf '  %s\n' "$1"
     printf '  [ 1 = 1 ]\n'
     printf '}\n'
@@ -36,7 +48,7 @@ write_probe() {
 }
 
 @test "an assertion that fails in non-final position fails its test" {
-  write_probe 'assert_output_contains "definitely-absent"' "'hello world'"
+  write_probe 'assert_output_contains "definitely-absent"' 'hello world'
   run bats "$probe"
   [ "$status" -ne 0 ]
   # Assert on the diagnostic, not merely on non-zero: a missing or unsourceable
@@ -67,27 +79,54 @@ write_probe() {
   [ "$rc" -eq 1 ]
 }
 
-@test "ordered matching succeeds when the substrings appear in order" {
+@test "a tab-delimited record matches as one literal, pinning separators and order" {
+  # The idiom that replaced the ordered-match helper: contract-tamper.sh emits
+  # the whole SECTION record with one printf, so matching it as a single literal
+  # is strictly stronger than an ordered match — it pins adjacency too.
   output='SECTION	tkt.md	Goal	unchanged'
-  assert_output_in_order 'SECTION' 'tkt.md' 'Goal' 'unchanged' && rc=0 || rc=$?
+  assert_output_contains "SECTION"$'\t'"tkt.md"$'\t'"Goal"$'\t'"unchanged" && rc=0 || rc=$?
   [ "$rc" -eq 0 ]
 }
 
-@test "ordered matching fails when the substrings appear out of order" {
-  output='SECTION	tkt.md	Goal	unchanged'
-  assert_output_in_order 'unchanged' 'SECTION' 2>/dev/null && rc=0 || rc=$?
+@test "a record literal fails when a separator differs" {
+  output='SECTION tkt.md Goal unchanged'
+  assert_output_contains "SECTION"$'\t'"tkt.md" 2>/dev/null && rc=0 || rc=$?
   [ "$rc" -eq 1 ]
 }
 
-@test "ordered matching treats each substring literally, not as a glob" {
-  output='7:- [ ] a
-8:- [ ] b'
-  assert_output_in_order '7:- [ ] a' '8:- [ ] b' && rc=0 || rc=$?
-  [ "$rc" -eq 0 ]
+@test "an empty expected value is refused, not matched against everything" {
+  output='hello world'
+  assert_output_contains '' 2>/dev/null && rc=0 || rc=$?
+  [ "$rc" -eq 1 ]
+}
+
+@test "an empty expected value is refused by the refutation too" {
+  output='hello world'
+  refute_output_contains '' 2>/dev/null && rc=0 || rc=$?
+  [ "$rc" -eq 1 ]
+}
+
+@test "a second argument is refused rather than silently dropped" {
+  # The shape an unquoted, glob-expanded call site arrives in. Dropping the
+  # extras would check a value nobody wrote.
+  output='hello world'
+  assert_output_contains 'hello' 'definitely-absent' 2>/dev/null && rc=0 || rc=$?
+  [ "$rc" -eq 1 ]
+}
+
+@test "an arity violation in non-final position fails its test" {
+  write_probe 'assert_output_contains one two' 'hello world'
+  run bats "$probe"
+  [ "$status" -ne 0 ]
+  case "$output" in
+    *"expected exactly 1 argument, got 2"*) found=yes ;;
+    *) found=no ;;
+  esac
+  [ "$found" = yes ]
 }
 
 @test "a refutation that fails in non-final position fails its test" {
-  write_probe 'refute_output_contains "hello"' "'hello world'"
+  write_probe 'refute_output_contains "hello"' 'hello world'
   run bats "$probe"
   [ "$status" -ne 0 ]
   case "$output" in
