@@ -3,10 +3,18 @@
 # suites rest on. These exist because an assertion that has never been observed
 # failing is unverified no matter how many times it has "passed" (spec 006).
 #
-# Assertions here use single-bracket `[ ]` deliberately, never the helpers under
-# test: `[ ]` is a simple command and so honors `errexit` in every position,
-# which is exactly the property the helpers are being built to supply. Using the
-# helpers to test the helpers would make a broken helper self-certifying.
+# Every test here takes its verdict from a single-bracket `[ ]`, never from the
+# return status of the helper under test: `[ ]` is a simple command and so honors
+# `errexit` in every position, which is exactly the property the helpers are being
+# built to supply. Letting a helper call be a test's final command would make the
+# function under test its own judge.
+#
+# That discipline is necessary but not sufficient, and the gap is worth naming.
+# A helper stubbed to `return 0` still passes every positive-path test here — an
+# assertion that something succeeds cannot distinguish a working helper from one
+# that always succeeds. The negative-path tests are what actually pin the mechanism:
+# stub all three helpers to `return 0` and tests 1, 3, 4, 6 and 8 fail. When adding
+# a positive case, add its negative twin, or the new coverage proves nothing.
 
 HELPERS="$BATS_TEST_DIRNAME/test_helpers.bash"
 source "$HELPERS"
@@ -43,7 +51,8 @@ write_probe() {
 @test "an expected value containing bracket metacharacters matches literally" {
   output='6:## Acceptance criteria
 7:- [ ] a'
-  assert_output_contains '7:- [ ] a'
+  assert_output_contains '7:- [ ] a' && rc=0 || rc=$?
+  [ "$rc" -eq 0 ]
 }
 
 @test "an expected value containing ? is not treated as a single-character wildcard" {
@@ -60,7 +69,8 @@ write_probe() {
 
 @test "ordered matching succeeds when the substrings appear in order" {
   output='SECTION	tkt.md	Goal	unchanged'
-  assert_output_in_order 'SECTION' 'tkt.md' 'Goal' 'unchanged'
+  assert_output_in_order 'SECTION' 'tkt.md' 'Goal' 'unchanged' && rc=0 || rc=$?
+  [ "$rc" -eq 0 ]
 }
 
 @test "ordered matching fails when the substrings appear out of order" {
@@ -72,7 +82,8 @@ write_probe() {
 @test "ordered matching treats each substring literally, not as a glob" {
   output='7:- [ ] a
 8:- [ ] b'
-  assert_output_in_order '7:- [ ] a' '8:- [ ] b'
+  assert_output_in_order '7:- [ ] a' '8:- [ ] b' && rc=0 || rc=$?
+  [ "$rc" -eq 0 ]
 }
 
 @test "a refutation that fails in non-final position fails its test" {
@@ -88,10 +99,12 @@ write_probe() {
 
 @test "refutation succeeds when the substring is absent" {
   output='hello world'
-  refute_output_contains 'goodbye'
+  refute_output_contains 'goodbye' && rc=0 || rc=$?
+  [ "$rc" -eq 0 ]
 }
 
 @test "refutation treats * literally rather than matching anything" {
   output='hello world'
-  refute_output_contains '*'
+  refute_output_contains '*' && rc=0 || rc=$?
+  [ "$rc" -eq 0 ]
 }
