@@ -8,7 +8,7 @@ The retro is a two-pass document paired to each spec: it accumulates per-ticket 
 
 ## Running form (per-ticket entries)
 
-Appended by `/done` when a ticket closes.
+Appended by `/done` when a ticket closes, then by `/refactor`'s close-out, which adds its own `**Dispatch** (refactor):` line to the entry `/done` already wrote. Two writers, so a modified running-form `retro.md` does not identify which one left it dirty — see the precondition below.
 
 ### Per-ticket entry format
 
@@ -17,8 +17,32 @@ Appended by `/done` when a ticket closes.
 
 **Outcome**: Exact match | Extended | Divergence | Omitted
 
+**Dispatch**: <lenses dispatched and how each resolved>
+
 <1-3 sentences on what was learned>
 ```
+
+This template is a two-member sync set with `/done`'s step-8 copy — a change here fans out to that skill.
+
+### The `**Dispatch**` field
+
+The **Dispatch record** ([EVIDENCE-PRINCIPLE.md](./EVIDENCE-PRINCIPLE.md)) — which lenses the close dispatched and how each resolved, so a lens that never ran is legible after the session ends. Written by `/done` from the close-out pair; `/refactor` appends its own from the Reviewers manifest, marked `**Dispatch** (refactor):` to distinguish the two keepers in one entry. `/retro` keeps no record and adds no line.
+
+Emission is mandatory, detail is gap-only. The clean case is one line; only the three non-clean states (`degraded`, `refused`, `unresolved`) carry detail, naming the lens and what its absence cost:
+
+```markdown
+**Dispatch**: close-out pair — both returned.
+**Dispatch** (refactor): 7 reviewers — all returned.
+```
+
+```markdown
+**Dispatch** (refactor): 7 reviewers — `pirr:qa-engineer` degraded (returned findings with no
+Partial verdict register, so its gap check is unaccounted for); the other 6 returned.
+```
+
+A persisted record never pairs `returned` with `unresolved`. The **Resolution preflight** refuses before *any* lens is dispatched, so an unresolved name means nothing ran and the close or pass ends there — the refusal message carries that record, and no retro entry receives it. `degraded` and `refused` are the states that legitimately sit beside `returned` in a persisted line.
+
+The record is an **attestation, not a verification**: it states what was dispatched and what came back, never that a lens was correct. Nothing downstream can audit it, which is why the pre-dispatch **Resolution preflight** carries its weight.
 
 ### Outcome labels
 
@@ -33,7 +57,7 @@ The same labels appear in the synthesized form, applied per spec section instead
 
 Written by `/retro` (no args), which **restructures `retro.md` in place**. The running form is preserved in git history; the live file becomes the structured synthesis.
 
-**Committed-running-retro precondition.** Git history is the *only* place the running form survives the rewrite, so `/retro` refuses to synthesize while the running retro has uncommitted content — a modified `retro.md`, or an untracked one. Fix: commit the retro directly on the spec branch (or, when the ticket's `done` flip is also uncommitted, resume that `/done` close and let its commit gate carry the retro), then re-run `/retro`.
+**Committed-running-retro precondition.** Git history is the *only* place the running form survives the rewrite, so `/retro` refuses to synthesize while the running retro has uncommitted content — a modified `retro.md`, or an untracked one. Fix: commit the retro directly on the spec branch — or resume whichever writer left it dirty and let that skill's commit gate carry it. The ticket's `done` flip discriminates: **uncommitted** alongside the retro dirt means an interrupted `/done` close (resume `/done`); **already committed** means an interrupted `/refactor` pass, which writes the retro at step 9 before its gates (re-run `/refactor`, whose gate 2 commits the record). Then re-run `/retro`.
 
 ### Sections
 

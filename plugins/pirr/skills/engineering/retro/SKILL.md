@@ -7,7 +7,7 @@ description: "Close a spec: synthesize the running retro into structured form, f
 
 Close a spec by synthesizing the running retro into structured form, with one final fact-check pass against the full spec-branch **git diff**. Code and its diff stay in git; spec text and status live in the store. The close ends in the shared close-out shape: one gated commit of everything the invocation wrote, then the gated merge into the default branch.
 
-References: [STORE.md](../../_shared/STORE.md) (artifact paths); [RETRO-FORMAT.md](../../_shared/RETRO-FORMAT.md); [ABSTRACTION-LEVELS-PRINCIPLE.md](../../_shared/ABSTRACTION-LEVELS-PRINCIPLE.md) (deviation threshold); [DIFF-MATERIALIZATION.md](../../_shared/DIFF-MATERIALIZATION.md) (the diff); [CLOSE-OUT.md](../../_shared/CLOSE-OUT.md) (the gates).
+References: [STORE.md](../../_shared/STORE.md) (artifact paths); [RETRO-FORMAT.md](../../_shared/RETRO-FORMAT.md); [ABSTRACTION-LEVELS-PRINCIPLE.md](../../_shared/ABSTRACTION-LEVELS-PRINCIPLE.md) (deviation threshold); [DIFF-MATERIALIZATION.md](../../_shared/DIFF-MATERIALIZATION.md) (the diff); [CLOSE-OUT.md](../../_shared/CLOSE-OUT.md) (the gates); [EVIDENCE-PRINCIPLE.md](../../_shared/EVIDENCE-PRINCIPLE.md) (the honesty rule's three states, and the **Partial verdict** register this skill's fact-checker return carries — `/retro` keeps no **Dispatch record** of its own, per that doc's keeper set).
 
 ## State contract
 
@@ -27,17 +27,25 @@ Refuses if any ticket isn't `Done` (lists outstanding tickets). An already-`Done
 
    **Verify the diff is complete before fact-checking it:** every `Done` ticket's work must be reachable from the spec branch tip. If the ticket branch still exists, ancestor-check its tip (`git merge-base --is-ancestor`). If the branch is gone — the normal state — locate the ticket's close commit *positively*: the commit that set the ticket's status to `done`, found in the spec branch's history of the ticket file (`git log <spec branch> -S 'status: done' -- <ticket path>`). Found → the close and everything under it is reachable. Not found → the close never reached the spec branch (branch deleted or never merged): the spec diff is silently missing that ticket — stop; if its branch survives, offer that ticket's close-out merge per [CLOSE-OUT.md](../../_shared/CLOSE-OUT.md) (ticket branch → spec branch); if not, warn the work is recoverable only from the reflog. Never infer "merged" from a branch's absence.
 
-   **One preflight the script cannot make:** the running retro must be committed before the synthesis consumes it — the rewrite preserves the running form in git history *only* (see [RETRO-FORMAT.md](../../_shared/RETRO-FORMAT.md)). An *untracked* `retro.md` never trips the script's dirty check (tracked-only by design) yet has no history: verify the running retro is tracked, and refuse if not — name the exact path and the always-works fix: commit it on the spec branch, then re-run `/retro`. (Only when a ticket's `done` flip is *also* uncommitted is resuming that `/done` close the better route — its commit gate carries the retro along.)
+   **One preflight the script cannot make:** the running retro must be committed before the synthesis consumes it — the rewrite preserves the running form in git history *only* (see [RETRO-FORMAT.md](../../_shared/RETRO-FORMAT.md)). An *untracked* `retro.md` never trips the script's exit-5 dirty check (tracked-only by design) and, being a store artifact, would pass exit 8's classification — yet it has no history: verify the running retro is tracked, and refuse if not — name the exact path and the always-works fix: commit it on the spec branch, then re-run `/retro`. (Two other routes beat a hand-commit when the retro is merely *dirty* rather than untracked, and the ticket's `done` flip picks between them: uncommitted alongside it → resume that `/done` close, whose commit gate carries the retro along; already committed → an interrupted `/refactor` pass wrote the retro at its step 9 and never reached its gates, so re-run `/refactor`. See [RECOVERY.md](../../_shared/RECOVERY.md).)
 
    Run the script:
 
    ```
-   bash "${CLAUDE_PLUGIN_ROOT}/scripts/materialize-diff.sh" <base> <head>
+   bash "${CLAUDE_PLUGIN_ROOT}/scripts/materialize-diff.sh" <base> <head> [--allow-untracked <path>...]
    ```
 
-   On success the diff is at `.pirr/diff.patch` — the fact-checker has no git access; this artifact is its only view of the diff. On any non-zero exit, follow the shared doc's exit-code table: relay stderr and stop — never fall back to a hand-rolled `git diff`. Exit 5 (dirty tree) is the one exit `/retro` interprets before stopping. Classify the dirty paths (store-artifact paths per STORE.md's artifact map: `docs/specs/**`, `docs/adr/**`, `docs/spikes/**`, `docs/reviewers.md`, `CONTEXT.md`, `.pirr/settings.toml`; everything else is implementation):
+   On success the diff is at `.pirr/diff.patch` — the fact-checker has no git access; this artifact is its only view of the diff. On any non-zero exit, follow the shared doc's exit-code table: relay stderr and stop — never fall back to a hand-rolled `git diff`. Exits 5 and 8 are the two `/retro` interprets before stopping. Both classify against the same division (store-artifact paths per STORE.md's artifact map: `docs/specs/**`, `docs/adr/**`, `docs/spikes/**`, `docs/reviewers.md`, `CONTEXT.md`, `.pirr/settings.toml`; everything else is implementation). Exit 8 sees one population exit 5 cannot — a path that is neither, such as a scratch note, an editor backup, or un-ignored build output. Refuse on it as well (refusing is the safe side of an unrecognized path), but say only that it can't be classified and point at `.gitignore`; the never-staged-work sentence below is false about it.
+
+   **Exit 5 (tracked dirt)** — two arms:
    - **Any implementation path is dirty** — refuse, naming the convention: implementation is committed before close-out runs. Print the implementation paths; the user commits *those paths only* — co-present store-artifact dirt stays in the tree (a resume signal; the rule is the implementation-dirt row of [RECOVERY.md](../../_shared/RECOVERY.md#resting-states)).
    - **Only store-artifact paths are dirty** — an interrupted state this close owns. Open [RECOVERY.md](../../_shared/RECOVERY.md#retro-interrupted-close) and route per its walkthrough, which reads the `Done` flip's position against this skill's store-edit order.
+
+   **Exit 8 (untracked paths).** Classify **per path, never by the set as a whole** — [CLOSE-OUT.md](../../_shared/CLOSE-OUT.md)'s enumeration is per-entry, and a mixed set matching no arm is how a whole-set test fails:
+   - **Any reported path is implementation** — refuse, same convention, naming what the exit prevented: a never-staged file is in neither the diff nor the close-out commit, so closing now would ship nothing of it. Print the implementation paths; the user stages or removes them, then re-runs `/retro`. Note the remedy differs from exit 5's *commit those paths only* — a never-staged file must be staged or removed first, so don't carry the exit-5 wording over. This arm fires even alongside legitimate planning artifacts.
+   - **No reported path is implementation** — proceed: re-invoke with `--allow-untracked` naming **every** reported path, then split them by authorship in what you tell the user. **Authorship is scoped to the close, not to the invocation** ([ADR 0007](../../../../../docs/adr/0007-authorship-is-scoped-to-the-close.md)) — on a resume, a crashed predecessor run's edits are this close's own, not foreign ([CLOSE-OUT.md](../../_shared/CLOSE-OUT.md)'s show-content-on-resume rule commits exactly those). This close's own edits pass without comment; paths belonging to no run of it are **named** as excluded. At spec scope the foreign set is the common case: a working store normally carries banked ideas and drafted specs with nothing to do with this spec.
+
+   Note the untracked `retro.md` case is already refused by the preflight above, which is strictly stronger than this exit: an untracked running retro fails on having no history for the synthesis to preserve, not merely on being untracked.
 
 4. **Invoke `pirr:deviation-fact-checker`** with, at minimum:
    - The diff artifact path (`.pirr/diff.patch`)
@@ -48,16 +56,22 @@ Refuses if any ticket isn't `Done` (lists outstanding tickets). An already-`Done
    - A reminder that it has Read/Grep over the working tree and must verify claims against current source, not stale comments
    - The planning-artifact label per [DIFF-MATERIALIZATION.md](../../_shared/DIFF-MATERIALIZATION.md)'s "Diffs contain planning artifacts" section, carried whole — copy the section's two-sided contract into the brief, never a paraphrase of it. A spec-scope diff always contains store-artifact hunks — every ticket's committed close-out edits — so the label is load-bearing, not decorative.
 
-   The fact-checker returns its three pinned sections — Deviation gaps, Misrepresented deviations, ADR candidates — at spec scope. Same threshold applies (see [ABSTRACTION-LEVELS-PRINCIPLE.md](../../_shared/ABSTRACTION-LEVELS-PRINCIPLE.md)): below-threshold churn doesn't accumulate into deviations at spec scope; don't surface it.
+   The fact-checker returns its three pinned finding sections — Deviation gaps, Misrepresented deviations, ADR candidates — followed by its Partial verdict register, at spec scope. Same threshold applies (see [ABSTRACTION-LEVELS-PRINCIPLE.md](../../_shared/ABSTRACTION-LEVELS-PRINCIPLE.md)): below-threshold churn doesn't accumulate into deviations at spec scope; don't surface it.
 
    Adversarially review findings against cited diff hunks. Spec-scope gaps tend to be cross-cutting things ticket-level diffs missed — seams that shifted across tickets — not new below-threshold churn.
 
-5. **Apply confirmed late-stage updates.** Append any newly-discovered deviations to the relevant ticket's `## Deviations`. Surface ADR candidates for explicit decision. If the fact-check returns `_None._` across the board, that's a clean spec — proceed to synthesis.
+5. **Apply confirmed late-stage updates.** Append any newly-discovered deviations to the relevant ticket's `## Deviations`. Surface ADR candidates for explicit decision. If the fact-check returns `_None._` across all three finding sections, that's a clean spec — proceed to synthesis.
 
 6. **Read inputs for synthesis:**
    - The spec — section structure and intent.
-   - The running retro — per-ticket entries with outcome labels.
+   - The running retro — per-ticket entries with outcome labels. Each entry's `**Dispatch**` line is a record, not commentary: it belongs to the ticket's close, and the synthesis neither summarizes nor carries it forward (see [RETRO-FORMAT.md](../../_shared/RETRO-FORMAT.md)).
    - Each ticket's `## Deviations` section — granular divergences (including `(refactor)`-marked entries).
+
+   **Report any ticket whose `## Deviations` was never materialized.** The section has three states, not two ([EVIDENCE-PRINCIPLE.md](../../_shared/EVIDENCE-PRINCIPLE.md)'s honesty rule): **absent** reads "nobody checked", the `_None yet._` placeholder reads "not yet", and an explicit `_None._` reads "checked, clean". Every `Done` ticket should carry the third — `/done`'s step 5 materializes it at close. A `Done` ticket still reading absent or placeholder means that close skipped the step, so its clean-looking emptiness is not a claim: **name those tickets to the user before synthesizing**, and don't let the synthesis read them as `Exact match` by default. Which tickets were never fact-checked is the spec-scope form of which lenses never ran — the same distinction, one layer up.
+
+   This is a report, not a gate: it does not refuse the close. But an unreported unmaterialized section silently becomes a clean synthesis line, which is precisely the silence-as-clean-result the honesty rule forbids.
+
+   (The three states are spelled out here rather than only cited because this is a per-ticket classification on the hot path — [ADR 0002](../../../../../docs/adr/0002-hot-path-classifications-stay-inlined.md). `/done`'s step 5 cites the doc instead: it *writes* the sentinel and needs the rule, not the routing table.)
 
 7. **Synthesize per spec section.** For each of the spec's five sections (Problem, Goals, Non-goals, Approach, Modules touched):
    - Determine the dominant outcome label across the tickets that touched this section. If the section had no real activity, label it `Exact match` and say so briefly.
@@ -114,6 +128,7 @@ Refuses if any ticket isn't `Done` (lists outstanding tickets). An already-`Done
 
 - **Don't write `## Next steps`, `## Future work`, or `## Roadmap`.** Strictly backward-looking. Forward-looking lessons go into a new spec.
 - **Don't fabricate outcomes.** If the running retro, deviations, and fact-checker output don't reveal what happened in a section, ask the user.
+- **Don't read an unmaterialized `## Deviations` as a clean one.** Absent and `_None yet._` mean nobody checked and not-yet; only an explicit `_None._` is a claim. Report the tickets carrying the first two (step 6) instead of synthesizing over them.
 - **Don't lose ticket-level granularity** — reference specific tickets by number.
 - **Don't pad sections with below-threshold deviations to look thorough.** Internal refactors, private renames, formatting churn don't belong in a synthesized retro; a section whose tickets had no above-threshold divergence gets `Exact match`.
 - **Don't skip the fact-check step even if every `/done` fact-checked cleanly.** Spec-level diff often surfaces things ticket-level diffs miss — particularly seams that shifted gradually across tickets, none capturing the cumulative move.

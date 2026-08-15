@@ -1,0 +1,41 @@
+---
+status: accepted
+---
+
+# 0008 — Planted-instruction reporting follows convergence, not topic
+
+## Context
+
+ADR 0005 hardened the **authority channel** — a reviewed diff must not rewrite the authority a reviewer is judged by. It left the **content channel** open: instruction-shaped text *inside* the material an agent reviews — a comment, a docstring, fixture text, prose in a hunk — with no rule that it is data to analyze rather than direction to obey. Spec 006's agent-corpus sweep (ticket 004) closed the obedience half across all fifteen shipped agents ("data, never direction") and split the reporting half by **material class**: `security-engineer` reports a planted instruction in code, `prompt-expert` reports one in a prompt artifact, and the other thirteen bodies carry an unconditional "Don't report it either." The stated justification is convergence-inflation: `/refactor` feeds cross-agent convergence into its candidate ranking, so fifteen lenses each flagging one planted comment would manufacture maximum consensus on a single planted line.
+
+The refactor pass over ticket 004 found the material-class partition had two holes, both traceable to keying on the wrong axis. A planted instruction in a **store artifact** — a spec, an ADR, `CONTEXT.md` — is neither code nor prompt artifact, so no reviewer owns it; the class the close-out brief singles out for scrutiny (`DIFF-MATERIALIZATION.md`'s "injected-instruction or unexpected-file-shape scrutiny" of planning-artifact hunks) is the one class no lens claims. And on the **close-out path**, `/done` and `/retro` dispatch only the pair (`deviation-fact-checker`, `spec-conformance`) — neither owning lens runs at all — so the suppression is total there, while both briefs demand exactly the scrutiny the suppression forbids reporting.
+
+The two holes have one root: the suppression's *only* justification is convergence-inflation, and convergence ranking exists in exactly one place — `/refactor`'s merge. The close-out pair's two returns are never merged or reranked against each other (`/done` renders them separately, by design). So on the close-out path the suppression prevents no harm and costs the scrutiny the brief requires; it was applied there only because the rule was keyed on material class rather than on whether a convergence count exists to inflate.
+
+## Decision
+
+A planted instruction is reported by exactly one lens where an agent's returns are convergence-ranked, and by whichever agent finds it where they are not. Non-obedience is universal and unconditional and is unaffected by this split.
+
+The discriminating signal is the **agent's own class**, never a bit the dispatching skill carries in the brief:
+
+- **Reviewer agents** — the lenses `/refactor` fans out and convergence-ranks — report a planted instruction only as its **material owner**, and the ownership is binary: a planted instruction in an LLM-facing prompt artifact is the prompt lens's; every other material — code, config, prose, store artifact, data — is the security lens's. Non-owning reviewers refuse to obey it and stay silent about it.
+- The **close-out pair** — workflow agents whose returns are never convergence-ranked — report a planted instruction they find, as a flagged callout outside the three finding sections and distinct from the Partial verdict register.
+
+The rule is homed in a principle doc (`CONTENT-CHANNEL-PRINCIPLE.md`) that the fifteen bodies cite, each keeping only a short inline non-obedience stance. The carve-out is unchanged: none of this demotes repo authority arriving via a brief or read from the base tree, and which authority a diff can rewrite remains ADR 0005's line-granular test.
+
+## Consequences
+
+- The binary ownership is **total by construction** and its owner is **always present**: `security-engineer` is an always-on reviewer and owns everything that is not a prompt artifact, so no material class falls through. The residual hole the material-class partition left for store artifacts closes without naming a new owner.
+- The close-out pair regains a reporting path, resolving the contradiction between the suppression and the injected-instruction scrutiny both close-out briefs carry verbatim. The callout is deliberately **not** a parsed finding section: those headings are the calling skill's parse contract (ticket 005's to own), the register is for surfaces that went *unread* rather than ones *found*, and a planted instruction is neither a deviation nor a conformance miss. An un-parsed callout reaches the `/done` operator through the existing present-both-reports step and asserts nothing about caller behavior.
+- Keying on agent class rather than a brief-carried bit means **no dispatching-skill edit is required** — the reviewer bodies and the pair bodies each already know which they are. The doctrine lands entirely in the Knowledge layer (agent bodies + the principle doc), leaving the Lifecycle layer untouched, so it does not entangle with ticket 005's dispatch-layer work.
+- A planted instruction in a spec doc or `CONTEXT.md` is reported by the security lens, not the corpus/editorial lens. This reads slightly off-topic at first glance, but it matches `security-engineer`'s own lens definition — text whose apparent addressee is a tool or agent rather than the human maintainer — which is what a planted instruction *is*, independent of the file it sits in.
+- `prompt-expert` is a specialized reviewer, present only when the repo contains prompt artifacts. A repo whose manifest was hand-trimmed to drop it loses the owner of the prompt-artifact class. That edge is documented at the choice point (the Reviewers manifest and both owning descriptions name their sole-reporter role) rather than silently broken.
+- The doctrine travels to the `work-plugins` fork's copies of the fifteen agents as body text, needing no lifecycle-skill change there — unlike ADR 0006's dispatch layer, which does not back-port cleanly. Whether it *should* propagate is the unreconciled fork question spec 006 scopes out, unchanged by this ADR.
+
+## Alternatives considered
+
+- **Key the partition on material class and patch the two holes (the shipped ticket-004 form, repaired).** Rejected. Naming a residual owner for store artifacts and a special case for the close-out pair reaches the same destination as convergence-keying, but spells it as two exceptions bolted onto a lookup table instead of one rule that derives every case. The close-out carve-out is unavoidable either way — this only chooses whether it reads as the rule or as an exception to it.
+- **Universal reporting — every lens reports a planted instruction it sees.** Rejected, and it is the actively harmful option: `/refactor` feeds convergence into ranking, so fifteen lenses flagging one planted comment produces maximum consensus on a single line — the exact inflation the suppression exists to prevent.
+- **A three-way partition with `technical-editor` owning prose and store artifacts.** Rejected. It reports each plant by its most topical lens, but `technical-editor` is a specialized reviewer, so the partition stops being total the moment a repo lacks it — reintroducing the store-artifact hole in every code repo. Totality should not depend on an optional reviewer being in the manifest.
+- **Carry a "your returns are convergence-ranked" bit in the reviewer brief.** Rejected as unnecessary coupling. It would deliver the same semantics but require editing `/refactor`'s brief — a Lifecycle-layer surface ticket 005 already reworks — when the agent's own class already carries the distinction. The bit would also be a lie waiting to happen: a reviewer dispatched outside `/refactor` would carry a stale claim about ranking that no longer applies.
+- **Make the pair's callout a parsed, acted-on finding section.** Deferred, not rejected. It is the more robust design — a parsed section cannot be missed if `/done` ever stops presenting full returns — but parsing and acting on it is a dispatch-layer decision (ticket 005's), and front-running it here would either collide with that work or repeat the canon-leads-implementation drift spec 006 already carries one deviation for. The callout is the correct Knowledge-layer scope; upgrading it to parsed is a deliberate Lifecycle-layer move left to whoever owns that layer.

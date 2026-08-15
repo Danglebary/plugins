@@ -13,7 +13,7 @@ strategy = "serial"
 # Merge convention for ticket → PRD and PRD → main merges — read by whichever
 # skill runs CLOSE-OUT.md's gated merge; that doc's Consumers section owns the
 # reader list. Never guessed.
-# merge = "no-ff"
+merge = "no-ff"
 
 [ticket_start]
 # When true, /next-ticket dispatches a research sub-agent as a standing
@@ -21,3 +21,15 @@ strategy = "serial"
 # assumptions, assess whether /tdd fits. The config is the standing consent —
 # no per-ticket prompt.
 research_opener = true
+
+[verification]
+# The repo's full build-and-test suite — read by whichever skill resolves
+# verification; IMPLEMENTATION-LOOP.md's "Resolving the repo's verification"
+# owns the ladder, the precedence, and the degradation rule. Never guessed,
+# never restated here.
+#
+# Repo-specific facts this file is the only place to state: run from the repo
+# root; this repo ships no /verify skill, so this key is what resolves; there is
+# no build step — the bats suites are the whole of it (bats-core, developed
+# against 1.13).
+command = "bats plugins/pirr/scripts/"

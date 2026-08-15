@@ -13,7 +13,7 @@ Every lifecycle close ends in the same shape: a **gated commit** of the close's 
 
 - **Read the merge convention from the config / the repo's CLAUDE.md** — never improvise it.
 - **Offer, never perform.** Offer the merge of the closed branch into its parent per the convention (`--no-ff`). The merge is the user's control point; an unanswered offer blocks — it is not consent.
-- **On accept**: merge, run the repo's verification (build + tests), and delete the merged branch **only after green**. If verification fails, stop and surface it — don't delete the branch.
+- **On accept**: merge, run the repo's verification (build + tests) — **resolved per [IMPLEMENTATION-LOOP.md](./IMPLEMENTATION-LOOP.md#resolving-the-repos-verification), never improvised**, the same convention the loop's exit task uses — and delete the merged branch **only after green**. Red, absent, or unrunnable all mean stop and surface it; none is a green, and none deletes the branch.
 - **On decline**: name the resting state ([RECOVERY.md](./RECOVERY.md#resting-states)). A declined merge never orphans a branch — the gate is re-enterable from every resting state.
 
 ## Resting states and the interrupted-close discriminator

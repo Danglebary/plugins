@@ -23,7 +23,9 @@ Applying the full capture list as a stop rule would over-surface — the thresho
 
 Stage **all implementation paths the ticket touched, plus the ticket file**, by explicit paths — `git add <path> <path>`, never `-A`, never `git add .`.
 
-The ticket file is not optional. The `Open → In progress` flip `/next-ticket` wrote earlier is an uncommitted store edit that, per [STORE.md](./STORE.md#writes-edits-and-git), rides the ticket's next real commit — and this *is* that commit; it also carries any `## Deviations` recorded mid-run. Staging implementation-only leaves that flip dirty, and the auto-invoked `/done` then sees a tree dirty in **only** store-artifact paths — which it reads as an *interrupted close-out* and resumes a close that never started ([RECOVERY.md](./RECOVERY.md#resting-states)). Staging the implementation and the ticket file together leaves a clean tree, so `/done` materializes its diff normally. Enumerate *all* implementation paths: any left unstaged stays tracked-dirty and trips the same misroute.
+The ticket file is not optional. The `Open → In progress` flip `/next-ticket` wrote earlier is an uncommitted store edit that, per [STORE.md](./STORE.md#writes-edits-and-git), rides the ticket's next real commit — and this *is* that commit; it also carries any `## Deviations` recorded mid-run. Staging implementation-only leaves that flip dirty, and the auto-invoked `/done` then sees a tree dirty in **only** store-artifact paths — which it reads as an *interrupted close-out* and resumes a close that never started ([RECOVERY.md](./RECOVERY.md#resting-states)). Staging the implementation and the ticket file together leaves a clean tree, so `/done` materializes its diff normally.
+
+Enumerate *all* implementation paths — but the two ways of leaving one out fail differently, and neither is the misroute above. A **modified tracked** file left unstaged stays tracked-dirty, so the diff script refuses with exit 5 and `/done`'s implementation-dirt arm names it. A **new** file left unstaged is untracked, so it refuses with exit 8 instead ([DIFF-MATERIALIZATION.md](./DIFF-MATERIALIZATION.md)) — the exit that exists because such a file is in neither the diff nor the close-out commit's enumeration and would otherwise ship nothing at all. Both stop the close; enumerate completely and neither fires.
 
 ### Graceful degradation — the signal must be positive
 
@@ -39,10 +41,10 @@ Green is a **positive** signal, never an assumed one. The loop auto-commits only
 "The repo's verification" is the **full build and test suite** — the same check `/done`'s merge gate runs ([CLOSE-OUT.md](./CLOSE-OUT.md#the-gated-merge)): one verification convention serving both the exit task here and the merge gate there. It runs in full even in `/tdd` mode, where the inner loop exercised only focused tests. It is **resolved, never improvised**, from three sources — first match wins:
 
 1. **A project verify skill** — the repo's own `/verify`-style skill, if it ships one. Purpose-built and executable, it is the least-ambiguous statement of how to verify this repo, so it wins.
-2. **A verification key in `.pirr/settings.toml`** — explicit structured config.
+2. **`[verification] command` in `.pirr/settings.toml`** — explicit structured config. That table and key are the canonical shape; a repo naming it anything else is not resolvable by source 2 and falls through to source 3.
 3. **A verification convention stated in the repo's `CLAUDE.md`** — prose, the interpretation-prone fallback.
 
-No source resolves → no verification is configured → the loop degrades per above (surface, don't commit). Both loop skills resolve it the same way, so `/tdd` and `/implement` can never disagree on what "green" means.
+No source resolves → no verification is configured → **the consumer degrades rather than assuming a pass**, and what that means is the consumer's own pending action: the loop's exit task surfaces and does not commit; the gated merge surfaces and does not delete the merged branch. Absent and unrunnable degrade exactly as red does — never as green. Both loop skills resolve it the same way, so `/tdd` and `/implement` can never disagree on what "green" means.
 
 ## The commit boundary — this is the implementation commit, not the close-out commit
 
